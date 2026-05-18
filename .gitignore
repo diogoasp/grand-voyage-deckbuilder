@@ -1,0 +1,29 @@
+# Godot 4
+.godot/
+.import/
+
+# Imported assets cache
+*.import
+
+# Exported builds
+/builds/
+/exports/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# C# / .NET, caso algum dia teste a versão C#
+.mono/
+bin/
+obj/

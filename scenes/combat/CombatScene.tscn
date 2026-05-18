@@ -1,0 +1,54 @@
+[gd_scene format=3 uid="uid://cotyq2708vtom"]
+
+[ext_resource type="Script" uid="uid://dvwt0iugl7tbk" path="res://scenes/combat/combat_scene.gd" id="1_cetgp"]
+
+[node name="CombatScene" type="Control" unique_id=1447061713]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 404.0
+offset_bottom = 240.0
+script = ExtResource("1_cetgp")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1533450500]
+layout_mode = 0
+offset_right = 1154.0
+offset_bottom = 650.0
+
+[node name="TopBar" type="HBoxContainer" parent="." unique_id=481716624]
+layout_mode = 0
+offset_right = 1146.0
+offset_bottom = 75.0
+
+[node name="PlayerHPLabel" type="Label" parent="TopBar" unique_id=1764902482]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="EnergyLabel" type="Label" parent="TopBar" unique_id=498130580]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+
+[node name="EnemyHPLabel" type="Label" parent="TopBar" unique_id=1850803614]
+layout_mode = 2
+
+[node name="EnemyArea" type="VBoxContainer" parent="." unique_id=1800212012]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="EnemyNameLabel" type="Label" parent="EnemyArea" unique_id=1244026989]
+layout_mode = 2
+
+[node name="HandArea" type="HBoxContainer" parent="." unique_id=767289767]
+layout_mode = 0
+offset_left = 259.0
+offset_top = 488.0
+offset_right = 975.0
+offset_bottom = 619.0
+
+[node name="EndTurnButton" type="Button" parent="." unique_id=352398968]
+layout_mode = 0
+offset_left = 1030.0
+offset_top = 541.0
+offset_right = 1103.0
+offset_bottom = 584.0

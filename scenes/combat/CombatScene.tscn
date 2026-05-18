@@ -19,6 +19,7 @@ color = Color(0.027916871, 0, 0.29856822, 1)
 layout_mode = 0
 offset_right = 1154.0
 offset_bottom = 75.0
+alignment = 1
 
 [node name="PlayerHPLabel" type="Label" parent="TopBar" unique_id=1764902482]
 layout_mode = 2
@@ -37,16 +38,24 @@ layout_mode = 2
 
 [node name="EnemyArea" type="VBoxContainer" parent="." unique_id=1800212012]
 layout_mode = 0
-offset_left = 823.0
-offset_top = 173.0
-offset_right = 1030.0
-offset_bottom = 403.0
+offset_left = 585.0
+offset_top = 162.0
+offset_right = 1104.0
+offset_bottom = 392.0
+alignment = 1
 
 [node name="EnemyNameLabel" type="Label" parent="EnemyArea" unique_id=1244026989]
 layout_mode = 2
 
 [node name="EnemyIntentLabel" type="Label" parent="EnemyArea" unique_id=749684533]
 layout_mode = 2
+
+[node name="EnemySprite" type="ColorRect" parent="EnemyArea" unique_id=2047750156]
+custom_minimum_size = Vector2(55, 140)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+color = Color(0.6756549, 0.07378373, 0, 1)
 
 [node name="HandArea" type="HBoxContainer" parent="." unique_id=767289767]
 layout_mode = 0
@@ -56,18 +65,6 @@ offset_right = 975.0
 offset_bottom = 619.0
 alignment = 1
 
-[node name="StrikeButton" type="Button" parent="HandArea" unique_id=463311879]
-layout_mode = 2
-text = "Golpe Básico
-Custo 1
-Dano 6"
-
-[node name="BlockButton" type="Button" parent="HandArea" unique_id=785527355]
-layout_mode = 2
-text = "Defesa Básica
-Custo 1
-Bloqueio 5"
-
 [node name="EndTurnButton" type="Button" parent="." unique_id=352398968]
 layout_mode = 0
 offset_left = 998.0
@@ -75,3 +72,10 @@ offset_top = 549.0
 offset_right = 1119.0
 offset_bottom = 592.0
 text = "Finalizar turno"
+
+[node name="Player" type="ColorRect" parent="." unique_id=1410445873]
+layout_mode = 0
+offset_left = 283.0
+offset_top = 234.0
+offset_right = 334.0
+offset_bottom = 368.0

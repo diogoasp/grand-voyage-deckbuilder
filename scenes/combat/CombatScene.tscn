@@ -13,10 +13,11 @@ script = ExtResource("1_cetgp")
 layout_mode = 0
 offset_right = 1154.0
 offset_bottom = 650.0
+color = Color(0.027916871, 0, 0.29856822, 1)
 
 [node name="TopBar" type="HBoxContainer" parent="." unique_id=481716624]
 layout_mode = 0
-offset_right = 1146.0
+offset_right = 1154.0
 offset_bottom = 75.0
 
 [node name="PlayerHPLabel" type="Label" parent="TopBar" unique_id=1764902482]
@@ -33,8 +34,10 @@ layout_mode = 2
 
 [node name="EnemyArea" type="VBoxContainer" parent="." unique_id=1800212012]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 823.0
+offset_top = 173.0
+offset_right = 1030.0
+offset_bottom = 403.0
 
 [node name="EnemyNameLabel" type="Label" parent="EnemyArea" unique_id=1244026989]
 layout_mode = 2
@@ -45,6 +48,12 @@ offset_left = 259.0
 offset_top = 488.0
 offset_right = 975.0
 offset_bottom = 619.0
+
+[node name="StrikeButton" type="Button" parent="HandArea" unique_id=463311879]
+layout_mode = 2
+text = "Golpe Básico
+Custo 1
+Dano 6"
 
 [node name="EndTurnButton" type="Button" parent="." unique_id=352398968]
 layout_mode = 0

@@ -32,6 +32,9 @@ size_flags_vertical = 8
 [node name="EnemyHPLabel" type="Label" parent="TopBar" unique_id=1850803614]
 layout_mode = 2
 
+[node name="BlockLabel" type="Label" parent="TopBar" unique_id=89880467]
+layout_mode = 2
+
 [node name="EnemyArea" type="VBoxContainer" parent="." unique_id=1800212012]
 layout_mode = 0
 offset_left = 823.0
@@ -42,12 +45,16 @@ offset_bottom = 403.0
 [node name="EnemyNameLabel" type="Label" parent="EnemyArea" unique_id=1244026989]
 layout_mode = 2
 
+[node name="EnemyIntentLabel" type="Label" parent="EnemyArea" unique_id=749684533]
+layout_mode = 2
+
 [node name="HandArea" type="HBoxContainer" parent="." unique_id=767289767]
 layout_mode = 0
 offset_left = 259.0
 offset_top = 488.0
 offset_right = 975.0
 offset_bottom = 619.0
+alignment = 1
 
 [node name="StrikeButton" type="Button" parent="HandArea" unique_id=463311879]
 layout_mode = 2
@@ -55,9 +62,16 @@ text = "Golpe Básico
 Custo 1
 Dano 6"
 
+[node name="BlockButton" type="Button" parent="HandArea" unique_id=785527355]
+layout_mode = 2
+text = "Defesa Básica
+Custo 1
+Bloqueio 5"
+
 [node name="EndTurnButton" type="Button" parent="." unique_id=352398968]
 layout_mode = 0
-offset_left = 1030.0
-offset_top = 541.0
-offset_right = 1103.0
-offset_bottom = 584.0
+offset_left = 998.0
+offset_top = 549.0
+offset_right = 1119.0
+offset_bottom = 592.0
+text = "Finalizar turno"

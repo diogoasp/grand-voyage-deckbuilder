@@ -21,20 +21,34 @@ offset_right = 1154.0
 offset_bottom = 75.0
 alignment = 1
 
+[node name="EnergyLabel" type="Label" parent="TopBar" unique_id=498130580]
+layout_direction = 2
+layout_mode = 2
+size_flags_horizontal = 2
+text = "Enegy Label"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="PlayerHPLabel" type="Label" parent="TopBar" unique_id=1764902482]
 layout_mode = 2
 size_flags_horizontal = 0
-
-[node name="EnergyLabel" type="Label" parent="TopBar" unique_id=498130580]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 8
+text = "PlayeHPLabel"
 
 [node name="EnemyHPLabel" type="Label" parent="TopBar" unique_id=1850803614]
 layout_mode = 2
+text = "EnemyHPLabel"
 
 [node name="BlockLabel" type="Label" parent="TopBar" unique_id=89880467]
 layout_mode = 2
+text = "BlockLabel"
+
+[node name="DrawPileLabel" type="Label" parent="TopBar" unique_id=1259792803]
+layout_mode = 2
+text = "DrawPile"
+
+[node name="DiscardPileLabel" type="Label" parent="TopBar" unique_id=253655563]
+layout_mode = 2
+text = "DiscardPile"
 
 [node name="EnemyArea" type="VBoxContainer" parent="." unique_id=1800212012]
 layout_mode = 0
@@ -59,11 +73,17 @@ color = Color(0.6756549, 0.07378373, 0, 1)
 
 [node name="HandArea" type="HBoxContainer" parent="." unique_id=767289767]
 layout_mode = 0
-offset_left = 259.0
-offset_top = 488.0
-offset_right = 975.0
-offset_bottom = 619.0
+offset_left = 33.0
+offset_top = 494.0
+offset_right = 813.0
+offset_bottom = 625.0
 alignment = 1
+
+[node name="StrikeButton" type="Button" parent="HandArea" unique_id=1438979917]
+layout_mode = 2
+text = "Golpe Básico
+Custo 1
+Dano 6"
 
 [node name="EndTurnButton" type="Button" parent="." unique_id=352398968]
 layout_mode = 0

@@ -1,18 +1,18 @@
 extends Control
 
-# Player Labels
 @onready var player_hp_label: Label = $TopBar/PlayerHPLabel
+@onready var enemy_hp_label: Label = $TopBar/EnemyHPLabel
 @onready var energy_label: Label = $TopBar/EnergyLabel
 @onready var block_label: Label = $TopBar/BlockLabel
+@onready var draw_pile_label: Label = $TopBar/DrawPileLabel
+@onready var discard_pile_label: Label = $TopBar/DiscardPileLabel
 
-# Enemy Labels
-@onready var enemy_hp_label: Label = $TopBar/EnemyHPLabel
 @onready var enemy_name_label: Label = $EnemyArea/EnemyNameLabel
 @onready var enemy_intent_label: Label = $EnemyArea/EnemyIntentLabel
 
-# Action elements
 @onready var hand_area: HBoxContainer = $HandArea
 @onready var end_turn_button: Button = $EndTurnButton
+
 
 var player_hp: int = 70
 var player_max_hp: int = 70
@@ -25,90 +25,249 @@ var enemy_damage: int = 6
 
 var energy: int = 3
 var max_energy: int = 3
+var cards_per_turn: int = 5
 
 var combat_finished: bool = false
+var next_card_instance_id: int = 1
 
-var hand_cards: Array[Dictionary] = [
-	{
+
+var card_database: Dictionary = {
+	"strike_basic": {
 		"id": "strike_basic",
 		"name": "Golpe Básico",
 		"cost": 1,
 		"description": "Cause 6 de dano.",
 		"effects": [
-			{ "type": "damage", "value": 6, "target": "enemy" }
+			{
+				"type": "damage",
+				"value": 6,
+				"target": "enemy"
+			}
 		]
 	},
-	{
+	"defend_basic": {
 		"id": "defend_basic",
 		"name": "Defesa Básica",
 		"cost": 1,
 		"description": "Ganhe 5 de bloqueio.",
 		"effects": [
-			{ "type": "block", "value": 5, "target": "player" }
+			{
+				"type": "block",
+				"value": 5,
+				"target": "player"
+			}
 		]
 	}
+}
+
+
+var starting_deck_ids: Array[String] = [
+	"strike_basic",
+	"strike_basic",
+	"strike_basic",
+	"defend_basic",
+	"defend_basic",
+	"defend_basic"
 ]
+
+var draw_pile: Array[Dictionary] = []
+var hand: Array[Dictionary] = []
+var discard_pile: Array[Dictionary] = []
+
 
 func _ready() -> void:
 	end_turn_button.pressed.connect(_on_end_turn_pressed)
-	create_hand()
+	start_combat()
+
+
+func start_combat() -> void:
+	combat_finished = false
+	next_card_instance_id = 1
+
+	player_hp = player_max_hp
+	player_block = 0
+	energy = max_energy
+
+	enemy_hp = enemy_max_hp
+
+	draw_pile.clear()
+	hand.clear()
+	discard_pile.clear()
+
+	for card_id in starting_deck_ids:
+		draw_pile.append(create_card_instance(card_id))
+
+	draw_pile.shuffle()
+
+	draw_cards(cards_per_turn)
+	rebuild_hand_ui()
 	update_ui()
 
-func create_hand() -> void:
-	clear_hand()
-	
-	for card_data in hand_cards:
+	print("Combate iniciado.")
+
+
+func create_card_instance(card_id: String) -> Dictionary:
+	if not card_database.has(card_id):
+		push_error("Carta não encontrada no banco: %s" % card_id)
+		return {}
+
+	var instance := {
+		"instance_id": next_card_instance_id,
+		"card_id": card_id
+	}
+
+	next_card_instance_id += 1
+
+	return instance
+
+
+func draw_cards(amount: int) -> void:
+	for i in range(amount):
+		if draw_pile.is_empty():
+			reshuffle_discard_into_draw_pile()
+
+		if draw_pile.is_empty():
+			return
+
+		var card_instance: Dictionary = draw_pile.pop_back()
+		hand.append(card_instance)
+
+
+func reshuffle_discard_into_draw_pile() -> void:
+	if discard_pile.is_empty():
+		return
+
+	print("Embaralhando descarte no deck de compra.")
+
+	draw_pile = discard_pile.duplicate()
+	draw_pile.shuffle()
+	discard_pile.clear()
+
+
+func rebuild_hand_ui() -> void:
+	clear_hand_ui()
+
+	for card_instance in hand:
+		var card_id: String = str(card_instance["card_id"])
+		var instance_id: int = int(card_instance["instance_id"])
+
+		if not card_database.has(card_id):
+			push_warning("Carta ausente do banco: %s" % card_id)
+			continue
+
+		var card_data: Dictionary = card_database[card_id]
+
 		var card_button := Button.new()
-		card_button.custom_minimum_size = Vector2(120, 200)
+		card_button.custom_minimum_size = Vector2(160, 110)
 		card_button.text = get_card_button_text(card_data)
-		card_button.pressed.connect(_on_card_pressed.bind(card_data))
+		card_button.set_meta("instance_id", instance_id)
+		card_button.set_meta("card_id", card_id)
+		card_button.set_meta("cost", int(card_data["cost"]))
+		card_button.pressed.connect(_on_card_button_pressed.bind(card_button))
+
 		hand_area.add_child(card_button)
 
-func clear_hand() -> void:
+
+func clear_hand_ui() -> void:
 	for child in hand_area.get_children():
 		child.queue_free()
 
+
 func get_card_button_text(card_data: Dictionary) -> String:
+	var card_name: String = str(card_data["name"])
+	var cost: int = int(card_data["cost"])
+	var description: String = str(card_data["description"])
+
 	return "%s\nCusto %d\n%s" % [
-		card_data["name"],
-		card_data["cost"],
-		card_data["description"]
+		card_name,
+		cost,
+		description
 	]
-	
+
 
 func update_ui() -> void:
 	player_hp_label.text = "HP: %d/%d" % [player_hp, player_max_hp]
 	enemy_hp_label.text = "Inimigo: %d/%d" % [enemy_hp, enemy_max_hp]
 	energy_label.text = "Energia: %d/%d" % [energy, max_energy]
 	block_label.text = "Bloqueio: %d" % player_block
-	
+	draw_pile_label.text = "Deck: %d" % draw_pile.size()
+	discard_pile_label.text = "Descarte: %d" % discard_pile.size()
+
 	enemy_name_label.text = enemy_name
-	# Sobre as intenções, como base podemos ver a intenção atual. 
-	# Com Haki da observação, podemos ver o dano que será causado. 
-	# Com Haki avançado podemos ver, além do dano, a ação seguinte planejada
-	enemy_intent_label.text = "Intenção: Atacar causando %d de dano" % enemy_damage
-	
+
+	if combat_finished:
+		enemy_intent_label.text = "Combate encerrado"
+	else:
+		enemy_intent_label.text = "Intenção: atacar causando %d de dano" % enemy_damage
+
 	for child in hand_area.get_children():
 		if child is Button:
-			var card_index := child.get_index()
-			var card_data := hand_cards[card_index]
-			var cost: int = card_data["cost"]
+			var cost: int = int(child.get_meta("cost", 0))
 			child.disabled = combat_finished or energy < cost
-			
+
 	end_turn_button.disabled = combat_finished
 
-func _on_card_pressed(card_data: Dictionary) -> void:
-	var cost: int = card_data["cost"]
-	
-	if not can_play_card(cost):
+
+func _on_card_button_pressed(card_button: Button) -> void:
+	if combat_finished:
 		return
-		
+
+	if not is_instance_valid(card_button):
+		return
+
+	var instance_id: int = int(card_button.get_meta("instance_id", -1))
+
+	if instance_id == -1:
+		push_warning("Botão de carta sem instance_id.")
+		return
+
+	var card_instance: Dictionary = find_card_in_hand(instance_id)
+
+	if card_instance.is_empty():
+		push_warning("Instância de carta não encontrada na mão: %d" % instance_id)
+		return
+
+	var card_id: String = str(card_instance["card_id"])
+
+	if not card_database.has(card_id):
+		push_warning("Carta não encontrada no banco: %s" % card_id)
+		return
+
+	var card_data: Dictionary = card_database[card_id]
+	var cost: int = int(card_data["cost"])
+
+	if not can_play_card(cost):
+		update_ui()
+		return
+
+	play_card(card_instance, card_data)
+
+
+func find_card_in_hand(instance_id: int) -> Dictionary:
+	for card_instance in hand:
+		if int(card_instance["instance_id"]) == instance_id:
+			return card_instance
+
+	return {}
+
+
+func play_card(card_instance: Dictionary, card_data: Dictionary) -> void:
+	var cost: int = int(card_data["cost"])
+
 	energy -= cost
+
+	print("Carta jogada: %s" % str(card_data["name"]))
+
 	resolve_card_effects(card_data)
-	
+	move_card_from_hand_to_discard(int(card_instance["instance_id"]))
+
+	if enemy_hp <= 0:
+		end_combat_with_victory()
+
+	rebuild_hand_ui()
 	update_ui()
 
-# TODO: Refatorar
+
 func can_play_card(cost: int) -> bool:
 	if combat_finished:
 		return false
@@ -119,90 +278,102 @@ func can_play_card(cost: int) -> bool:
 
 	return true
 
+
+func move_card_from_hand_to_discard(instance_id: int) -> void:
+	for i in range(hand.size()):
+		var card_instance: Dictionary = hand[i]
+
+		if int(card_instance["instance_id"]) == instance_id:
+			var removed_card: Dictionary = hand.pop_at(i)
+			discard_pile.append(removed_card)
+			return
+
+	push_warning("Não foi possível mover carta para descarte: %d" % instance_id)
+
+
 func resolve_card_effects(card_data: Dictionary) -> void:
-	print("Card jogada: %s" % card_data["name"])
-	
 	var effects: Array = card_data["effects"]
-	
+
 	for effect in effects:
 		resolve_effect(effect)
-	
-	if enemy_hp <= 0:
-		end_combat_with_victory()
+
 
 func resolve_effect(effect: Dictionary) -> void:
-	var effect_type: String = effect["type"]
-	var value: int = effect["value"]
-	var target: String = effect["target"]
-	
+	var effect_type: String = str(effect["type"])
+	var value: int = int(effect["value"])
+	var target: String = str(effect["target"])
+
 	match effect_type:
 		"damage":
 			if target == "enemy":
 				enemy_hp -= value
 				enemy_hp = max(enemy_hp, 0)
 				print("Causou %d de dano." % value)
+
 		"block":
 			if target == "player":
 				player_block += value
 				print("Ganhou %d de bloqueio." % value)
-				
+
 		_:
 			push_warning("Tipo de efeito desconhecido: %s" % effect_type)
 
-func _on_end_turn() -> void:
+
+func _on_end_turn_pressed() -> void:
 	if combat_finished:
 		return
-	
+
+	discard_hand()
 	resolve_enemy_turn()
-	
+
 	if combat_finished:
+		rebuild_hand_ui()
 		update_ui()
 		return
-	
+
 	start_player_turn()
+	rebuild_hand_ui()
 	update_ui()
 
-func start_player_turn() -> void:
-	print("Novo turno do jogador.")
-	energy = max_energy
-	player_block = 0
+
+func discard_hand() -> void:
+	for card_instance in hand:
+		discard_pile.append(card_instance)
+
+	hand.clear()
+
 
 func resolve_enemy_turn() -> void:
-	print("Turno inimigo!")
-	
-	var incoming_damage := enemy_damage
-	var blocked_damage = min (player_block, incoming_damage)
-	var final_damage = incoming_damage - blocked_damage
-	
+	print("Turno do inimigo.")
+
+	var incoming_damage: int = enemy_damage
+	var blocked_damage: int = min(player_block, incoming_damage)
+	var final_damage: int = incoming_damage - blocked_damage
+
 	player_block -= blocked_damage
 	player_hp -= final_damage
 	player_hp = max(player_hp, 0)
-	
+
 	print("Bloqueado: %d. Dano recebido: %d." % [blocked_damage, final_damage])
-	
+
 	if player_hp <= 0:
 		end_combat_with_defeat()
 
+
+func start_player_turn() -> void:
+	print("Novo turno do jogador.")
+
+	energy = max_energy
+	player_block = 0
+
+	draw_cards(cards_per_turn)
+
+
 func end_combat_with_victory() -> void:
 	combat_finished = true
-	print("Vitória!")
+	print("Vitória! Inimigo derrotado.")
+
 
 func end_combat_with_defeat() -> void:
 	combat_finished = true
-	print("Derrota! O capitão caiu.")
-	
-func _on_end_turn_pressed() -> void:
-	if combat_finished: return
-	
-	resolve_enemy_turn()
-	
-	if combat_finished:
-		update_ui()
-		return
-		
-	start_player_turn()
-	update_ui()
-	
-	
-	
-	
+	print("Derrota. O capitão caiu.")

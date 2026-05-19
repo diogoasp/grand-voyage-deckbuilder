@@ -7,6 +7,9 @@ extends Control
 @onready var draw_pile_label: Label = $TopBar/DrawPileLabel
 @onready var discard_pile_label: Label = $TopBar/DiscardPileLabel
 
+@onready var gold_label: Label = $TopBar/GoldLabel
+@onready var bounty_label: Label = $TopBar/BountyLabel
+
 @onready var enemy_name_label: Label = $EnemyArea/EnemyNameLabel
 @onready var enemy_intent_label: Label = $EnemyArea/EnemyIntentLabel
 
@@ -17,6 +20,10 @@ extends Control
 var player: Combatant
 var enemy: Combatant
 var effect_resolver: EffectResolver
+
+var gold: int = 0
+var bounty: int = 0
+var reward_claimed: bool = false
 
 var current_enemy_id: String = "marine_recruit"
 var current_enemy_data: Dictionary = {}
@@ -56,6 +63,7 @@ func start_combat_against(enemy_id: String) -> void:
 func start_combat() -> void:
 	combat_finished = false
 	next_card_instance_id = 1
+	reward_claimed = false
 
 	player = Combatant.new()
 	player.setup("player", "Capitão", 70)
@@ -231,6 +239,8 @@ func update_ui() -> void:
 	block_label.text = "Bloqueio: %d" % player.block
 	draw_pile_label.text = "Deck: %d" % draw_pile.size()
 	discard_pile_label.text = "Descarte: %d" % discard_pile.size()
+	gold_label.text = "Ouro: %d" % gold
+	bounty_label.text = "Bounty: %d" % bounty
 
 	enemy_name_label.text = enemy.display_name
 	enemy_intent_label.text = get_enemy_intent_text()
@@ -434,10 +444,49 @@ func start_player_turn() -> void:
 
 
 func end_combat_with_victory() -> void:
+	if combat_finished:
+		return
+
 	combat_finished = true
+	claim_combat_rewards()
+
 	print("Vitória! Inimigo derrotado.")
 
 
 func end_combat_with_defeat() -> void:
 	combat_finished = true
 	print("Derrota. O capitão caiu.")
+	
+func claim_combat_rewards() -> void:
+	if reward_claimed:
+		return
+
+	reward_claimed = true
+
+	var rewards: Dictionary = current_enemy_data.get("rewards", {})
+
+	if rewards.is_empty():
+		print("Nenhuma recompensa definida para este inimigo.")
+		return
+
+	var gold_min: int = int(rewards.get("gold_min", 0))
+	var gold_max: int = int(rewards.get("gold_max", gold_min))
+	var bounty_reward: int = int(rewards.get("bounty", 0))
+
+	if gold_max < gold_min:
+		gold_max = gold_min
+
+	var gold_reward: int = randi_range(gold_min, gold_max)
+
+	gold += gold_reward
+	bounty += bounty_reward
+
+	print("Recompensas recebidas: %d ouro, %d bounty." % [
+		gold_reward,
+		bounty_reward
+	])
+
+	print("Total atual: %d ouro, %d bounty." % [
+		gold,
+		bounty
+	])

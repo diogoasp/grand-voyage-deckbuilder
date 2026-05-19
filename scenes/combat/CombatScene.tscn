@@ -81,25 +81,37 @@ animations = [{
 [node name="CombatScene" type="Control" unique_id=1447061713]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 404.0
-offset_bottom = 240.0
+offset_right = 1154.0
+offset_bottom = 628.0
 script = ExtResource("1_cetgp")
 
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1163839127]
+layout_mode = 0
+offset_right = 1151.0
+offset_bottom = 150.0
+color = Color(0.16543144, 0.16543144, 0.16543144, 1)
+
 [node name="Boss1MorganBg" type="Sprite2D" parent="." unique_id=1623098963]
-position = Vector2(577.4375, 323.90625)
-scale = Vector2(4.5043945, 3.9886715)
+position = Vector2(577, 328)
+scale = Vector2(4.5043945, 3.4568357)
 texture = ExtResource("2_gvrxc")
 
 [node name="Boss1MorganBgFront" type="Sprite2D" parent="." unique_id=1745339370]
-position = Vector2(579, 291)
+position = Vector2(573.99994, 320)
 scale = Vector2(3.144414, 2.0340383)
 texture = ExtResource("3_i18os")
 
 [node name="TopBar" type="HBoxContainer" parent="." unique_id=481716624]
 layout_mode = 0
-offset_right = 1154.0
-offset_bottom = 75.0
+offset_left = 20.0
+offset_right = 1139.0
+offset_bottom = 51.0
 alignment = 1
+
+[node name="PlayerHPLabel" type="Label" parent="TopBar" unique_id=1764902482]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "PlayeHPLabel"
 
 [node name="EnergyLabel" type="Label" parent="TopBar" unique_id=498130580]
 layout_direction = 2
@@ -109,10 +121,21 @@ text = "Enegy Label"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PlayerHPLabel" type="Label" parent="TopBar" unique_id=1764902482]
+[node name="BountyLabel" type="Label" parent="TopBar" unique_id=1224706788]
+layout_direction = 2
 layout_mode = 2
-size_flags_horizontal = 0
-text = "PlayeHPLabel"
+size_flags_horizontal = 2
+text = "Bounty Label"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GoldLabel" type="Label" parent="TopBar" unique_id=1263058213]
+layout_direction = 2
+layout_mode = 2
+size_flags_horizontal = 2
+text = "Gold Label"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="EnemyHPLabel" type="Label" parent="TopBar" unique_id=1850803614]
 layout_mode = 2
@@ -130,12 +153,21 @@ text = "DrawPile"
 layout_mode = 2
 text = "DiscardPile"
 
+[node name="ColorRect2" type="ColorRect" parent="." unique_id=1042119628]
+custom_minimum_size = Vector2(0, 105)
+layout_mode = 0
+offset_left = -3.0
+offset_top = 537.0
+offset_right = 1154.0
+offset_bottom = 648.0
+color = Color(0.16543144, 0.16543144, 0.16543144, 1)
+
 [node name="EnemyArea" type="VBoxContainer" parent="." unique_id=1800212012]
 layout_mode = 0
-offset_left = 585.0
-offset_top = 125.0
-offset_right = 1104.0
-offset_bottom = 355.0
+offset_left = 767.0
+offset_top = 194.0
+offset_right = 982.0
+offset_bottom = 424.0
 alignment = 1
 
 [node name="EnemyNameLabel" type="Label" parent="EnemyArea" unique_id=1244026989]
@@ -145,17 +177,17 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="EnemySprite" type="AnimatedSprite2D" parent="EnemyArea" unique_id=164225054]
-position = Vector2(297, 309)
+position = Vector2(92.99997, 260.00003)
 scale = Vector2(1.9520063, 2.1188645)
 sprite_frames = SubResource("SpriteFrames_i18os")
-frame_progress = 0.3966073
+frame_progress = 0.4847637
 
 [node name="HandArea" type="HBoxContainer" parent="." unique_id=767289767]
 layout_mode = 0
-offset_left = 33.0
-offset_top = 494.0
-offset_right = 813.0
-offset_bottom = 625.0
+offset_left = 20.0
+offset_top = 497.0
+offset_right = 800.0
+offset_bottom = 628.0
 alignment = 1
 
 [node name="EndTurnButton" type="Button" parent="." unique_id=352398968]
@@ -167,9 +199,9 @@ offset_bottom = 592.0
 text = "Finalizar turno"
 
 [node name="Player" type="AnimatedSprite2D" parent="." unique_id=1194753351]
-position = Vector2(280.00003, 415)
+position = Vector2(280.00003, 443)
 scale = Vector2(1.0803572, 1.0737705)
 sprite_frames = SubResource("SpriteFrames_dqp6h")
 animation = &"idle"
-frame_progress = 0.025533058
+frame_progress = 0.17218779
 flip_h = true

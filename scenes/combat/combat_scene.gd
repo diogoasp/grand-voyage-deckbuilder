@@ -45,6 +45,7 @@ var discard_pile: Array[CardInstance] = []
 
 
 func _ready() -> void:
+	randomize()
 	end_turn_button.pressed.connect(_on_end_turn_pressed)
 	start_combat()
 
@@ -106,7 +107,34 @@ func select_enemy_intent() -> void:
 		enemy_intent = {}
 		return
 
-	enemy_intent = intent_pool[0]
+	enemy_intent = pick_weighted_intent(intent_pool)
+
+func pick_weighted_intent(intent_pool: Array) -> Dictionary:
+	var total_weight: int = 0
+
+	for intent in intent_pool:
+		if not intent is Dictionary:
+			continue
+
+		total_weight += max(int(intent.get("weight", 0)), 0)
+
+	if total_weight <= 0:
+		push_warning("Intent pool sem pesos válidos.")
+		return {}
+
+	var roll: int = randi_range(1, total_weight)
+	var accumulated_weight: int = 0
+
+	for intent in intent_pool:
+		if not intent is Dictionary:
+			continue
+
+		accumulated_weight += max(int(intent.get("weight", 0)), 0)
+
+		if roll <= accumulated_weight:
+			return intent
+
+	return {}
 
 
 func create_card_instance(card_id: String) -> CardInstance:
@@ -192,7 +220,10 @@ func get_card_button_text(card_data: Dictionary) -> String:
 
 func update_ui() -> void:
 	player_hp_label.text = "HP: %s" % player.get_hp_text()
-	enemy_hp_label.text = "Inimigo: %s" % enemy.get_hp_text()
+	enemy_hp_label.text = "Inimigo: %s | Bloqueio: %d" % [
+		enemy.get_hp_text(),
+		enemy.block
+	]
 	energy_label.text = "Energia: %d/%d" % [energy, max_energy]
 	block_label.text = "Bloqueio: %d" % player.block
 	draw_pile_label.text = "Deck: %d" % draw_pile.size()
@@ -394,7 +425,6 @@ func start_player_turn() -> void:
 
 	energy = max_energy
 	player.clear_block()
-	enemy.clear_block()
 
 	select_enemy_intent()
 	draw_cards(cards_per_turn)

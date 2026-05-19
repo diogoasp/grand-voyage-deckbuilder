@@ -6,22 +6,22 @@
 	"intent_pool": [
 	  {
 		"id": "basic_attack",
-		"weight": 100,
+		"weight": 70,
 		"effects": [
 		  {
 			"type": "damage",
-			"value": 10,
+			"value": 6,
 			"target": "player"
 		  }
 		]
 	  },
-	{
-		"id": "defend_basic",
-		"weight": 100,
+	  {
+		"id": "guard",
+		"weight": 30,
 		"effects": [
 		  {
 			"type": "block",
-			"value": 12,
+			"value": 5,
 			"target": "self"
 		  }
 		]

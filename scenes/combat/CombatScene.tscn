@@ -148,7 +148,7 @@ layout_mode = 2
 position = Vector2(297, 309)
 scale = Vector2(1.9520063, 2.1188645)
 sprite_frames = SubResource("SpriteFrames_i18os")
-frame_progress = 0.09411747
+frame_progress = 0.6046817
 
 [node name="HandArea" type="HBoxContainer" parent="." unique_id=767289767]
 layout_mode = 0
@@ -171,5 +171,5 @@ position = Vector2(280.00003, 415)
 scale = Vector2(1.0803572, 1.0737705)
 sprite_frames = SubResource("SpriteFrames_dqp6h")
 animation = &"idle"
-frame_progress = 0.18844402
+frame_progress = 0.37258738
 flip_h = true

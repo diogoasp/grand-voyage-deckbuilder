@@ -1,0 +1,25 @@
+{
+  "marine_recruit": {
+	"id": "marine_recruit",
+	"name": "Recruta da Marinha",
+	"max_hp": 32,
+	"intent_pool": [
+	  {
+		"id": "basic_attack",
+		"weight": 100,
+		"effects": [
+		  {
+			"type": "damage",
+			"value": 10,
+			"target": "player"
+		  }
+		]
+	  }
+	],
+	"rewards": {
+	  "gold_min": 8,
+	  "gold_max": 15,
+	  "bounty": 5
+	}
+  }
+}

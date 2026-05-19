@@ -1,7 +1,7 @@
 extends Node
 
 var cards: Dictionary = {}
-
+var enemies: Dictionary = {}
 
 func _ready() -> void:
 	load_all_data()
@@ -9,7 +9,10 @@ func _ready() -> void:
 
 func load_all_data() -> void:
 	cards = load_json_dictionary("res://data/cards/cards.json")
+	enemies = load_json_dictionary("res://data/enemies/enemies.json")
+
 	print("DataLoader: %d cartas carregadas." % cards.size())
+	print("DataLoader: %d inimigos carregados." % enemies.size())
 
 
 func load_json_dictionary(path: String) -> Dictionary:
@@ -47,3 +50,14 @@ func get_card(card_id: String) -> Dictionary:
 
 func has_card(card_id: String) -> bool:
 	return cards.has(card_id)
+
+func get_enemy(enemy_id: String) -> Dictionary:
+	if not enemies.has(enemy_id):
+		push_warning("Inimigo não encontrado: %s" % enemy_id)
+		return {}
+
+	return enemies[enemy_id]
+
+
+func has_enemy(enemy_id: String) -> bool:
+	return enemies.has(enemy_id)

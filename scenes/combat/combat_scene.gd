@@ -14,21 +14,16 @@ extends Control
 @onready var end_turn_button: Button = $EndTurnButton
 
 
-var player_hp: int = 70
-var player_max_hp: int = 70
-var player_block: int = 0
+var player: Combatant
+var enemy: Combatant
+
+var current_enemy_id: String = "marine_recruit"
+var current_enemy_data: Dictionary = {}
+var enemy_intent: Dictionary = {}
 
 var energy: int = 3
 var max_energy: int = 3
 var cards_per_turn: int = 5
-
-var current_enemy_id: String = "marine_recruit"
-var current_enemy_data: Dictionary = {}
-
-var enemy_name: String = ""
-var enemy_hp: int = 0
-var enemy_max_hp: int = 0
-var enemy_intent: Dictionary = {}
 
 var combat_finished: bool = false
 var next_card_instance_id: int = 1
@@ -57,11 +52,12 @@ func start_combat() -> void:
 	combat_finished = false
 	next_card_instance_id = 1
 
-	player_hp = player_max_hp
-	player_block = 0
-	energy = max_energy
-	
+	player = Combatant.new()
+	player.setup("player", "Capitão", 70)
+
 	load_enemy(current_enemy_id)
+
+	energy = max_energy
 
 	draw_pile.clear()
 	hand.clear()
@@ -77,6 +73,37 @@ func start_combat() -> void:
 	update_ui()
 
 	print("Combate iniciado.")
+
+
+func load_enemy(enemy_id: String) -> void:
+	if not DataLoader.has_enemy(enemy_id):
+		push_error("Inimigo não encontrado: %s" % enemy_id)
+		return
+
+	current_enemy_id = enemy_id
+	current_enemy_data = DataLoader.get_enemy(enemy_id)
+
+	var enemy_name: String = str(current_enemy_data["name"])
+	var enemy_max_hp: int = int(current_enemy_data["max_hp"])
+
+	enemy = Combatant.new()
+	enemy.setup(enemy_id, enemy_name, enemy_max_hp)
+
+	select_enemy_intent()
+
+
+func select_enemy_intent() -> void:
+	if current_enemy_data.is_empty():
+		enemy_intent = {}
+		return
+
+	var intent_pool: Array = current_enemy_data.get("intent_pool", [])
+
+	if intent_pool.is_empty():
+		enemy_intent = {}
+		return
+
+	enemy_intent = intent_pool[0]
 
 
 func create_card_instance(card_id: String) -> Dictionary:
@@ -102,7 +129,13 @@ func draw_cards(amount: int) -> void:
 		if draw_pile.is_empty():
 			return
 
-		var card_instance: Dictionary = draw_pile.pop_back()
+		var popped_card: Variant = draw_pile.pop_back()
+
+		if not popped_card is Dictionary:
+			push_warning("Carta inválida encontrada no deck.")
+			continue
+
+		var card_instance: Dictionary = popped_card
 		hand.append(card_instance)
 
 
@@ -159,19 +192,15 @@ func get_card_button_text(card_data: Dictionary) -> String:
 
 
 func update_ui() -> void:
-	player_hp_label.text = "HP: %d/%d" % [player_hp, player_max_hp]
-	enemy_hp_label.text = "Inimigo: %d/%d" % [enemy_hp, enemy_max_hp]
+	player_hp_label.text = "HP: %s" % player.get_hp_text()
+	enemy_hp_label.text = "Inimigo: %s" % enemy.get_hp_text()
 	energy_label.text = "Energia: %d/%d" % [energy, max_energy]
-	block_label.text = "Bloqueio: %d" % player_block
+	block_label.text = "Bloqueio: %d" % player.block
 	draw_pile_label.text = "Deck: %d" % draw_pile.size()
 	discard_pile_label.text = "Descarte: %d" % discard_pile.size()
 
-	enemy_name_label.text = enemy_name
-
-	if combat_finished:
-		enemy_intent_label.text = "Combate encerrado"
-	else:
-		enemy_intent_label.text = get_enemy_intent_text()
+	enemy_name_label.text = enemy.display_name
+	enemy_intent_label.text = get_enemy_intent_text()
 
 	for child in hand_area.get_children():
 		if child is Button:
@@ -179,6 +208,35 @@ func update_ui() -> void:
 			child.disabled = combat_finished or energy < cost
 
 	end_turn_button.disabled = combat_finished
+
+
+func get_enemy_intent_text() -> String:
+	if combat_finished:
+		return "Combate encerrado"
+
+	if enemy_intent.is_empty():
+		return "Intenção: desconhecida"
+
+	var effects: Array = enemy_intent.get("effects", [])
+
+	if effects.is_empty():
+		return "Intenção: nenhuma"
+
+	var parts: Array[String] = []
+
+	for effect in effects:
+		var effect_type: String = str(effect["type"])
+		var value: int = int(effect["value"])
+		var target: String = str(effect["target"])
+
+		if effect_type == "damage" and target == "player":
+			parts.append("atacar causando %d de dano" % value)
+		elif effect_type == "block" and target == "self":
+			parts.append("defender ganhando %d de bloqueio" % value)
+		else:
+			parts.append("%s %d" % [effect_type, value])
+
+	return "Intenção: " + ", ".join(parts)
 
 
 func _on_card_button_pressed(card_button: Button) -> void:
@@ -234,7 +292,7 @@ func play_card(card_instance: Dictionary, card_data: Dictionary) -> void:
 	resolve_card_effects(card_data)
 	move_card_from_hand_to_discard(int(card_instance["instance_id"]))
 
-	if enemy_hp <= 0:
+	if enemy.is_defeated():
 		end_combat_with_victory()
 
 	rebuild_hand_ui()
@@ -257,8 +315,12 @@ func move_card_from_hand_to_discard(instance_id: int) -> void:
 		var card_instance: Dictionary = hand[i]
 
 		if int(card_instance["instance_id"]) == instance_id:
-			var removed_card: Dictionary = hand.pop_at(i)
-			discard_pile.append(removed_card)
+			var removed_card_variant: Variant = hand.pop_at(i)
+
+			if removed_card_variant is Dictionary:
+				var removed_card: Dictionary = removed_card_variant
+				discard_pile.append(removed_card)
+
 			return
 
 	push_warning("Não foi possível mover carta para descarte: %d" % instance_id)
@@ -268,10 +330,11 @@ func resolve_card_effects(card_data: Dictionary) -> void:
 	var effects: Array = card_data["effects"]
 
 	for effect in effects:
-		resolve_effect(effect)
+		if effect is Dictionary:
+			resolve_player_card_effect(effect)
 
 
-func resolve_effect(effect: Dictionary) -> void:
+func resolve_player_card_effect(effect: Dictionary) -> void:
 	var effect_type: String = str(effect["type"])
 	var value: int = int(effect["value"])
 	var target: String = str(effect["target"])
@@ -279,13 +342,12 @@ func resolve_effect(effect: Dictionary) -> void:
 	match effect_type:
 		"damage":
 			if target == "enemy":
-				enemy_hp -= value
-				enemy_hp = max(enemy_hp, 0)
-				print("Causou %d de dano." % value)
+				var result: Dictionary = enemy.take_damage(value)
+				print("Causou %d de dano." % int(result["final_damage"]))
 
 		"block":
 			if target == "player":
-				player_block += value
+				player.gain_block(value)
 				print("Ganhou %d de bloqueio." % value)
 
 		_:
@@ -315,60 +377,6 @@ func discard_hand() -> void:
 
 	hand.clear()
 
-func load_enemy(enemy_id: String) -> void:
-	if not DataLoader.has_enemy(enemy_id):
-		push_error("Inimigo não encontrado: %s" % enemy_id)
-		return
-
-	current_enemy_id = enemy_id
-	current_enemy_data = DataLoader.get_enemy(enemy_id)
-
-	enemy_name = str(current_enemy_data["name"])
-	enemy_max_hp = int(current_enemy_data["max_hp"])
-	enemy_hp = enemy_max_hp
-
-	select_enemy_intent()
-
-func get_enemy_intent_text() -> String:
-	if combat_finished:
-		return "Combate encerrado"
-
-	if enemy_intent.is_empty():
-		return "Intenção: desconhecida"
-
-	var effects: Array = enemy_intent.get("effects", [])
-
-	if effects.is_empty():
-		return "Intenção: nenhuma"
-
-	var parts: Array[String] = []
-
-	for effect in effects:
-		var effect_type: String = str(effect["type"])
-		var value: int = int(effect["value"])
-		var target: String = str(effect["target"])
-
-		if effect_type == "damage" and target == "player":
-			parts.append("atacar causando %d de dano" % value)
-		elif effect_type == "block" and target == "self":
-			parts.append("defender ganhando %d de bloqueio" % value)
-		else:
-			parts.append("%s %d" % [effect_type, value])
-
-	return "Intenção: " + ", ".join(parts)
-
-func select_enemy_intent() -> void:
-	if current_enemy_data.is_empty():
-		enemy_intent = {}
-		return
-
-	var intent_pool: Array = current_enemy_data.get("intent_pool", [])
-
-	if intent_pool.is_empty():
-		enemy_intent = {}
-		return
-
-	enemy_intent = intent_pool[0]
 
 func resolve_enemy_turn() -> void:
 	print("Turno do inimigo.")
@@ -380,10 +388,12 @@ func resolve_enemy_turn() -> void:
 	var effects: Array = enemy_intent.get("effects", [])
 
 	for effect in effects:
-		resolve_enemy_effect(effect)
+		if effect is Dictionary:
+			resolve_enemy_effect(effect)
 
-	if player_hp <= 0:
+	if player.is_defeated():
 		end_combat_with_defeat()
+
 
 func resolve_enemy_effect(effect: Dictionary) -> void:
 	var effect_type: String = str(effect["type"])
@@ -393,26 +403,27 @@ func resolve_enemy_effect(effect: Dictionary) -> void:
 	match effect_type:
 		"damage":
 			if target == "player":
-				apply_damage_to_player(value)
+				var result: Dictionary = player.take_damage(value)
+				print("Bloqueado: %d. Dano recebido: %d." % [
+					int(result["blocked_damage"]),
+					int(result["final_damage"])
+				])
+
+		"block":
+			if target == "self":
+				enemy.gain_block(value)
+				print("%s ganhou %d de bloqueio." % [enemy.display_name, value])
 
 		_:
 			push_warning("Tipo de efeito inimigo desconhecido: %s" % effect_type)
-			
-func apply_damage_to_player(amount: int) -> void:
-	var blocked_damage: int = min(player_block, amount)
-	var final_damage: int = amount - blocked_damage
 
-	player_block -= blocked_damage
-	player_hp -= final_damage
-	player_hp = max(player_hp, 0)
-
-	print("Bloqueado: %d. Dano recebido: %d." % [blocked_damage, final_damage])
 
 func start_player_turn() -> void:
 	print("Novo turno do jogador.")
 
 	energy = max_energy
-	player_block = 0
+	player.clear_block()
+	enemy.clear_block()
 
 	select_enemy_intent()
 	draw_cards(cards_per_turn)

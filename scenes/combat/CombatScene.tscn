@@ -1,6 +1,80 @@
 [gd_scene format=3 uid="uid://cotyq2708vtom"]
 
 [ext_resource type="Script" uid="uid://dvwt0iugl7tbk" path="res://scenes/combat/combat_scene.gd" id="1_cetgp"]
+[ext_resource type="Texture2D" uid="uid://bd5kcqgtcftvk" path="res://assets/art/Marine_Swordsman_1_-removebg-preview.png" id="2_2ussv"]
+[ext_resource type="Texture2D" uid="uid://bju3ywjmvuun6" path="res://assets/art/3DS - One Piece_ Great Pirate Colosseum (JPN) - Fighters - Monkey D. Luffy.png" id="2_7pc1q"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0x2iq"]
+atlas = ExtResource("2_2ussv")
+region = Rect2(0, 0, 57, 59)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gvrxc"]
+atlas = ExtResource("2_2ussv")
+region = Rect2(57, 0, 57, 59)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_i18os"]
+resource_name = "enemy_marine_sword"
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0x2iq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gvrxc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0x2iq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gvrxc")
+}],
+"loop": true,
+"name": &"default",
+"speed": 3.0
+}]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dqp6h"]
+atlas = ExtResource("2_7pc1q")
+region = Rect2(2, 741, 112, 116)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6khhl"]
+atlas = ExtResource("2_7pc1q")
+region = Rect2(116, 741, 112, 116)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_57kx0"]
+atlas = ExtResource("2_7pc1q")
+region = Rect2(230, 741, 112, 116)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qkiah"]
+atlas = ExtResource("2_7pc1q")
+region = Rect2(344, 741, 112, 116)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_dqp6h"]
+resource_name = "player"
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dqp6h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6khhl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_57kx0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qkiah")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_57kx0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6khhl")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
 
 [node name="CombatScene" type="Control" unique_id=1447061713]
 layout_mode = 3
@@ -64,12 +138,11 @@ layout_mode = 2
 [node name="EnemyIntentLabel" type="Label" parent="EnemyArea" unique_id=749684533]
 layout_mode = 2
 
-[node name="EnemySprite" type="ColorRect" parent="EnemyArea" unique_id=2047750156]
-custom_minimum_size = Vector2(55, 140)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-color = Color(0.6756549, 0.07378373, 0, 1)
+[node name="EnemySprite" type="AnimatedSprite2D" parent="EnemyArea" unique_id=164225054]
+position = Vector2(300, 155)
+scale = Vector2(1.9520063, 2.1188645)
+sprite_frames = SubResource("SpriteFrames_i18os")
+frame_progress = 0.6853078
 
 [node name="HandArea" type="HBoxContainer" parent="." unique_id=767289767]
 layout_mode = 0
@@ -87,9 +160,10 @@ offset_right = 1119.0
 offset_bottom = 592.0
 text = "Finalizar turno"
 
-[node name="Player" type="ColorRect" parent="." unique_id=1410445873]
-layout_mode = 0
-offset_left = 283.0
-offset_top = 234.0
-offset_right = 334.0
-offset_bottom = 368.0
+[node name="Player" type="AnimatedSprite2D" parent="." unique_id=1194753351]
+position = Vector2(285, 308)
+scale = Vector2(1.0803572, 1.0737705)
+sprite_frames = SubResource("SpriteFrames_dqp6h")
+animation = &"idle"
+frame_progress = 0.8409138
+flip_h = true

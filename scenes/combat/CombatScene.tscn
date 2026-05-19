@@ -127,9 +127,9 @@ text = "DiscardPile"
 [node name="EnemyArea" type="VBoxContainer" parent="." unique_id=1800212012]
 layout_mode = 0
 offset_left = 585.0
-offset_top = 162.0
+offset_top = 125.0
 offset_right = 1104.0
-offset_bottom = 392.0
+offset_bottom = 355.0
 alignment = 1
 
 [node name="EnemyNameLabel" type="Label" parent="EnemyArea" unique_id=1244026989]
@@ -139,10 +139,10 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="EnemySprite" type="AnimatedSprite2D" parent="EnemyArea" unique_id=164225054]
-position = Vector2(300, 155)
+position = Vector2(300, 191)
 scale = Vector2(1.9520063, 2.1188645)
 sprite_frames = SubResource("SpriteFrames_i18os")
-frame_progress = 0.6853078
+frame_progress = 0.022552887
 
 [node name="HandArea" type="HBoxContainer" parent="." unique_id=767289767]
 layout_mode = 0
@@ -165,5 +165,5 @@ position = Vector2(285, 308)
 scale = Vector2(1.0803572, 1.0737705)
 sprite_frames = SubResource("SpriteFrames_dqp6h")
 animation = &"idle"
-frame_progress = 0.8409138
+frame_progress = 0.06941822
 flip_h = true

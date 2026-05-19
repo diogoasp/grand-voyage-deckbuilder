@@ -14,6 +14,17 @@
 			"target": "player"
 		  }
 		]
+	  },
+	{
+		"id": "defend_basic",
+		"weight": 100,
+		"effects": [
+		  {
+			"type": "block",
+			"value": 12,
+			"target": "self"
+		  }
+		]
 	  }
 	],
 	"rewards": {

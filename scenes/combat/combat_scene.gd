@@ -16,6 +16,7 @@ extends Control
 
 var player: Combatant
 var enemy: Combatant
+var effect_resolver: EffectResolver
 
 var current_enemy_id: String = "marine_recruit"
 var current_enemy_data: Dictionary = {}
@@ -54,6 +55,8 @@ func start_combat() -> void:
 
 	player = Combatant.new()
 	player.setup("player", "Capitão", 70)
+	
+	effect_resolver = EffectResolver.new()
 
 	load_enemy(current_enemy_id)
 
@@ -319,32 +322,15 @@ func move_card_from_hand_to_discard(instance_id: int) -> void:
 
 
 func resolve_card_effects(card_data: Dictionary) -> void:
-	var effects: Array = card_data["effects"]
+	var effects: Array = card_data.get("effects", [])
+	var results: Array[Dictionary] = effect_resolver.resolve_effects(
+		effects,
+		player,
+		enemy,
+		"card"
+	)
 
-	for effect in effects:
-		if effect is Dictionary:
-			resolve_player_card_effect(effect)
-
-
-func resolve_player_card_effect(effect: Dictionary) -> void:
-	var effect_type: String = str(effect["type"])
-	var value: int = int(effect["value"])
-	var target: String = str(effect["target"])
-
-	match effect_type:
-		"damage":
-			if target == "enemy":
-				var result: Dictionary = enemy.take_damage(value)
-				print("Causou %d de dano." % int(result["final_damage"]))
-
-		"block":
-			if target == "player":
-				player.gain_block(value)
-				print("Ganhou %d de bloqueio." % value)
-
-		_:
-			push_warning("Tipo de efeito desconhecido: %s" % effect_type)
-
+	print_effect_results(results)
 
 func _on_end_turn_pressed() -> void:
 	if combat_finished:
@@ -379,37 +365,29 @@ func resolve_enemy_turn() -> void:
 		return
 
 	var effects: Array = enemy_intent.get("effects", [])
+	var results: Array[Dictionary] = effect_resolver.resolve_effects(
+		effects,
+		player,
+		enemy,
+		"enemy_intent"
+	)
 
-	for effect in effects:
-		if effect is Dictionary:
-			resolve_enemy_effect(effect)
+	print_effect_results(results)
 
 	if player.is_defeated():
 		end_combat_with_defeat()
 
+func print_effect_results(results: Array[Dictionary]) -> void:
+	for result in results:
+		var message: String = str(result.get("message", ""))
 
-func resolve_enemy_effect(effect: Dictionary) -> void:
-	var effect_type: String = str(effect["type"])
-	var value: int = int(effect["value"])
-	var target: String = str(effect["target"])
+		if message == "":
+			continue
 
-	match effect_type:
-		"damage":
-			if target == "player":
-				var result: Dictionary = player.take_damage(value)
-				print("Bloqueado: %d. Dano recebido: %d." % [
-					int(result["blocked_damage"]),
-					int(result["final_damage"])
-				])
-
-		"block":
-			if target == "self":
-				enemy.gain_block(value)
-				print("%s ganhou %d de bloqueio." % [enemy.display_name, value])
-
-		_:
-			push_warning("Tipo de efeito inimigo desconhecido: %s" % effect_type)
-
+		if bool(result.get("success", true)):
+			print(message)
+		else:
+			push_warning(message)
 
 func start_player_turn() -> void:
 	print("Novo turno do jogador.")

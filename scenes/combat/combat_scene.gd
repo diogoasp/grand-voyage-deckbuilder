@@ -47,8 +47,11 @@ var discard_pile: Array[CardInstance] = []
 func _ready() -> void:
 	randomize()
 	end_turn_button.pressed.connect(_on_end_turn_pressed)
-	start_combat()
+	start_combat_against(current_enemy_id)
 
+func start_combat_against(enemy_id: String) -> void:
+	current_enemy_id = enemy_id
+	start_combat()
 
 func start_combat() -> void:
 	combat_finished = false

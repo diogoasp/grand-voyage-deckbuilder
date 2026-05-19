@@ -32,5 +32,50 @@
 	  "gold_max": 15,
 	  "bounty": 5
 	}
+  },
+  "bandit_sailor": {
+	"id": "bandit_sailor",
+	"name": "Saqueador do Mar",
+	"max_hp": 40,
+	"intent_pool": [
+	  {
+		"id": "slash",
+		"weight": 60,
+		"effects": [
+		  {
+			"type": "damage",
+			"value": 7,
+			"target": "player"
+		  }
+		]
+	  },
+	  {
+		"id": "brace",
+		"weight": 25,
+		"effects": [
+		  {
+			"type": "block",
+			"value": 6,
+			"target": "self"
+		  }
+		]
+	  },
+	  {
+		"id": "heavy_cut",
+		"weight": 15,
+		"effects": [
+		  {
+			"type": "damage",
+			"value": 11,
+			"target": "player"
+		  }
+		]
+	  }
+	],
+	"rewards": {
+	  "gold_min": 12,
+	  "gold_max": 20,
+	  "bounty": 8
+	}
   }
 }

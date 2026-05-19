@@ -38,9 +38,9 @@ var starting_deck_ids: Array[String] = [
 	"defend_basic"
 ]
 
-var draw_pile: Array[Dictionary] = []
-var hand: Array[Dictionary] = []
-var discard_pile: Array[Dictionary] = []
+var draw_pile: Array[CardInstance] = []
+var hand: Array[CardInstance] = []
+var discard_pile: Array[CardInstance] = []
 
 
 func _ready() -> void:
@@ -106,19 +106,17 @@ func select_enemy_intent() -> void:
 	enemy_intent = intent_pool[0]
 
 
-func create_card_instance(card_id: String) -> Dictionary:
+func create_card_instance(card_id: String) -> CardInstance:
 	if not DataLoader.has_card(card_id):
 		push_error("Carta não encontrada no banco: %s" % card_id)
-		return {}
+		return null
 
-	var instance := {
-		"instance_id": next_card_instance_id,
-		"card_id": card_id
-	}
+	var card_instance := CardInstance.new()
+	card_instance.setup(next_card_instance_id, card_id)
 
 	next_card_instance_id += 1
 
-	return instance
+	return card_instance
 
 
 func draw_cards(amount: int) -> void:
@@ -129,13 +127,7 @@ func draw_cards(amount: int) -> void:
 		if draw_pile.is_empty():
 			return
 
-		var popped_card: Variant = draw_pile.pop_back()
-
-		if not popped_card is Dictionary:
-			push_warning("Carta inválida encontrada no deck.")
-			continue
-
-		var card_instance: Dictionary = popped_card
+		var card_instance: CardInstance = draw_pile.pop_back()
 		hand.append(card_instance)
 
 
@@ -154,8 +146,12 @@ func rebuild_hand_ui() -> void:
 	clear_hand_ui()
 
 	for card_instance in hand:
-		var card_id: String = str(card_instance["card_id"])
-		var instance_id: int = int(card_instance["instance_id"])
+		if card_instance == null or not card_instance.is_valid():
+			push_warning("Instância de carta inválida na mão.")
+			continue
+
+		var card_id: String = card_instance.card_id
+		var instance_id: int = card_instance.instance_id
 
 		if not DataLoader.has_card(card_id):
 			push_warning("Carta ausente do banco: %s" % card_id)
@@ -252,13 +248,13 @@ func _on_card_button_pressed(card_button: Button) -> void:
 		push_warning("Botão de carta sem instance_id.")
 		return
 
-	var card_instance: Dictionary = find_card_in_hand(instance_id)
+	var card_instance: CardInstance = find_card_in_hand(instance_id)
 
-	if card_instance.is_empty():
+	if card_instance == null:
 		push_warning("Instância de carta não encontrada na mão: %d" % instance_id)
 		return
 
-	var card_id: String = str(card_instance["card_id"])
+	var card_id: String = card_instance.card_id
 
 	if not DataLoader.has_card(card_id):
 		push_warning("Carta não encontrada no banco: %s" % card_id)
@@ -274,15 +270,15 @@ func _on_card_button_pressed(card_button: Button) -> void:
 	play_card(card_instance, card_data)
 
 
-func find_card_in_hand(instance_id: int) -> Dictionary:
+func find_card_in_hand(instance_id: int) -> CardInstance:
 	for card_instance in hand:
-		if int(card_instance["instance_id"]) == instance_id:
+		if card_instance != null and card_instance.instance_id == instance_id:
 			return card_instance
 
-	return {}
+	return null
 
 
-func play_card(card_instance: Dictionary, card_data: Dictionary) -> void:
+func play_card(card_instance: CardInstance, card_data: Dictionary) -> void:
 	var cost: int = int(card_data["cost"])
 
 	energy -= cost
@@ -290,7 +286,7 @@ func play_card(card_instance: Dictionary, card_data: Dictionary) -> void:
 	print("Carta jogada: %s" % str(card_data["name"]))
 
 	resolve_card_effects(card_data)
-	move_card_from_hand_to_discard(int(card_instance["instance_id"]))
+	move_card_from_hand_to_discard(card_instance.instance_id)
 
 	if enemy.is_defeated():
 		end_combat_with_victory()
@@ -312,15 +308,11 @@ func can_play_card(cost: int) -> bool:
 
 func move_card_from_hand_to_discard(instance_id: int) -> void:
 	for i in range(hand.size()):
-		var card_instance: Dictionary = hand[i]
+		var card_instance: CardInstance = hand[i]
 
-		if int(card_instance["instance_id"]) == instance_id:
-			var removed_card_variant: Variant = hand.pop_at(i)
-
-			if removed_card_variant is Dictionary:
-				var removed_card: Dictionary = removed_card_variant
-				discard_pile.append(removed_card)
-
+		if card_instance != null and card_instance.instance_id == instance_id:
+			var removed_card: CardInstance = hand.pop_at(i)
+			discard_pile.append(removed_card)
 			return
 
 	push_warning("Não foi possível mover carta para descarte: %d" % instance_id)
@@ -373,7 +365,8 @@ func _on_end_turn_pressed() -> void:
 
 func discard_hand() -> void:
 	for card_instance in hand:
-		discard_pile.append(card_instance)
+		if card_instance != null:
+			discard_pile.append(card_instance)
 
 	hand.clear()
 

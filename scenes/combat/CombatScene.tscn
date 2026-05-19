@@ -79,12 +79,6 @@ offset_right = 813.0
 offset_bottom = 625.0
 alignment = 1
 
-[node name="StrikeButton" type="Button" parent="HandArea" unique_id=1438979917]
-layout_mode = 2
-text = "Golpe Básico
-Custo 1
-Dano 6"
-
 [node name="EndTurnButton" type="Button" parent="." unique_id=352398968]
 layout_mode = 0
 offset_left = 998.0

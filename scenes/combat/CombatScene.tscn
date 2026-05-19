@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://dvwt0iugl7tbk" path="res://scenes/combat/combat_scene.gd" id="1_cetgp"]
 [ext_resource type="Texture2D" uid="uid://bd5kcqgtcftvk" path="res://assets/art/Marine_Swordsman_1_-removebg-preview.png" id="2_2ussv"]
 [ext_resource type="Texture2D" uid="uid://bju3ywjmvuun6" path="res://assets/art/3DS - One Piece_ Great Pirate Colosseum (JPN) - Fighters - Monkey D. Luffy.png" id="2_7pc1q"]
+[ext_resource type="Texture2D" uid="uid://bou1ouens75dm" path="res://assets/art/Boss 1 Morgan_bg.png" id="2_gvrxc"]
+[ext_resource type="Texture2D" uid="uid://crgr6k283tg4y" path="res://assets/art/Boss 1 Morgan_bg_front.png" id="3_i18os"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0x2iq"]
 atlas = ExtResource("2_2ussv")
@@ -83,11 +85,15 @@ offset_right = 404.0
 offset_bottom = 240.0
 script = ExtResource("1_cetgp")
 
-[node name="Background" type="ColorRect" parent="." unique_id=1533450500]
-layout_mode = 0
-offset_right = 1154.0
-offset_bottom = 650.0
-color = Color(0.027916871, 0, 0.29856822, 1)
+[node name="Boss1MorganBg" type="Sprite2D" parent="." unique_id=1623098963]
+position = Vector2(577.4375, 323.90625)
+scale = Vector2(4.5043945, 3.9886715)
+texture = ExtResource("2_gvrxc")
+
+[node name="Boss1MorganBgFront" type="Sprite2D" parent="." unique_id=1745339370]
+position = Vector2(579, 291)
+scale = Vector2(3.144414, 2.0340383)
+texture = ExtResource("3_i18os")
 
 [node name="TopBar" type="HBoxContainer" parent="." unique_id=481716624]
 layout_mode = 0
@@ -139,10 +145,10 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="EnemySprite" type="AnimatedSprite2D" parent="EnemyArea" unique_id=164225054]
-position = Vector2(300, 191)
+position = Vector2(297, 309)
 scale = Vector2(1.9520063, 2.1188645)
 sprite_frames = SubResource("SpriteFrames_i18os")
-frame_progress = 0.022552887
+frame_progress = 0.09411747
 
 [node name="HandArea" type="HBoxContainer" parent="." unique_id=767289767]
 layout_mode = 0
@@ -161,9 +167,9 @@ offset_bottom = 592.0
 text = "Finalizar turno"
 
 [node name="Player" type="AnimatedSprite2D" parent="." unique_id=1194753351]
-position = Vector2(285, 308)
+position = Vector2(280.00003, 415)
 scale = Vector2(1.0803572, 1.0737705)
 sprite_frames = SubResource("SpriteFrames_dqp6h")
 animation = &"idle"
-frame_progress = 0.06941822
+frame_progress = 0.18844402
 flip_h = true

@@ -31,36 +31,6 @@ var combat_finished: bool = false
 var next_card_instance_id: int = 1
 
 
-var card_database: Dictionary = {
-	"strike_basic": {
-		"id": "strike_basic",
-		"name": "Golpe Básico",
-		"cost": 1,
-		"description": "Cause 6 de dano.",
-		"effects": [
-			{
-				"type": "damage",
-				"value": 6,
-				"target": "enemy"
-			}
-		]
-	},
-	"defend_basic": {
-		"id": "defend_basic",
-		"name": "Defesa Básica",
-		"cost": 1,
-		"description": "Ganhe 5 de bloqueio.",
-		"effects": [
-			{
-				"type": "block",
-				"value": 5,
-				"target": "player"
-			}
-		]
-	}
-}
-
-
 var starting_deck_ids: Array[String] = [
 	"strike_basic",
 	"strike_basic",
@@ -107,7 +77,7 @@ func start_combat() -> void:
 
 
 func create_card_instance(card_id: String) -> Dictionary:
-	if not card_database.has(card_id):
+	if not DataLoader.has_card(card_id):
 		push_error("Carta não encontrada no banco: %s" % card_id)
 		return {}
 
@@ -151,11 +121,11 @@ func rebuild_hand_ui() -> void:
 		var card_id: String = str(card_instance["card_id"])
 		var instance_id: int = int(card_instance["instance_id"])
 
-		if not card_database.has(card_id):
+		if not DataLoader.has_card(card_id):
 			push_warning("Carta ausente do banco: %s" % card_id)
 			continue
 
-		var card_data: Dictionary = card_database[card_id]
+		var card_data: Dictionary = DataLoader.get_card(card_id)
 
 		var card_button := Button.new()
 		card_button.custom_minimum_size = Vector2(160, 110)
@@ -229,11 +199,11 @@ func _on_card_button_pressed(card_button: Button) -> void:
 
 	var card_id: String = str(card_instance["card_id"])
 
-	if not card_database.has(card_id):
+	if not DataLoader.has_card(card_id):
 		push_warning("Carta não encontrada no banco: %s" % card_id)
 		return
 
-	var card_data: Dictionary = card_database[card_id]
+	var card_data: Dictionary = DataLoader.get_card(card_id)
 	var cost: int = int(card_data["cost"])
 
 	if not can_play_card(cost):

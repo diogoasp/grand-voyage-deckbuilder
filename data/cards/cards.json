@@ -1,0 +1,36 @@
+{
+  "strike_basic": {
+	"id": "strike_basic",
+	"name": "Golpe Básico",
+	"description": "Cause 6 de dano.",
+	"cost": 1,
+	"type": "attack",
+	"rarity": "starter",
+	"source": "starter_deck",
+	"tags": ["physical"],
+	"effects": [
+	  {
+		"type": "damage",
+		"value": 6,
+		"target": "enemy"
+	  }
+	]
+  },
+  "defend_basic": {
+	"id": "defend_basic",
+	"name": "Defesa Básica",
+	"description": "Ganhe 5 de bloqueio.",
+	"cost": 1,
+	"type": "skill",
+	"rarity": "starter",
+	"source": "starter_deck",
+	"tags": ["defense"],
+	"effects": [
+	  {
+		"type": "block",
+		"value": 5,
+		"target": "player"
+	  }
+	]
+  }
+}

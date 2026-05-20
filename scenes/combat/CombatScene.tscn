@@ -35,40 +35,27 @@ animations = [{
 "speed": 3.0
 }]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_i18os"]
+atlas = ExtResource("2_7pc1q")
+region = Rect2(116, 741, 110, 117)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_dqp6h"]
 atlas = ExtResource("2_7pc1q")
-region = Rect2(2, 741, 112, 116)
+region = Rect2(231, 741, 110, 117)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_6khhl"]
 atlas = ExtResource("2_7pc1q")
-region = Rect2(116, 741, 112, 116)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_57kx0"]
-atlas = ExtResource("2_7pc1q")
-region = Rect2(230, 741, 112, 116)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_qkiah"]
-atlas = ExtResource("2_7pc1q")
-region = Rect2(344, 741, 112, 116)
+region = Rect2(346, 741, 110, 117)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_dqp6h"]
 resource_name = "player"
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_i18os")
+}, {
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_dqp6h")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_6khhl")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_57kx0")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_qkiah")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_57kx0")
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_6khhl")

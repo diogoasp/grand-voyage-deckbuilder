@@ -21,8 +21,6 @@ var player: Combatant
 var enemy: Combatant
 var effect_resolver: EffectResolver
 
-var gold: int = 0
-var bounty: int = 0
 var reward_claimed: bool = false
 
 var current_enemy_id: String = "marine_recruit"
@@ -66,7 +64,8 @@ func start_combat() -> void:
 	reward_claimed = false
 
 	player = Combatant.new()
-	player.setup("player", "Capitão", 70)
+	player.setup("player", "Capitão", GameState.player_max_hp)
+	player.hp = GameState.player_hp
 	
 	effect_resolver = EffectResolver.new()
 
@@ -78,7 +77,7 @@ func start_combat() -> void:
 	hand.clear()
 	discard_pile.clear()
 
-	for card_id in starting_deck_ids:
+	for card_id in GameState.current_deck:
 		draw_pile.append(create_card_instance(card_id))
 
 	draw_pile.shuffle()
@@ -239,8 +238,8 @@ func update_ui() -> void:
 	block_label.text = "Bloqueio: %d" % player.block
 	draw_pile_label.text = "Deck: %d" % draw_pile.size()
 	discard_pile_label.text = "Descarte: %d" % discard_pile.size()
-	gold_label.text = "Ouro: %d" % gold
-	bounty_label.text = "Bounty: %d" % bounty
+	gold_label.text = "Ouro: %d" % GameState.gold
+	bounty_label.text = "Bounty: %d" % GameState.bounty
 
 	enemy_name_label.text = enemy.display_name
 	enemy_intent_label.text = get_enemy_intent_text()
@@ -448,6 +447,7 @@ func end_combat_with_victory() -> void:
 		return
 
 	combat_finished = true
+	GameState.set_player_hp(player.hp)
 	claim_combat_rewards()
 
 	print("Vitória! Inimigo derrotado.")
@@ -455,6 +455,7 @@ func end_combat_with_victory() -> void:
 
 func end_combat_with_defeat() -> void:
 	combat_finished = true
+	GameState.set_player_hp(player.hp)
 	print("Derrota. O capitão caiu.")
 	
 func claim_combat_rewards() -> void:
@@ -478,8 +479,8 @@ func claim_combat_rewards() -> void:
 
 	var gold_reward: int = randi_range(gold_min, gold_max)
 
-	gold += gold_reward
-	bounty += bounty_reward
+	GameState.gain_gold(gold_reward)
+	GameState.gain_bounty(bounty_reward)
 
 	print("Recompensas recebidas: %d ouro, %d bounty." % [
 		gold_reward,
@@ -487,6 +488,6 @@ func claim_combat_rewards() -> void:
 	])
 
 	print("Total atual: %d ouro, %d bounty." % [
-		gold,
-		bounty
+		GameState.gold,
+		GameState.bounty
 	])

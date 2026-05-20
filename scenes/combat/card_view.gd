@@ -1,7 +1,7 @@
 class_name CardView
 extends PanelContainer
 
-signal card_play_requested(card_view: CardView)
+signal card_play_requested(card_view: CardView, drop_position: Vector2)
 
 @onready var name_label: Label = $VBoxContainer/NameLabel
 @onready var cost_label: Label = $VBoxContainer/CostLabel
@@ -15,8 +15,6 @@ var is_dragging: bool = false
 var drag_offset: Vector2 = Vector2.ZERO
 var original_global_position: Vector2 = Vector2.ZERO
 
-var play_threshold_y: float = 420.0
-
 
 func setup(card_instance: CardInstance, card_data: Dictionary) -> void:
 	instance_id = card_instance.instance_id
@@ -29,7 +27,7 @@ func setup(card_instance: CardInstance, card_data: Dictionary) -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
-	if disabled_by_parent():
+	if mouse_filter == Control.MOUSE_FILTER_IGNORE:
 		return
 
 	if event is InputEventMouseButton:
@@ -46,7 +44,7 @@ func handle_mouse_button(event: InputEventMouseButton) -> void:
 	if event.pressed:
 		start_drag(event.global_position)
 	else:
-		end_drag()
+		end_drag(event.global_position)
 
 
 func handle_mouse_motion(event: InputEventMouseMotion) -> void:
@@ -63,18 +61,15 @@ func start_drag(mouse_global_position: Vector2) -> void:
 	z_index = 100
 
 
-func end_drag() -> void:
+func end_drag(mouse_global_position: Vector2) -> void:
 	if not is_dragging:
 		return
 
 	is_dragging = false
 	z_index = 0
 
-	if global_position.y < play_threshold_y:
-		card_play_requested.emit(self)
-	else:
-		global_position = original_global_position
+	card_play_requested.emit(self, mouse_global_position)
 
 
-func disabled_by_parent() -> bool:
-	return modulate.a < 1.0
+func return_to_original_position() -> void:
+	global_position = original_global_position

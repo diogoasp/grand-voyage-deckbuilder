@@ -11,6 +11,7 @@ const CARD_VIEW_SCENE: PackedScene = preload("res://scenes/combat/CardView.tscn"
 @onready var gold_label: Label = $TopBar/GoldLabel
 @onready var bounty_label: Label = $TopBar/BountyLabel
 
+@onready var enemy_area: VBoxContainer = $EnemyArea
 @onready var enemy_name_label: Label = $EnemyArea/EnemyNameLabel
 @onready var enemy_intent_label: Label = $EnemyArea/EnemyIntentLabel
 
@@ -294,42 +295,52 @@ func get_enemy_intent_text() -> String:
 	return "Intenção: " + ", ".join(parts)
 
 
-func _on_card_play_requested(card_view: CardView) -> void:
+func _on_card_play_requested(card_view: CardView, drop_position: Vector2) -> void:
 	if combat_finished:
-		card_view.global_position = card_view.original_global_position
+		card_view.return_to_original_position()
 		return
 
 	if not is_instance_valid(card_view):
+		return
+
+	if not is_drop_position_over_enemy_area(drop_position):
+		card_view.return_to_original_position()
 		return
 
 	var instance_id: int = card_view.instance_id
 
 	if instance_id == -1:
 		push_warning("CardView sem instance_id.")
+		card_view.return_to_original_position()
 		return
 
 	var card_instance: CardInstance = find_card_in_hand(instance_id)
 
 	if card_instance == null:
 		push_warning("Instância de carta não encontrada na mão: %d" % instance_id)
+		card_view.return_to_original_position()
 		return
 
 	var card_id: String = card_instance.card_id
 
 	if not DataLoader.has_card(card_id):
 		push_warning("Carta não encontrada no banco: %s" % card_id)
+		card_view.return_to_original_position()
 		return
 
 	var card_data: Dictionary = DataLoader.get_card(card_id)
 	var cost: int = int(card_data["cost"])
 
 	if not can_play_card(cost):
-		card_view.global_position = card_view.original_global_position
+		card_view.return_to_original_position()
 		update_ui()
 		return
 
 	play_card(card_instance, card_data)
 
+func is_drop_position_over_enemy_area(drop_position: Vector2) -> bool:
+	var enemy_rect := Rect2(enemy_area.global_position, enemy_area.size)
+	return enemy_rect.has_point(drop_position)
 
 func find_card_in_hand(instance_id: int) -> CardInstance:
 	for card_instance in hand:

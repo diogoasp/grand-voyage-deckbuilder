@@ -1,4 +1,5 @@
 extends Control
+const CARD_VIEW_SCENE: PackedScene = preload("res://scenes/combat/CardView.tscn")
 
 @onready var player_hp_label: Label = $TopBar/PlayerHPLabel
 @onready var enemy_hp_label: Label = $TopBar/EnemyHPLabel
@@ -202,23 +203,18 @@ func rebuild_hand_ui() -> void:
 			continue
 
 		var card_id: String = card_instance.card_id
-		var instance_id: int = card_instance.instance_id
 
 		if not DataLoader.has_card(card_id):
 			push_warning("Carta ausente do banco: %s" % card_id)
 			continue
 
 		var card_data: Dictionary = DataLoader.get_card(card_id)
+		var card_view: CardView = CARD_VIEW_SCENE.instantiate()
 
-		var card_button := Button.new()
-		card_button.custom_minimum_size = Vector2(160, 110)
-		card_button.text = get_card_button_text(card_data)
-		card_button.set_meta("instance_id", instance_id)
-		card_button.set_meta("card_id", card_id)
-		card_button.set_meta("cost", int(card_data["cost"]))
-		card_button.pressed.connect(_on_card_button_pressed.bind(card_button))
+		hand_area.add_child(card_view)
 
-		hand_area.add_child(card_button)
+		card_view.setup(card_instance, card_data)
+		card_view.card_play_requested.connect(_on_card_play_requested)
 
 
 func clear_hand_ui() -> void:
@@ -255,9 +251,16 @@ func update_ui() -> void:
 	enemy_intent_label.text = get_enemy_intent_text()
 
 	for child in hand_area.get_children():
-		if child is Button:
-			var cost: int = int(child.get_meta("cost", 0))
-			child.disabled = combat_finished or energy < cost
+		if child is CardView:
+			var card_view: CardView = child
+			var can_play := not combat_finished and energy >= card_view.cost
+
+			if can_play:
+				card_view.modulate.a = 1.0
+				card_view.mouse_filter = Control.MOUSE_FILTER_STOP
+			else:
+				card_view.modulate.a = 0.45
+				card_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	end_turn_button.disabled = combat_finished
 
@@ -291,17 +294,18 @@ func get_enemy_intent_text() -> String:
 	return "Intenção: " + ", ".join(parts)
 
 
-func _on_card_button_pressed(card_button: Button) -> void:
+func _on_card_play_requested(card_view: CardView) -> void:
 	if combat_finished:
+		card_view.global_position = card_view.original_global_position
 		return
 
-	if not is_instance_valid(card_button):
+	if not is_instance_valid(card_view):
 		return
 
-	var instance_id: int = int(card_button.get_meta("instance_id", -1))
+	var instance_id: int = card_view.instance_id
 
 	if instance_id == -1:
-		push_warning("Botão de carta sem instance_id.")
+		push_warning("CardView sem instance_id.")
 		return
 
 	var card_instance: CardInstance = find_card_in_hand(instance_id)
@@ -320,6 +324,7 @@ func _on_card_button_pressed(card_button: Button) -> void:
 	var cost: int = int(card_data["cost"])
 
 	if not can_play_card(cost):
+		card_view.global_position = card_view.original_global_position
 		update_ui()
 		return
 

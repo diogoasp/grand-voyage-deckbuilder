@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://c7frf0a46sm8x"]
+
+[ext_resource type="Script" uid="uid://crijxbr6su6if" path="res://scenes/combat/card_view.gd" id="1_ty6ft"]
+
+[node name="CardView" type="PanelContainer" unique_id=1551394569]
+offset_right = 110.0
+offset_bottom = 160.0
+script = ExtResource("1_ty6ft")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=133676511]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="VBoxContainer" unique_id=1201203674]
+layout_mode = 2
+
+[node name="CostLabel" type="Label" parent="VBoxContainer" unique_id=400787461]
+layout_mode = 2
+
+[node name="DescriptionLabel" type="Label" parent="VBoxContainer" unique_id=862027404]
+layout_mode = 2

@@ -1,16 +1,20 @@
 extends Control
 const CARD_VIEW_SCENE: PackedScene = preload("res://scenes/combat/CardView.tscn")
 
+@onready var player_area: Control = $PlayerArea
+@onready var player_name_label: Label = $PlayerArea/PlayerNameLabel
 @onready var player_hp_label: Label = $TopBar/PlayerHPLabel
-@onready var enemy_hp_label: Label = $TopBar/EnemyHPLabel
+
 @onready var energy_label: Label = $TopBar/EnergyLabel
 @onready var block_label: Label = $TopBar/BlockLabel
+
 @onready var draw_pile_label: Label = $TopBar/DrawPileLabel
 @onready var discard_pile_label: Label = $TopBar/DiscardPileLabel
 
 @onready var gold_label: Label = $TopBar/GoldLabel
 @onready var bounty_label: Label = $TopBar/BountyLabel
 
+@onready var enemy_hp_label: Label = $TopBar/EnemyHPLabel
 @onready var enemy_area: VBoxContainer = $EnemyArea
 @onready var enemy_name_label: Label = $EnemyArea/EnemyNameLabel
 @onready var enemy_intent_label: Label = $EnemyArea/EnemyIntentLabel
@@ -215,6 +219,8 @@ func rebuild_hand_ui() -> void:
 		hand_area.add_child(card_view)
 
 		card_view.setup(card_instance, card_data)
+		card_view.card_drag_started.connect(_on_card_drag_started)
+		card_view.card_drag_ended.connect(_on_card_drag_ended)
 		card_view.card_play_requested.connect(_on_card_play_requested)
 
 
@@ -236,6 +242,7 @@ func get_card_button_text(card_data: Dictionary) -> String:
 
 
 func update_ui() -> void:
+	player_name_label.text = player.display_name
 	player_hp_label.text = "HP: %s" % player.get_hp_text()
 	enemy_hp_label.text = "Inimigo: %s | Bloqueio: %d" % [
 		enemy.get_hp_text(),
@@ -303,10 +310,6 @@ func _on_card_play_requested(card_view: CardView, drop_position: Vector2) -> voi
 	if not is_instance_valid(card_view):
 		return
 
-	if not is_drop_position_over_enemy_area(drop_position):
-		card_view.return_to_original_position()
-		return
-
 	var instance_id: int = card_view.instance_id
 
 	if instance_id == -1:
@@ -334,6 +337,13 @@ func _on_card_play_requested(card_view: CardView, drop_position: Vector2) -> voi
 	if not can_play_card(cost):
 		card_view.return_to_original_position()
 		update_ui()
+		return
+
+	var required_target: String = get_required_drop_target(card_data)
+
+	if not is_drop_position_valid_for_target(drop_position, required_target):
+		print("Alvo inválido para carta: %s" % str(card_data["name"]))
+		card_view.return_to_original_position()
 		return
 
 	play_card(card_instance, card_data)
@@ -567,3 +577,66 @@ func pick_next_test_enemy_id() -> String:
 		return "bandit_sailor"
 
 	return "marine_recruit"
+	
+func get_required_drop_target(card_data: Dictionary) -> String:
+	var effects: Array = card_data.get("effects", [])
+
+	for effect in effects:
+		if not effect is Dictionary:
+			continue
+
+		var target: String = str(effect.get("target", ""))
+
+		if target == "enemy":
+			return "enemy"
+
+		if target == "player":
+			return "player"
+
+	return "none"
+	
+func is_drop_position_valid_for_target(drop_position: Vector2, required_target: String) -> bool:
+	match required_target:
+		"enemy":
+			return is_position_inside_control(drop_position, enemy_area)
+
+		"player":
+			return is_position_inside_control(drop_position, player_area)
+
+		"none":
+			return true
+
+		_:
+			return false
+			
+func is_position_inside_control(position: Vector2, control: Control) -> bool:
+	var rect := Rect2(control.global_position, control.size)
+	return rect.has_point(position)
+
+func _on_card_drag_started(card_view: CardView) -> void:
+	var card_data := DataLoader.get_card(card_view.card_id)
+	var required_target := get_required_drop_target(card_data)
+	highlight_target_area(required_target)
+
+
+func _on_card_drag_ended(_card_view: CardView) -> void:
+	clear_target_highlights()
+	
+func highlight_target_area(required_target: String) -> void:
+	clear_target_highlights()
+
+	match required_target:
+		"enemy":
+			enemy_area.modulate = Color(1.2, 1.2, 1.2, 1.0)
+
+		"player":
+			player_area.modulate = Color(1.2, 1.2, 1.2, 1.0)
+
+		"none":
+			enemy_area.modulate = Color(1.1, 1.1, 1.1, 1.0)
+			player_area.modulate = Color(1.1, 1.1, 1.1, 1.0)
+
+
+func clear_target_highlights() -> void:
+	enemy_area.modulate = Color(1, 1, 1, 1)
+	player_area.modulate = Color(1, 1, 1, 1)

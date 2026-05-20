@@ -1,6 +1,8 @@
 class_name CardView
 extends PanelContainer
 
+signal card_drag_started(card_view: CardView)
+signal card_drag_ended(card_view: CardView)
 signal card_play_requested(card_view: CardView, drop_position: Vector2)
 
 @onready var name_label: Label = $VBoxContainer/NameLabel
@@ -59,6 +61,7 @@ func start_drag(mouse_global_position: Vector2) -> void:
 	original_global_position = global_position
 	drag_offset = mouse_global_position - global_position
 	z_index = 100
+	card_drag_started.emit(self)
 
 
 func end_drag(mouse_global_position: Vector2) -> void:
@@ -68,8 +71,15 @@ func end_drag(mouse_global_position: Vector2) -> void:
 	is_dragging = false
 	z_index = 0
 
+	card_drag_ended.emit(self)
 	card_play_requested.emit(self, mouse_global_position)
 
 
 func return_to_original_position() -> void:
-	global_position = original_global_position
+	var tween := create_tween()
+	tween.tween_property(
+		self,
+		"global_position",
+		original_global_position,
+		0.15
+	).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)

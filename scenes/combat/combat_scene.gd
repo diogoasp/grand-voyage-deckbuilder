@@ -16,6 +16,12 @@ extends Control
 @onready var hand_area: HBoxContainer = $HandArea
 @onready var end_turn_button: Button = $EndTurnButton
 
+@onready var result_panel: PanelContainer = $ResultPanel
+@onready var result_title_label: Label = $ResultPanel/ResultVBox/ResultTitleLabel
+@onready var result_body_label: Label = $ResultPanel/ResultVBox/ResultBodyLabel
+@onready var next_combat_button: Button = $ResultPanel/ResultVBox/NextCombatButton
+@onready var reset_run_button: Button = $ResultPanel/ResultVBox/ResetRunButton
+
 
 var player: Combatant
 var enemy: Combatant
@@ -52,13 +58,17 @@ var discard_pile: Array[CardInstance] = []
 func _ready() -> void:
 	randomize()
 	end_turn_button.pressed.connect(_on_end_turn_pressed)
-	start_combat_against(current_enemy_id)
+	next_combat_button.pressed.connect(_on_next_combat_pressed)
+	reset_run_button.pressed.connect(_on_reset_run_pressed)
+	start_combat()
 
 func start_combat_against(enemy_id: String) -> void:
 	current_enemy_id = enemy_id
 	start_combat()
 
 func start_combat() -> void:
+	result_panel.visible = false
+
 	combat_finished = false
 	next_card_instance_id = 1
 	reward_claimed = false
@@ -448,27 +458,49 @@ func end_combat_with_victory() -> void:
 
 	combat_finished = true
 	GameState.set_player_hp(player.hp)
-	claim_combat_rewards()
+
+	var reward_text: String = claim_combat_rewards()
 
 	print("Vitória! Inimigo derrotado.")
 
+	show_result_panel(
+		"Vitória!",
+		"%s\n\nHP restante: %d/%d\nOuro total: %d\nBounty total: %d" % [
+			reward_text,
+			GameState.player_hp,
+			GameState.player_max_hp,
+			GameState.gold,
+			GameState.bounty
+		],
+		true
+	)
+
 
 func end_combat_with_defeat() -> void:
+	if combat_finished:
+		return
+
 	combat_finished = true
 	GameState.set_player_hp(player.hp)
+
 	print("Derrota. O capitão caiu.")
+
+	show_result_panel(
+		"Derrota",
+		"O capitão caiu.\nA run terminou.",
+		false
+	)
 	
-func claim_combat_rewards() -> void:
+func claim_combat_rewards() -> String:
 	if reward_claimed:
-		return
+		return ""
 
 	reward_claimed = true
 
 	var rewards: Dictionary = current_enemy_data.get("rewards", {})
 
 	if rewards.is_empty():
-		print("Nenhuma recompensa definida para este inimigo.")
-		return
+		return "Nenhuma recompensa definida."
 
 	var gold_min: int = int(rewards.get("gold_min", 0))
 	var gold_max: int = int(rewards.get("gold_max", gold_min))
@@ -482,12 +514,40 @@ func claim_combat_rewards() -> void:
 	GameState.gain_gold(gold_reward)
 	GameState.gain_bounty(bounty_reward)
 
-	print("Recompensas recebidas: %d ouro, %d bounty." % [
+	var message := "Recompensas recebidas:\n%d ouro\n%d bounty" % [
 		gold_reward,
 		bounty_reward
-	])
+	]
 
+	print(message)
 	print("Total atual: %d ouro, %d bounty." % [
 		GameState.gold,
 		GameState.bounty
 	])
+
+	return message
+	
+func show_result_panel(title: String, body: String, victory: bool) -> void:
+	result_title_label.text = title
+	result_body_label.text = body
+
+	next_combat_button.visible = victory
+	reset_run_button.visible = true
+
+	result_panel.visible = true
+	update_ui()
+	
+func _on_next_combat_pressed() -> void:
+	var next_enemy_id := pick_next_test_enemy_id()
+	start_combat_against(next_enemy_id)
+
+
+func _on_reset_run_pressed() -> void:
+	GameState.reset_run()
+	start_combat_against("marine_recruit")
+	
+func pick_next_test_enemy_id() -> String:
+	if current_enemy_id == "marine_recruit":
+		return "bandit_sailor"
+
+	return "marine_recruit"

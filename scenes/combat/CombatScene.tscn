@@ -205,3 +205,37 @@ sprite_frames = SubResource("SpriteFrames_dqp6h")
 animation = &"idle"
 frame_progress = 0.09269306
 flip_h = true
+
+[node name="ResultPanel" type="PanelContainer" parent="." unique_id=1992243722]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -177.0
+offset_top = -104.0
+offset_right = 183.0
+offset_bottom = 116.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ResultVBox" type="VBoxContainer" parent="ResultPanel" unique_id=1490961352]
+layout_mode = 2
+
+[node name="ResultTitleLabel" type="Label" parent="ResultPanel/ResultVBox" unique_id=791794324]
+layout_mode = 2
+text = "Resultado"
+
+[node name="ResultBodyLabel" type="Label" parent="ResultPanel/ResultVBox" unique_id=1887818106]
+layout_mode = 2
+text = "Texto do resultado."
+
+[node name="NextCombatButton" type="Button" parent="ResultPanel/ResultVBox" unique_id=900189964]
+layout_mode = 2
+text = "Novo Combate"
+
+[node name="ResetRunButton" type="Button" parent="ResultPanel/ResultVBox" unique_id=214394725]
+layout_mode = 2
+text = "Reiniciar Run"

@@ -192,7 +192,7 @@ layout_mode = 0
 offset_left = 20.0
 offset_top = 497.0
 offset_right = 800.0
-offset_bottom = 628.0
+offset_bottom = 707.0
 alignment = 1
 
 [node name="EndTurnButton" type="Button" parent="." unique_id=352398968]

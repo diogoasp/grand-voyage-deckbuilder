@@ -1,5 +1,6 @@
 extends Control
 const CARD_VIEW_SCENE: PackedScene = preload("res://scenes/combat/CardView.tscn")
+const CARD_SLOT_SIZE: Vector2 = Vector2(130, 190)
 
 @onready var player_area: Control = $PlayerArea
 @onready var player_name_label: Label = $PlayerArea/PlayerNameLabel
@@ -214,10 +215,19 @@ func rebuild_hand_ui() -> void:
 			continue
 
 		var card_data: Dictionary = DataLoader.get_card(card_id)
+
+		var card_slot := Control.new()
+		card_slot.custom_minimum_size = CARD_SLOT_SIZE
+		card_slot.size = CARD_SLOT_SIZE
+		card_slot.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		card_slot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+
+		hand_area.add_child(card_slot)
+
 		var card_view: CardView = CARD_VIEW_SCENE.instantiate()
+		card_slot.add_child(card_view)
 
-		hand_area.add_child(card_view)
-
+		card_view.position = Vector2.ZERO
 		card_view.setup(card_instance, card_data)
 		card_view.card_drag_started.connect(_on_card_drag_started)
 		card_view.card_drag_ended.connect(_on_card_drag_ended)
@@ -227,19 +237,6 @@ func rebuild_hand_ui() -> void:
 func clear_hand_ui() -> void:
 	for child in hand_area.get_children():
 		child.queue_free()
-
-
-func get_card_button_text(card_data: Dictionary) -> String:
-	var card_name: String = str(card_data["name"])
-	var cost: int = int(card_data["cost"])
-	var description: String = str(card_data["description"])
-
-	return "%s\nCusto %d\n%s" % [
-		card_name,
-		cost,
-		description
-	]
-
 
 func update_ui() -> void:
 	player_name_label.text = player.display_name
@@ -258,20 +255,28 @@ func update_ui() -> void:
 	enemy_name_label.text = enemy.display_name
 	enemy_intent_label.text = get_enemy_intent_text()
 
-	for child in hand_area.get_children():
-		if child is CardView:
-			var card_view: CardView = child
-			var can_play := not combat_finished and energy >= card_view.cost
+	for card_view in get_card_views_in_hand():
+		var can_play := not combat_finished and energy >= card_view.cost
 
-			if can_play:
-				card_view.modulate.a = 1.0
-				card_view.mouse_filter = Control.MOUSE_FILTER_STOP
-			else:
-				card_view.modulate.a = 0.45
-				card_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		if can_play:
+			card_view.modulate.a = 1.0
+			card_view.mouse_filter = Control.MOUSE_FILTER_STOP
+		else:
+			card_view.modulate.a = 0.45
+			card_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			card_view.reset_visual_state()
 
 	end_turn_button.disabled = combat_finished
 
+func get_card_views_in_hand() -> Array[CardView]:
+	var card_views: Array[CardView] = []
+
+	for slot in hand_area.get_children():
+		for child in slot.get_children():
+			if child is CardView:
+				card_views.append(child)
+
+	return card_views
 
 func get_enemy_intent_text() -> String:
 	if combat_finished:
@@ -341,16 +346,12 @@ func _on_card_play_requested(card_view: CardView, drop_position: Vector2) -> voi
 
 	var required_target: String = get_required_drop_target(card_data)
 
-	if not is_drop_position_valid_for_target(drop_position, required_target):
+	if not is_card_over_valid_target(card_view, required_target):
 		print("Alvo inválido para carta: %s" % str(card_data["name"]))
 		card_view.return_to_original_position()
 		return
 
 	play_card(card_instance, card_data)
-
-func is_drop_position_over_enemy_area(drop_position: Vector2) -> bool:
-	var enemy_rect := Rect2(enemy_area.global_position, enemy_area.size)
-	return enemy_rect.has_point(drop_position)
 
 func find_card_in_hand(instance_id: int) -> CardInstance:
 	for card_instance in hand:
@@ -595,19 +596,28 @@ func get_required_drop_target(card_data: Dictionary) -> String:
 
 	return "none"
 	
-func is_drop_position_valid_for_target(drop_position: Vector2, required_target: String) -> bool:
+func is_card_over_valid_target(card_view: CardView, required_target: String) -> bool:
 	match required_target:
 		"enemy":
-			return is_position_inside_control(drop_position, enemy_area)
+			return is_card_over_control(card_view, enemy_area, Vector2(80, 80))
 
 		"player":
-			return is_position_inside_control(drop_position, player_area)
+			return is_card_over_control(card_view, player_area, Vector2(80, 80))
 
 		"none":
 			return true
 
 		_:
 			return false
+
+func is_card_over_control(card_view: CardView, control: Control, padding: Vector2 = Vector2.ZERO) -> bool:
+	var card_rect := Rect2(card_view.global_position, card_view.size)
+
+	var target_rect := Rect2(control.global_position, control.size)
+	target_rect.position -= padding
+	target_rect.size += padding * 2.0
+
+	return card_rect.intersects(target_rect)
 			
 func is_position_inside_control(position: Vector2, control: Control) -> bool:
 	var rect := Rect2(control.global_position, control.size)

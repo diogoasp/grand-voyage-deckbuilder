@@ -346,7 +346,29 @@ func resolve_card_effects(card_data: Dictionary) -> void:
 		"card"
 	)
 
+	apply_effect_results(results)
 	print_effect_results(results)
+
+func apply_effect_results(results: Array[Dictionary]) -> void:
+	for result in results:
+		if not bool(result.get("success", true)):
+			continue
+
+		var result_type: String = str(result.get("type", ""))
+
+		match result_type:
+			"draw":
+				var amount: int = int(result.get("amount", 0))
+				deck_manager.draw_cards(amount)
+				rebuild_hand_ui()
+
+			"gain_energy":
+				var amount: int = int(result.get("amount", 0))
+				energy += amount
+
+			_:
+				pass
+
 
 func _on_end_turn_pressed() -> void:
 	if combat_finished:

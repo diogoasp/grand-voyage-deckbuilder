@@ -32,5 +32,39 @@
 		"target": "player"
 	  }
 	]
+  },
+  "quick_thinking": {
+	"id": "quick_thinking",
+	"name": "Pensamento Rápido",
+	"description": "Compre 2 cartas.",
+	"cost": 1,
+	"type": "skill",
+	"rarity": "common",
+	"source": "training",
+	"tags": ["utility", "draw"],
+	"effects": [
+	  {
+		"type": "draw",
+		"value": 2,
+		"target": "player"
+	  }
+	]
+  },
+  "second_wind": {
+	"id": "second_wind",
+	"name": "Segundo Fôlego",
+	"description": "Ganhe 1 de energia.",
+	"cost": 0,
+	"type": "skill",
+	"rarity": "common",
+	"source": "training",
+	"tags": ["utility", "energy"],
+	"effects": [
+	  {
+		"type": "gain_energy",
+		"value": 1,
+		"target": "player"
+	  }
+	]
   }
 }

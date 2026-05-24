@@ -1,6 +1,44 @@
 class_name EffectResolver
 extends RefCounted
 
+func resolve_draw(value: int, target: String, source: String) -> Dictionary:
+	if target != "player":
+		return {
+			"type": "draw",
+			"source": source,
+			"target": target,
+			"success": false,
+			"message": "Alvo inválido para compra de cartas: %s" % target
+		}
+
+	return {
+		"type": "draw",
+		"source": source,
+		"target": target,
+		"success": true,
+		"amount": max(value, 0),
+		"message": "Comprou %d carta(s)." % max(value, 0)
+	}
+
+
+func resolve_gain_energy(value: int, target: String, source: String) -> Dictionary:
+	if target != "player":
+		return {
+			"type": "gain_energy",
+			"source": source,
+			"target": target,
+			"success": false,
+			"message": "Alvo inválido para ganho de energia: %s" % target
+		}
+
+	return {
+		"type": "gain_energy",
+		"source": source,
+		"target": target,
+		"success": true,
+		"amount": max(value, 0),
+		"message": "Ganhou %d de energia." % max(value, 0)
+	}
 
 func resolve_effects(
 	effects: Array,
@@ -14,6 +52,7 @@ func resolve_effects(
 		if not effect is Dictionary:
 			results.append({
 				"type": "invalid",
+				"success": false,
 				"message": "Efeito ignorado: não é Dictionary."
 			})
 			continue
@@ -41,6 +80,12 @@ func resolve_effect(
 		"block":
 			return resolve_block(value, target, player, enemy, source)
 
+		"draw":
+			return resolve_draw(value, target, source)
+
+		"gain_energy":
+			return resolve_gain_energy(value, target, source)
+
 		_:
 			return {
 				"type": "unknown",
@@ -48,7 +93,6 @@ func resolve_effect(
 				"source": source,
 				"message": "Tipo de efeito desconhecido: %s" % effect_type
 			}
-
 
 func resolve_damage(
 	value: int,

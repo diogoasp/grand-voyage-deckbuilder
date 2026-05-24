@@ -14,9 +14,10 @@ var current_deck: Array[String] = [
 	"strike_basic",
 	"defend_basic",
 	"defend_basic",
-	"defend_basic"
+	"defend_basic",
+	"quick_thinking",
+	"second_wind"
 ]
-
 
 func reset_run() -> void:
 	player_hp = player_max_hp
@@ -30,7 +31,9 @@ func reset_run() -> void:
 		"strike_basic",
 		"defend_basic",
 		"defend_basic",
-		"defend_basic"
+		"defend_basic",
+		"quick_thinking",
+		"second_wind"
 	]
 
 

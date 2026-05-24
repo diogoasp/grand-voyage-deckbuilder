@@ -34,6 +34,8 @@ var player: Combatant
 var enemy: Combatant
 var effect_resolver: EffectResolver
 
+var deck_manager: DeckManager
+
 var reward_claimed: bool = false
 
 var current_enemy_id: String = "marine_recruit"
@@ -45,7 +47,6 @@ var max_energy: int = 3
 var cards_per_turn: int = 5
 
 var combat_finished: bool = false
-var next_card_instance_id: int = 1
 
 var dragged_card_view: CardView = null
 var dragged_card_required_target: String = ""
@@ -58,11 +59,6 @@ var starting_deck_ids: Array[String] = [
 	"defend_basic",
 	"defend_basic"
 ]
-
-var draw_pile: Array[CardInstance] = []
-var hand: Array[CardInstance] = []
-var discard_pile: Array[CardInstance] = []
-
 
 func _ready() -> void:
 	randomize()
@@ -79,29 +75,22 @@ func start_combat() -> void:
 	result_panel.visible = false
 
 	combat_finished = false
-	next_card_instance_id = 1
 	reward_claimed = false
 
 	player = Combatant.new()
 	player.setup("player", "Capitão", GameState.player_max_hp)
 	player.hp = GameState.player_hp
-	
+
 	effect_resolver = EffectResolver.new()
 
 	load_enemy(current_enemy_id)
 
 	energy = max_energy
 
-	draw_pile.clear()
-	hand.clear()
-	discard_pile.clear()
+	deck_manager = DeckManager.new()
+	deck_manager.setup_from_deck_ids(GameState.current_deck)
+	deck_manager.draw_cards(cards_per_turn)
 
-	for card_id in GameState.current_deck:
-		draw_pile.append(create_card_instance(card_id))
-
-	draw_pile.shuffle()
-
-	draw_cards(cards_per_turn)
 	rebuild_hand_ui()
 	update_ui()
 
@@ -166,46 +155,10 @@ func pick_weighted_intent(intent_pool: Array) -> Dictionary:
 	return {}
 
 
-func create_card_instance(card_id: String) -> CardInstance:
-	if not DataLoader.has_card(card_id):
-		push_error("Carta não encontrada no banco: %s" % card_id)
-		return null
-
-	var card_instance := CardInstance.new()
-	card_instance.setup(next_card_instance_id, card_id)
-
-	next_card_instance_id += 1
-
-	return card_instance
-
-
-func draw_cards(amount: int) -> void:
-	for i in range(amount):
-		if draw_pile.is_empty():
-			reshuffle_discard_into_draw_pile()
-
-		if draw_pile.is_empty():
-			return
-
-		var card_instance: CardInstance = draw_pile.pop_back()
-		hand.append(card_instance)
-
-
-func reshuffle_discard_into_draw_pile() -> void:
-	if discard_pile.is_empty():
-		return
-
-	print("Embaralhando descarte no deck de compra.")
-
-	draw_pile = discard_pile.duplicate()
-	draw_pile.shuffle()
-	discard_pile.clear()
-
-
 func rebuild_hand_ui() -> void:
 	clear_hand_ui()
 
-	for card_instance in hand:
+	for card_instance in deck_manager.hand:
 		if card_instance == null or not card_instance.is_valid():
 			push_warning("Instância de carta inválida na mão.")
 			continue
@@ -249,8 +202,8 @@ func update_ui() -> void:
 	]
 	energy_label.text = "Energia: %d/%d" % [energy, max_energy]
 	block_label.text = "Bloqueio: %d" % player.block
-	draw_pile_label.text = "Deck: %d" % draw_pile.size()
-	discard_pile_label.text = "Descarte: %d" % discard_pile.size()
+	draw_pile_label.text = "Deck: %d" % deck_manager.get_draw_count()
+	discard_pile_label.text = "Descarte: %d" % deck_manager.get_discard_count()
 	gold_label.text = "Ouro: %d" % GameState.gold
 	bounty_label.text = "Bounty: %d" % GameState.bounty
 
@@ -324,7 +277,7 @@ func _on_card_play_requested(card_view: CardView, drop_position: Vector2) -> voi
 		card_view.return_to_original_position()
 		return
 
-	var card_instance: CardInstance = find_card_in_hand(instance_id)
+	var card_instance: CardInstance = deck_manager.find_card_in_hand(instance_id)
 
 	if card_instance == null:
 		push_warning("Instância de carta não encontrada na mão: %d" % instance_id)
@@ -355,13 +308,6 @@ func _on_card_play_requested(card_view: CardView, drop_position: Vector2) -> voi
 
 	play_card(card_instance, card_data)
 
-func find_card_in_hand(instance_id: int) -> CardInstance:
-	for card_instance in hand:
-		if card_instance != null and card_instance.instance_id == instance_id:
-			return card_instance
-
-	return null
-
 
 func play_card(card_instance: CardInstance, card_data: Dictionary) -> void:
 	var cost: int = int(card_data["cost"])
@@ -371,7 +317,7 @@ func play_card(card_instance: CardInstance, card_data: Dictionary) -> void:
 	print("Carta jogada: %s" % str(card_data["name"]))
 
 	resolve_card_effects(card_data)
-	move_card_from_hand_to_discard(card_instance.instance_id)
+	deck_manager.move_card_from_hand_to_discard(card_instance.instance_id)
 
 	if enemy.is_defeated():
 		end_combat_with_victory()
@@ -391,18 +337,6 @@ func can_play_card(cost: int) -> bool:
 	return true
 
 
-func move_card_from_hand_to_discard(instance_id: int) -> void:
-	for i in range(hand.size()):
-		var card_instance: CardInstance = hand[i]
-
-		if card_instance != null and card_instance.instance_id == instance_id:
-			var removed_card: CardInstance = hand.pop_at(i)
-			discard_pile.append(removed_card)
-			return
-
-	push_warning("Não foi possível mover carta para descarte: %d" % instance_id)
-
-
 func resolve_card_effects(card_data: Dictionary) -> void:
 	var effects: Array = card_data.get("effects", [])
 	var results: Array[Dictionary] = effect_resolver.resolve_effects(
@@ -418,7 +352,7 @@ func _on_end_turn_pressed() -> void:
 	if combat_finished:
 		return
 
-	discard_hand()
+	deck_manager.discard_hand()
 	resolve_enemy_turn()
 
 	if combat_finished:
@@ -429,14 +363,6 @@ func _on_end_turn_pressed() -> void:
 	start_player_turn()
 	rebuild_hand_ui()
 	update_ui()
-
-
-func discard_hand() -> void:
-	for card_instance in hand:
-		if card_instance != null:
-			discard_pile.append(card_instance)
-
-	hand.clear()
 
 
 func resolve_enemy_turn() -> void:
@@ -478,7 +404,7 @@ func start_player_turn() -> void:
 	player.clear_block()
 
 	select_enemy_intent()
-	draw_cards(cards_per_turn)
+	deck_manager.draw_cards(cards_per_turn)
 
 
 func end_combat_with_victory() -> void:

@@ -66,5 +66,22 @@
 		"target": "player"
 	  }
 	]
-  }
+  },
+	"field_medicine": {
+  "id": "field_medicine",
+  "name": "Medicina de Campo",
+  "description": "Recupere 6 de HP.",
+  "cost": 1,
+  "type": "skill",
+  "rarity": "common",
+  "source": "crew",
+  "tags": ["healing", "doctor"],
+  "effects": [
+	{
+	  "type": "heal",
+	  "value": 6,
+	  "target": "player"
+	}
+  ]
+}
 }

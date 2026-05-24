@@ -46,6 +46,9 @@ func resolve_effect(
 		"gain_energy":
 			return resolve_gain_energy(value, target, context, source)
 
+		"heal":
+			return resolve_heal(value, target, context, source)
+
 		_:
 			return {
 				"type": "unknown",
@@ -179,6 +182,40 @@ func resolve_gain_energy(
 		"message": "Ganhou %d de energia." % amount
 	}
 
+func resolve_heal(
+	value: int,
+	target: String,
+	context: CombatContext,
+	source: String
+) -> Dictionary:
+	var target_combatant: Combatant = get_target_combatant(target, context, source)
+
+	if target_combatant == null:
+		return {
+			"type": "heal",
+			"source": source,
+			"target": target,
+			"success": false,
+			"message": "Alvo inválido para cura: %s" % target
+		}
+
+	var heal_result: Dictionary = target_combatant.heal(value)
+	var effective_heal: int = int(heal_result["effective_heal"])
+
+	return {
+		"type": "heal",
+		"source": source,
+		"target": target,
+		"success": true,
+		"requested_heal": int(heal_result["requested_heal"]),
+		"effective_heal": effective_heal,
+		"current_hp": int(heal_result["current_hp"]),
+		"max_hp": int(heal_result["max_hp"]),
+		"message": "%s recuperou %d de HP." % [
+			target_combatant.display_name,
+			effective_heal
+		]
+	}
 
 func get_target_combatant(
 	target: String,

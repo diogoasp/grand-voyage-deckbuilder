@@ -47,3 +47,19 @@ func is_defeated() -> bool:
 
 func get_hp_text() -> String:
 	return "%d/%d" % [hp, max_hp]
+
+func heal(amount: int) -> Dictionary:
+	var heal_amount: int = max(amount, 0)
+	var hp_before: int = hp
+
+	hp += heal_amount
+	hp = min(hp, max_hp)
+
+	var effective_heal: int = hp - hp_before
+
+	return {
+		"requested_heal": heal_amount,
+		"effective_heal": effective_heal,
+		"current_hp": hp,
+		"max_hp": max_hp
+	}

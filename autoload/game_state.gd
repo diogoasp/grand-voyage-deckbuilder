@@ -16,7 +16,8 @@ var current_deck: Array[String] = [
 	"defend_basic",
 	"defend_basic",
 	"quick_thinking",
-	"second_wind"
+	"second_wind",
+	"field_medicine"
 ]
 
 func reset_run() -> void:
@@ -33,7 +34,8 @@ func reset_run() -> void:
 		"defend_basic",
 		"defend_basic",
 		"quick_thinking",
-		"second_wind"
+		"second_wind",
+		"field_medicine"
 	]
 
 

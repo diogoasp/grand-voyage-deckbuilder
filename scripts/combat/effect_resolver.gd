@@ -1,49 +1,10 @@
 class_name EffectResolver
 extends RefCounted
 
-func resolve_draw(value: int, target: String, source: String) -> Dictionary:
-	if target != "player":
-		return {
-			"type": "draw",
-			"source": source,
-			"target": target,
-			"success": false,
-			"message": "Alvo inválido para compra de cartas: %s" % target
-		}
-
-	return {
-		"type": "draw",
-		"source": source,
-		"target": target,
-		"success": true,
-		"amount": max(value, 0),
-		"message": "Comprou %d carta(s)." % max(value, 0)
-	}
-
-
-func resolve_gain_energy(value: int, target: String, source: String) -> Dictionary:
-	if target != "player":
-		return {
-			"type": "gain_energy",
-			"source": source,
-			"target": target,
-			"success": false,
-			"message": "Alvo inválido para ganho de energia: %s" % target
-		}
-
-	return {
-		"type": "gain_energy",
-		"source": source,
-		"target": target,
-		"success": true,
-		"amount": max(value, 0),
-		"message": "Ganhou %d de energia." % max(value, 0)
-	}
 
 func resolve_effects(
 	effects: Array,
-	player: Combatant,
-	enemy: Combatant,
+	context: CombatContext,
 	source: String = ""
 ) -> Array[Dictionary]:
 	var results: Array[Dictionary] = []
@@ -57,7 +18,7 @@ func resolve_effects(
 			})
 			continue
 
-		var result: Dictionary = resolve_effect(effect, player, enemy, source)
+		var result: Dictionary = resolve_effect(effect, context, source)
 		results.append(result)
 
 	return results
@@ -65,8 +26,7 @@ func resolve_effects(
 
 func resolve_effect(
 	effect: Dictionary,
-	player: Combatant,
-	enemy: Combatant,
+	context: CombatContext,
 	source: String = ""
 ) -> Dictionary:
 	var effect_type: String = str(effect.get("type", ""))
@@ -75,33 +35,34 @@ func resolve_effect(
 
 	match effect_type:
 		"damage":
-			return resolve_damage(value, target, player, enemy, source)
+			return resolve_damage(value, target, context, source)
 
 		"block":
-			return resolve_block(value, target, player, enemy, source)
+			return resolve_block(value, target, context, source)
 
 		"draw":
-			return resolve_draw(value, target, source)
+			return resolve_draw(value, target, context, source)
 
 		"gain_energy":
-			return resolve_gain_energy(value, target, source)
+			return resolve_gain_energy(value, target, context, source)
 
 		_:
 			return {
 				"type": "unknown",
+				"success": false,
 				"effect_type": effect_type,
 				"source": source,
 				"message": "Tipo de efeito desconhecido: %s" % effect_type
 			}
 
+
 func resolve_damage(
 	value: int,
 	target: String,
-	player: Combatant,
-	enemy: Combatant,
+	context: CombatContext,
 	source: String
 ) -> Dictionary:
-	var target_combatant: Combatant = get_target_combatant(target, player, enemy)
+	var target_combatant: Combatant = get_target_combatant(target, context, source)
 
 	if target_combatant == null:
 		return {
@@ -133,11 +94,10 @@ func resolve_damage(
 func resolve_block(
 	value: int,
 	target: String,
-	player: Combatant,
-	enemy: Combatant,
+	context: CombatContext,
 	source: String
 ) -> Dictionary:
-	var target_combatant: Combatant = get_target_combatant(target, player, enemy)
+	var target_combatant: Combatant = get_target_combatant(target, context, source)
 
 	if target_combatant == null:
 		return {
@@ -164,20 +124,79 @@ func resolve_block(
 	}
 
 
+func resolve_draw(
+	value: int,
+	target: String,
+	context: CombatContext,
+	source: String
+) -> Dictionary:
+	if target != "player":
+		return {
+			"type": "draw",
+			"source": source,
+			"target": target,
+			"success": false,
+			"message": "Alvo inválido para compra de cartas: %s" % target
+		}
+
+	var amount: int = max(value, 0)
+	context.deck_manager.draw_cards(amount)
+
+	return {
+		"type": "draw",
+		"source": source,
+		"target": target,
+		"success": true,
+		"amount": amount,
+		"message": "Comprou %d carta(s)." % amount
+	}
+
+
+func resolve_gain_energy(
+	value: int,
+	target: String,
+	context: CombatContext,
+	source: String
+) -> Dictionary:
+	if target != "player":
+		return {
+			"type": "gain_energy",
+			"source": source,
+			"target": target,
+			"success": false,
+			"message": "Alvo inválido para ganho de energia: %s" % target
+		}
+
+	var amount: int = max(value, 0)
+	context.gain_energy(amount)
+
+	return {
+		"type": "gain_energy",
+		"source": source,
+		"target": target,
+		"success": true,
+		"amount": amount,
+		"message": "Ganhou %d de energia." % amount
+	}
+
+
 func get_target_combatant(
 	target: String,
-	player: Combatant,
-	enemy: Combatant
+	context: CombatContext,
+	source: String
 ) -> Combatant:
 	match target:
 		"player":
-			return player
+			return context.player
 
 		"enemy":
-			return enemy
+			return context.enemy
 
 		"self":
-			return enemy
+			if source == "enemy_intent":
+				return context.enemy
+
+			return context.player
 
 		_:
 			return null

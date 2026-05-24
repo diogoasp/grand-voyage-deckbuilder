@@ -35,6 +35,7 @@ var enemy: Combatant
 var effect_resolver: EffectResolver
 
 var deck_manager: DeckManager
+var combat_context: CombatContext
 
 var reward_claimed: bool = false
 
@@ -42,9 +43,8 @@ var current_enemy_id: String = "marine_recruit"
 var current_enemy_data: Dictionary = {}
 var enemy_intent: Dictionary = {}
 
-var energy: int = 3
-var max_energy: int = 3
 var cards_per_turn: int = 5
+var max_energy: int = 3
 
 var combat_finished: bool = false
 
@@ -85,11 +85,17 @@ func start_combat() -> void:
 
 	load_enemy(current_enemy_id)
 
-	energy = max_energy
-
 	deck_manager = DeckManager.new()
 	deck_manager.setup_from_deck_ids(GameState.current_deck)
 	deck_manager.draw_cards(cards_per_turn)
+
+	combat_context = CombatContext.new()
+	combat_context.setup(
+		player,
+		enemy,
+		deck_manager,
+		max_energy
+	)
 
 	rebuild_hand_ui()
 	update_ui()
@@ -200,7 +206,10 @@ func update_ui() -> void:
 		enemy.get_hp_text(),
 		enemy.block
 	]
-	energy_label.text = "Energia: %d/%d" % [energy, max_energy]
+	energy_label.text = "Energia: %d/%d" % [
+		combat_context.energy,
+		combat_context.max_energy
+	]
 	block_label.text = "Bloqueio: %d" % player.block
 	draw_pile_label.text = "Deck: %d" % deck_manager.get_draw_count()
 	discard_pile_label.text = "Descarte: %d" % deck_manager.get_discard_count()
@@ -211,7 +220,7 @@ func update_ui() -> void:
 	enemy_intent_label.text = get_enemy_intent_text()
 
 	for card_view in get_card_views_in_hand():
-		var can_play := not combat_finished and energy >= card_view.cost
+		var can_play := not combat_finished and combat_context.can_spend_energy(card_view.cost)
 
 		if can_play:
 			card_view.modulate.a = 1.0
@@ -312,7 +321,7 @@ func _on_card_play_requested(card_view: CardView, drop_position: Vector2) -> voi
 func play_card(card_instance: CardInstance, card_data: Dictionary) -> void:
 	var cost: int = int(card_data["cost"])
 
-	energy -= cost
+	combat_context.spend_energy(cost)
 
 	print("Carta jogada: %s" % str(card_data["name"]))
 
@@ -330,45 +339,21 @@ func can_play_card(cost: int) -> bool:
 	if combat_finished:
 		return false
 
-	if energy < cost:
+	if not combat_context.can_spend_energy(cost):
 		print("Energia insuficiente.")
 		return false
 
 	return true
 
-
 func resolve_card_effects(card_data: Dictionary) -> void:
 	var effects: Array = card_data.get("effects", [])
 	var results: Array[Dictionary] = effect_resolver.resolve_effects(
 		effects,
-		player,
-		enemy,
+		combat_context,
 		"card"
 	)
 
-	apply_effect_results(results)
 	print_effect_results(results)
-
-func apply_effect_results(results: Array[Dictionary]) -> void:
-	for result in results:
-		if not bool(result.get("success", true)):
-			continue
-
-		var result_type: String = str(result.get("type", ""))
-
-		match result_type:
-			"draw":
-				var amount: int = int(result.get("amount", 0))
-				deck_manager.draw_cards(amount)
-				rebuild_hand_ui()
-
-			"gain_energy":
-				var amount: int = int(result.get("amount", 0))
-				energy += amount
-
-			_:
-				pass
-
 
 func _on_end_turn_pressed() -> void:
 	if combat_finished:
@@ -397,8 +382,7 @@ func resolve_enemy_turn() -> void:
 	var effects: Array = enemy_intent.get("effects", [])
 	var results: Array[Dictionary] = effect_resolver.resolve_effects(
 		effects,
-		player,
-		enemy,
+		combat_context,
 		"enemy_intent"
 	)
 
@@ -422,7 +406,7 @@ func print_effect_results(results: Array[Dictionary]) -> void:
 func start_player_turn() -> void:
 	print("Novo turno do jogador.")
 
-	energy = max_energy
+	combat_context.reset_energy()
 	player.clear_block()
 
 	select_enemy_intent()

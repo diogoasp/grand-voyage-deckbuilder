@@ -49,3 +49,11 @@ func gain_bounty(amount: int) -> void:
 
 func set_player_hp(value: int) -> void:
 	player_hp = clamp(value, 0, player_max_hp)
+
+func add_card_to_deck(card_id: String) -> void:
+	if not DataLoader.has_card(card_id):
+		push_warning("Tentativa de adicionar carta inexistente ao deck: %s" % card_id)
+		return
+
+	current_deck.append(card_id)
+	print("Carta adicionada ao deck: %s" % card_id)

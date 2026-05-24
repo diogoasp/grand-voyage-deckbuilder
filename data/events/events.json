@@ -1,0 +1,28 @@
+{
+  "old_port_trainer": {
+	"id": "old_port_trainer",
+	"title": "Velho Lutador do Porto",
+	"body": "Um veterano observa seus movimentos no cais. Ele não diz muito, apenas aponta falhas na sua guarda e oferece uma breve lição antes da maré virar.",
+	"choices": [
+	  {
+		"label": "Treinar defesa",
+		"effects": [
+		  {
+			"type": "add_card_to_deck",
+			"card_id": "field_medicine"
+		  }
+		]
+	  },
+	  {
+		"label": "Ajudar a carregar suprimentos",
+		"effects": [
+		  {
+			"type": "gain_resource",
+			"resource": "gold",
+			"value": 15
+		  }
+		]
+	  }
+	]
+  }
+}

@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://y14kgd73sy70"]
+
+[ext_resource type="Script" uid="uid://ct7c4s6y0w1jh" path="res://scenes/events/event_scene.gd" id="1_snngf"]
+
+[node name="EventScene" type="Control" unique_id=550957958]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_snngf")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1194738318]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="EventPanel" type="PanelContainer" parent="." unique_id=1403964442]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="EventVBox" type="VBoxContainer" parent="EventPanel" unique_id=394915202]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="EventPanel/EventVBox" unique_id=804816673]
+layout_mode = 2
+
+[node name="BodyLabel" type="Label" parent="EventPanel/EventVBox" unique_id=1282740428]
+layout_mode = 2
+
+[node name="ChoicesVBox" type="VBoxContainer" parent="EventPanel/EventVBox" unique_id=878656269]
+layout_mode = 2

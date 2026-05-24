@@ -3,6 +3,8 @@ extends Node
 var cards: Dictionary = {}
 var enemies: Dictionary = {}
 
+var events: Dictionary = {}
+
 func _ready() -> void:
 	load_all_data()
 
@@ -10,9 +12,11 @@ func _ready() -> void:
 func load_all_data() -> void:
 	cards = load_json_dictionary("res://data/cards/cards.json")
 	enemies = load_json_dictionary("res://data/enemies/enemies.json")
+	events = load_json_dictionary("res://data/events/events.json")
 
 	print("DataLoader: %d cartas carregadas." % cards.size())
 	print("DataLoader: %d inimigos carregados." % enemies.size())
+	print("DataLoader: %d eventos carregados." % events.size())
 
 
 func load_json_dictionary(path: String) -> Dictionary:
@@ -61,3 +65,14 @@ func get_enemy(enemy_id: String) -> Dictionary:
 
 func has_enemy(enemy_id: String) -> bool:
 	return enemies.has(enemy_id)
+
+func get_event(event_id: String) -> Dictionary:
+	if not events.has(event_id):
+		push_warning("Evento não encontrado: %s" % event_id)
+		return {}
+
+	return events[event_id]
+
+
+func has_event(event_id: String) -> bool:
+	return events.has(event_id)

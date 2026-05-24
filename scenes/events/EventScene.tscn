@@ -32,3 +32,6 @@ layout_mode = 2
 
 [node name="ChoicesVBox" type="VBoxContainer" parent="EventPanel/EventVBox" unique_id=878656269]
 layout_mode = 2
+
+[node name="ContinueButton" type="Button" parent="EventPanel/EventVBox" unique_id=2080844723]
+layout_mode = 2

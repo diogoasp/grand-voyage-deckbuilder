@@ -1,5 +1,7 @@
 extends Node
 
 func _ready() -> void:
-	var combat_scene := preload("res://scenes/combat/CombatScene.tscn").instantiate()
-	add_child(combat_scene)
+	GameState.reset_run()
+
+	var event_scene := preload("res://scenes/events/EventScene.tscn").instantiate()
+	add_child(event_scene)

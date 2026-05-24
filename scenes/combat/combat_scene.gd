@@ -47,6 +47,8 @@ var cards_per_turn: int = 5
 var combat_finished: bool = false
 var next_card_instance_id: int = 1
 
+var dragged_card_view: CardView = null
+var dragged_card_required_target: String = ""
 
 var starting_deck_ids: Array[String] = [
 	"strike_basic",
@@ -624,12 +626,17 @@ func is_position_inside_control(position: Vector2, control: Control) -> bool:
 	return rect.has_point(position)
 
 func _on_card_drag_started(card_view: CardView) -> void:
-	var card_data := DataLoader.get_card(card_view.card_id)
-	var required_target := get_required_drop_target(card_data)
-	highlight_target_area(required_target)
+	dragged_card_view = card_view
+
+	var card_data: Dictionary = DataLoader.get_card(card_view.card_id)
+	dragged_card_required_target = get_required_drop_target(card_data)
+
+	highlight_target_area(dragged_card_required_target)
 
 
 func _on_card_drag_ended(_card_view: CardView) -> void:
+	dragged_card_view = null
+	dragged_card_required_target = ""
 	clear_target_highlights()
 	
 func highlight_target_area(required_target: String) -> void:
@@ -637,16 +644,53 @@ func highlight_target_area(required_target: String) -> void:
 
 	match required_target:
 		"enemy":
-			enemy_area.modulate = Color(1.2, 1.2, 1.2, 1.0)
+			enemy_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
 
 		"player":
-			player_area.modulate = Color(1.2, 1.2, 1.2, 1.0)
+			player_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
 
 		"none":
-			enemy_area.modulate = Color(1.1, 1.1, 1.1, 1.0)
-			player_area.modulate = Color(1.1, 1.1, 1.1, 1.0)
+			enemy_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
+			player_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
 
 
 func clear_target_highlights() -> void:
 	enemy_area.modulate = Color(1, 1, 1, 1)
 	player_area.modulate = Color(1, 1, 1, 1)
+
+func _process(_delta: float) -> void:
+	if dragged_card_view == null:
+		return
+
+	if not is_instance_valid(dragged_card_view):
+		return
+
+	update_drag_target_feedback()
+	
+func update_drag_target_feedback() -> void:
+	clear_target_highlights()
+
+	if dragged_card_required_target == "":
+		return
+
+	var is_valid_target := is_card_over_valid_target(
+		dragged_card_view,
+		dragged_card_required_target
+	)
+
+	match dragged_card_required_target:
+		"enemy":
+			if is_valid_target:
+				enemy_area.modulate = Color(1.35, 1.35, 1.35, 1.0)
+			else:
+				enemy_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
+
+		"player":
+			if is_valid_target:
+				player_area.modulate = Color(1.35, 1.35, 1.35, 1.0)
+			else:
+				player_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
+
+		"none":
+			enemy_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
+			player_area.modulate = Color(1.12, 1.12, 1.12, 1.0)

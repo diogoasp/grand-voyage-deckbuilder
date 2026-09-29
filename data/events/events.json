@@ -5,7 +5,7 @@
 	"body": "Um veterano observa seus movimentos no cais. Ele não diz muito, apenas aponta falhas na sua guarda e oferece uma breve lição antes da maré virar.",
 	"choices": [
 	  {
-		"label": "Treinar postura defensiva",
+		"label": "Treinar postura defensiva (+1 Defesa Básica)",
 		"effects": [
 		  {
 			"type": "add_card_to_deck",
@@ -14,7 +14,16 @@
 		]
 	  },
 	  {
-		"label": "Ajudar a carregar suprimentos",
+		"label": "Despertar vontade marcial (+1 Golpe com Armamento - Dano perfurante que ignora bloqueio)",
+		"effects": [
+		  {
+			"type": "add_card_to_deck",
+			"card_id": "buso_strike"
+		  }
+		]
+	  },
+	  {
+		"label": "Ajudar a carregar suprimentos (+15 Ouro)",
 		"effects": [
 		  {
 			"type": "gain_resource",

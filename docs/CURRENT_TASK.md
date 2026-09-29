@@ -1,31 +1,31 @@
 # Tarefa Atual
 
 ## Nome
-Implementar a primeira camada de Haki simples com postura/recurso e cartas dedicadas.
+Implementar a batalha de Chefe do Setor (Capitão da Marinha Morgan) para conclusão da rota marítima.
 
 ## Objetivo
-Materializar o pilar de design de Haki conforme definido em `GRAND_VOYAGE_CONCEITO_E_DIRECAO.md`:
-- Haki funciona como disciplina marcial acessível a qualquer capitão, sem a penalidade de fraqueza ao mar das Akuma no Mi;
-- implementar uma forma de Haki: **Haki de Armamento (Busoshoku Haki)** ou **Haki de Observação (Kenbunshoku Haki)**;
+Fechar o ciclo do Vertical Slice com uma batalha final de setor desafiadora:
+- Chefe: Capitão Morgan (Braço de Machado / Patrulha da Base da Marinha);
 - mecânica:
-  - Armamento: potencializa o próximo ataque ou converte dano em penetração de armadura/anulação de resistências;
-  - Observação: prevê com exatidão dano futuro ou concede esquiva/bloqueio reativo;
-- treinamento através de mentor/evento ou cidade.
+  - vida substancialmente maior que os inimigos comuns;
+  - ciclo de intenções com ataque pesado, bloqueio fortificado e golpe cortante;
+  - arena temática com os assets de fundo já presentes no projeto (`res://assets/art/Boss 1 Morgan_bg.png`);
+- conectar o nó final do mapa náutico (Setor 4) para invocar o chefe em vez de um lacaio comum;
+- tela de vitória do setor ao derrotá-lo.
 
 ## Escopo
 Implementar:
-- dados e cartas de Haki em `res://data/cards/cards.json`;
-- suporte de treino de Haki em eventos ou no porto (`CityScene` / `EventScene`);
-- resolução de efeitos específicos de Haki no `EffectResolver` e `CombatContext`;
-- validação com o fluxo atual.
+- dados do chefe `marine_captain_morgan` em `res://data/enemies/enemies.json`;
+- vinculação no nó do Estágio 3/4 do mapa náutico (`scripts/map/map_scene.gd`);
+- tratamento de vitória da run/setor no `RunScene`.
 
 Não implementar:
-- sistema complexo de Haki do Conquistador em área;
-- árvore completa com dezenas de técnicas de Haki avançado.
+- múltiplos atos ou segundo mapa (Grand Line) antes de validar o chefe do primeiro setor.
 
 ## Critérios de aceite
-1. O capitão pode adquirir técnicas de Haki durante a run.
-2. Cartas de Haki funcionam em combate sem gerar erros.
-3. Diferenciação clara entre cartas físicas, de Akuma no Mi e de Haki.
+1. O estágio final do mapa leva ao combate contra o Chefe Morgan.
+2. O chefe executa suas intenções no combate.
+3. Derrotar o chefe conclui com êxito o setor da run.
 4. Sem erros ou warnings no depurador do Godot.
+
 

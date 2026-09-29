@@ -83,7 +83,12 @@ text = "Descansar na Taverna (Recupera 20 HP)"
 [node name="TrainButton" type="Button" parent="CityPanel/Margin/CityVBox/ActionsVBox"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 42)
-text = "Treinar Técnicas (Custa 15 Ouro -> +1 Golpe Básico)"
+text = "Treino Básico (Custa 15 Ouro -> +1 Golpe Básico)"
+
+[node name="HakiButton" type="Button" parent="CityPanel/Margin/CityVBox/ActionsVBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 42)
+text = "Treino de Observação (Custa 25 Ouro -> +1 Foco de Observação)"
 
 [node name="SuppliesButton" type="Button" parent="CityPanel/Margin/CityVBox/ActionsVBox"]
 layout_mode = 2

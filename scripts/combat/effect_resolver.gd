@@ -35,7 +35,8 @@ func resolve_effect(
 
 	match effect_type:
 		"damage":
-			return resolve_damage(value, target, context, source)
+			var ignore_block: bool = bool(effect.get("ignore_block", false))
+			return resolve_damage(value, target, context, source, ignore_block)
 
 		"block":
 			return resolve_block(value, target, context, source)
@@ -48,6 +49,9 @@ func resolve_effect(
 
 		"heal":
 			return resolve_heal(value, target, context, source)
+
+		"intangible":
+			return resolve_intangible(value, target, context, source)
 
 		_:
 			return {
@@ -63,7 +67,8 @@ func resolve_damage(
 	value: int,
 	target: String,
 	context: CombatContext,
-	source: String
+	source: String,
+	ignore_block: bool = false
 ) -> Dictionary:
 	var target_combatant: Combatant = get_target_combatant(target, context, source)
 
@@ -76,7 +81,17 @@ func resolve_damage(
 			"message": "Alvo inválido para dano: %s" % target
 		}
 
-	var damage_result: Dictionary = target_combatant.take_damage(value)
+	var damage_result: Dictionary = target_combatant.take_damage(value, ignore_block)
+
+	var msg: String = "%s recebeu %d de dano." % [
+		target_combatant.display_name,
+		int(damage_result["final_damage"])
+	]
+	if ignore_block:
+		msg = "%s recebeu %d de dano direto perfurante (ignora bloqueio)." % [
+			target_combatant.display_name,
+			int(damage_result["final_damage"])
+		]
 
 	return {
 		"type": "damage",
@@ -87,10 +102,7 @@ func resolve_damage(
 		"blocked_damage": int(damage_result["blocked_damage"]),
 		"final_damage": int(damage_result["final_damage"]),
 		"remaining_hp": int(damage_result["remaining_hp"]),
-		"message": "%s recebeu %d de dano." % [
-			target_combatant.display_name,
-			int(damage_result["final_damage"])
-		]
+		"message": msg
 	}
 
 
@@ -216,6 +228,40 @@ func resolve_heal(
 			effective_heal
 		]
 	}
+
+
+func resolve_intangible(
+	value: int,
+	target: String,
+	context: CombatContext,
+	source: String
+) -> Dictionary:
+	var target_combatant: Combatant = get_target_combatant(target, context, source)
+
+	if target_combatant == null:
+		return {
+			"type": "intangible",
+			"source": source,
+			"target": target,
+			"success": false,
+			"message": "Alvo inválido para intangibilidade: %s" % target
+		}
+
+	var turns: int = max(value, 1)
+	target_combatant.gain_intangible(turns)
+
+	return {
+		"type": "intangible",
+		"source": source,
+		"target": target,
+		"success": true,
+		"turns": turns,
+		"message": "%s ativou Intangibilidade por %d turno(s)! Dano recebido reduzido a 1." % [
+			target_combatant.display_name,
+			turns
+		]
+	}
+
 
 func get_target_combatant(
 	target: String,

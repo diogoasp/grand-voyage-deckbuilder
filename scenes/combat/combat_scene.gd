@@ -8,6 +8,7 @@ const CARD_SLOT_SIZE: Vector2 = Vector2(130, 190)
 
 @onready var player_area: Control = $PlayerArea
 @onready var player_name_label: Label = $PlayerArea/PlayerNameLabel
+@onready var player_status_container: HBoxContainer = $PlayerArea/PlayerStatusContainer
 @onready var player_hp_label: Label = $TopBar/PlayerHPLabel
 
 @onready var energy_label: Label = $TopBar/EnergyLabel
@@ -240,6 +241,25 @@ func update_ui() -> void:
 			card_view.reset_visual_state()
 
 	end_turn_button.disabled = combat_finished
+	update_status_icons()
+
+
+func update_status_icons() -> void:
+	if player_status_container == null:
+		return
+
+	for child in player_status_container.get_children():
+		child.queue_free()
+
+	if player != null and player.intangible > 0:
+		var status_badge := PanelContainer.new()
+		var label := Label.new()
+		label.text = "☁ Névoa (%d)" % player.intangible
+		label.add_theme_font_size_override("font_size", 12)
+		label.add_theme_color_override("font_color", Color(0.7, 0.9, 1.0))
+		status_badge.add_child(label)
+		status_badge.tooltip_text = "Intangibilidade (Forma de Névoa): Dano recebido reduzido a no máximo 1 por %d turno(s)." % player.intangible
+		player_status_container.add_child(status_badge)
 
 func get_card_views_in_hand() -> Array[CardView]:
 	var card_views: Array[CardView] = []
@@ -417,6 +437,7 @@ func start_player_turn() -> void:
 
 	combat_context.reset_energy()
 	player.clear_block()
+	player.tick_turn_statuses()
 
 	select_enemy_intent()
 	deck_manager.draw_cards(cards_per_turn)

@@ -87,16 +87,21 @@
 	"mist_form": {
 	  "id": "mist_form",
 	  "name": "Forma de Névoa",
-	  "description": "Seu corpo se dispersa em névoa. Ganhe 8 de bloqueio.",
+	  "description": "Seu corpo se dispersa em névoa. Ganhe 4 de bloqueio e Intangibilidade por 1 turno (todo dano recebido reduzido a 1).",
 	  "cost": 1,
 	  "type": "skill",
 	  "rarity": "rare",
 	  "source": "devil_fruit",
-	  "tags": ["devil_fruit", "logia", "defense"],
+	  "tags": ["devil_fruit", "logia", "defense", "intangible"],
 	  "effects": [
 		{
 		  "type": "block",
-		  "value": 8,
+		  "value": 4,
+		  "target": "player"
+		},
+		{
+		  "type": "intangible",
+		  "value": 1,
 		  "target": "player"
 		}
 	  ]
@@ -122,6 +127,47 @@
 		  "target": "player"
 		}
 	  ]
+	},
+	"buso_strike": {
+	  "id": "buso_strike",
+	  "name": "Golpe com Armamento",
+	  "description": "Endureça sua vontade marcial. Cause 8 de dano perfurante que ignora o bloqueio do inimigo.",
+	  "cost": 1,
+	  "type": "attack",
+	  "rarity": "uncommon",
+	  "source": "haki_training",
+	  "tags": ["haki", "busoshoku", "attack", "piercing"],
+	  "effects": [
+		{
+		  "type": "damage",
+		  "value": 8,
+		  "target": "enemy",
+		  "ignore_block": true
+		}
+	  ]
+	},
+	"kenbun_focus": {
+	  "id": "kenbun_focus",
+	  "name": "Foco de Observação",
+	  "description": "Sinta a intenção do oponente. Ganhe 6 de bloqueio e compre 1 carta.",
+	  "cost": 1,
+	  "type": "skill",
+	  "rarity": "uncommon",
+	  "source": "haki_training",
+	  "tags": ["haki", "kenbunshoku", "defense", "utility"],
+	  "effects": [
+		{
+		  "type": "block",
+		  "value": 6,
+		  "target": "player"
+		},
+		{
+		  "type": "draw",
+		  "value": 1,
+		  "target": "player"
+		}
+	  ]
 	}
 }
+
 

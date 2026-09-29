@@ -6,6 +6,7 @@ var display_name: String = ""
 var max_hp: int = 1
 var hp: int = 1
 var block: int = 0
+var intangible: int = 0
 
 
 func setup(new_id: String, new_display_name: String, new_max_hp: int) -> void:
@@ -14,14 +15,24 @@ func setup(new_id: String, new_display_name: String, new_max_hp: int) -> void:
 	max_hp = max(new_max_hp, 1)
 	hp = max_hp
 	block = 0
+	intangible = 0
 
 
-func take_damage(amount: int) -> Dictionary:
+func take_damage(amount: int, ignore_block: bool = false) -> Dictionary:
 	var incoming_damage: int = max(amount, 0)
-	var blocked_damage: int = min(block, incoming_damage)
-	var final_damage: int = incoming_damage - blocked_damage
+	var blocked_damage: int = 0
+	var final_damage: int = incoming_damage
 
-	block -= blocked_damage
+	# Intangibilidade reduz todo dano recebido a no máximo 1 (mecânica canônica de intangibilidade/logia)
+	if intangible > 0 and incoming_damage > 0:
+		incoming_damage = 1
+		final_damage = 1
+
+	if not ignore_block:
+		blocked_damage = min(block, incoming_damage)
+		final_damage = incoming_damage - blocked_damage
+		block -= blocked_damage
+
 	hp -= final_damage
 	hp = max(hp, 0)
 
@@ -29,7 +40,8 @@ func take_damage(amount: int) -> Dictionary:
 		"incoming_damage": incoming_damage,
 		"blocked_damage": blocked_damage,
 		"final_damage": final_damage,
-		"remaining_hp": hp
+		"remaining_hp": hp,
+		"was_intangible": intangible > 0
 	}
 
 
@@ -39,6 +51,15 @@ func gain_block(amount: int) -> void:
 
 func clear_block() -> void:
 	block = 0
+
+
+func gain_intangible(turns: int) -> void:
+	intangible += max(turns, 0)
+
+
+func tick_turn_statuses() -> void:
+	if intangible > 0:
+		intangible -= 1
 
 
 func is_defeated() -> bool:

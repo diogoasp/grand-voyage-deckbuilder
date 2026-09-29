@@ -309,6 +309,28 @@ Suporte arquitetural:
 - `CombatScene` aplica automaticamente a passiva etérea da fruta no início da batalha;
 - `MapScene` exibe em tempo real a fruta consumida no painel de status do capitão.
 
+## Haki (Força de Vontade Marcial)
+
+Dados:
+`res://data/cards/cards.json`
+
+Cartas de Haki implementadas:
+- `buso_strike` (Golpe com Armamento / Busoshoku Strike):
+  - Tipo: Ataque marcial infundido de Haki;
+  - Custo: 1 Energia;
+  - Efeito: 8 de dano perfurante que ignora totalmente o bloqueio do inimigo (`ignore_block: true`);
+  - Obtenção: evento do Velho Lutador do Porto (`old_port_trainer`).
+- `kenbun_focus` (Foco de Observação / Kenbunshoku Focus):
+  - Tipo: Habilidade sensorial de antecipação;
+  - Custo: 1 Energia;
+  - Efeito: Ganha 6 de Bloqueio e compra 1 carta do deck;
+  - Obtenção: treino especial no porto seguro (`CityScene`).
+
+Suporte arquitetural:
+- `Combatant.take_damage(amount, ignore_block)` agora aceita bypass de armadura para ataques com Armamento;
+- `EffectResolver` reconhece o parâmetro `ignore_block` e resolve o dano perfurante informando o feedback no combate;
+- `CityScene` e `EventScene` integradas para permitir treinamento deliberado de Haki.
+
 ## Fluxo atual
 Fluxo atual implementado:
 
@@ -317,7 +339,7 @@ Main
 → RunScene (start_run -> GameState.reset_run())
 → MapScene (Carta Náutica do Setor)
   ├── Setor 1: Escolha Inicial no Cais:
-  │     ├── [A] Velho Lutador (Postura defensiva / Recursos)
+  │     ├── [A] Velho Lutador (Postura defensiva OU Despertar Haki de Armamento: Golpe perfurante)
   │     └── [B] Médico do Cais (Recrutar Dr. Lin: +1 Medicina de Campo, cura por setor)
   │     └── Conclusão -> Aplica passivas de viagem -> Retorna ao Mapa
   ├── Setor 2: Escolha de Rota de Mar:
@@ -325,21 +347,21 @@ Main
   │     ├── [B] Pirataria Rival ("bandit_sailor")
   │     └── [C] Baú Naufragado ("mysterious_chest" -> Comer Fruta da Névoa OU Vender por 50 Ouro)
   │     └── Vitória/Conclusão -> Aplica passivas de viagem -> Retorna ao Mapa
-  ├── Setor 3: Porto Seguro (CityScene: 1 ação) -> Zarpar -> Retorna ao Mapa
+  ├── Setor 3: Porto Seguro (CityScene: Taverna, Treino Básico, Treino de Haki de Observação ou Provisões) -> Zarpar
   └── Setor 4: Águas Profundas ("bandit_sailor") -> Vitória -> Rota concluída
 (Em caso de derrota no combate -> RunScene reinicia o ciclo via start_run())
 ```
 
 ## Dívida técnica conhecida
 1. Rebuild da mão deve ser observado em mudanças futuras para evitar problemas de `queue_free()` durante sinais.
-2. O sistema de status/buffs temporários em combate ainda não foi generalizado (passiva aplicada diretamente no init).
+2. O sistema de status/buffs temporários em combate ainda não foi generalizado.
 3. UI visual ainda é de protótipo.
 4. Eventos e cidades ainda resolvem efeitos localmente.
 5. Não há save da run em disco ainda.
 
 ## Próximo marco
-Implementar a primeira camada de Haki simples (Haki de Observação / Kenbunshoku Haki ou Armamento / Busoshoku Haki) como mecânica distinta e complementar às Akuma no Mi.
+Implementar a primeira batalha de Chefe do Setor (Capitão Morgan ou equivalente marítimo) com padrão de fases/intenções desafiadoras para fechar o loop completo do Vertical Slice.
 
 ## Regra de escopo
-Não iniciar metaprogressão persistente nem múltiplas classes antes de validar Haki e sua coexistência com Akuma no Mi.
+Manter o chefe focado no padrão mecânico existente (intenções, ataques pesados, buffs/armadura) antes de expandir para o Setor 2 (Grand Line).
 

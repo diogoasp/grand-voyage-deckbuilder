@@ -2,15 +2,15 @@ extends Control
 
 signal depart_requested
 
-@onready var title_label: Label = $CityPanel/CityVBox/TitleLabel
-@onready var description_label: Label = $CityPanel/CityVBox/DescriptionLabel
-@onready var status_label: Label = $CityPanel/CityVBox/StatusLabel
-@onready var feedback_label: Label = $CityPanel/CityVBox/FeedbackLabel
+@onready var title_label: Label = $CityPanel/Margin/CityVBox/TitleLabel
+@onready var description_label: Label = $CityPanel/Margin/CityVBox/DescriptionLabel
+@onready var status_label: Label = $CityPanel/Margin/CityVBox/StatusLabel
+@onready var feedback_label: Label = $CityPanel/Margin/CityVBox/FeedbackLabel
 
-@onready var rest_button: Button = $CityPanel/CityVBox/ActionsVBox/RestButton
-@onready var train_button: Button = $CityPanel/CityVBox/ActionsVBox/TrainButton
-@onready var supplies_button: Button = $CityPanel/CityVBox/ActionsVBox/SuppliesButton
-@onready var depart_button: Button = $CityPanel/CityVBox/DepartButton
+@onready var rest_button: Button = $CityPanel/Margin/CityVBox/ActionsVBox/RestButton
+@onready var train_button: Button = $CityPanel/Margin/CityVBox/ActionsVBox/TrainButton
+@onready var supplies_button: Button = $CityPanel/Margin/CityVBox/ActionsVBox/SuppliesButton
+@onready var depart_button: Button = $CityPanel/Margin/CityVBox/DepartButton
 
 var action_taken: bool = false
 

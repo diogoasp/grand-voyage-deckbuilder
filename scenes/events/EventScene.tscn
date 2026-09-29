@@ -7,35 +7,63 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 118.0
-offset_bottom = 72.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_snngf")
 
 [node name="Background" type="ColorRect" parent="." unique_id=1194738318]
-layout_mode = 0
-offset_right = 1270.0
-offset_bottom = 720.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.12, 0.16, 1)
 
 [node name="EventPanel" type="PanelContainer" parent="." unique_id=1403964442]
-layout_mode = 0
-offset_right = 411.0
-offset_bottom = 402.0
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -240.0
+offset_right = 300.0
+offset_bottom = 240.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="EventVBox" type="VBoxContainer" parent="EventPanel" unique_id=394915202]
+[node name="Margin" type="MarginContainer" parent="EventPanel"]
 layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="EventVBox" type="VBoxContainer" parent="EventPanel/Margin" unique_id=394915202]
+layout_mode = 2
+theme_override_constants/separation = 16
 alignment = 1
 
-[node name="TitleLabel" type="Label" parent="EventPanel/EventVBox" unique_id=804816673]
+[node name="TitleLabel" type="Label" parent="EventPanel/Margin/EventVBox" unique_id=804816673]
 layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Título do Evento"
+horizontal_alignment = 1
 
-[node name="BodyLabel" type="Label" parent="EventPanel/EventVBox" unique_id=1282740428]
+[node name="BodyLabel" type="Label" parent="EventPanel/Margin/EventVBox" unique_id=1282740428]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
+text = "Texto do evento descrevendo a situação náutica."
+horizontal_alignment = 1
+autowrap_mode = 2
 
-[node name="ChoicesVBox" type="VBoxContainer" parent="EventPanel/EventVBox" unique_id=878656269]
+[node name="ChoicesVBox" type="VBoxContainer" parent="EventPanel/Margin/EventVBox" unique_id=878656269]
 layout_mode = 2
+theme_override_constants/separation = 10
 
-[node name="ContinueButton" type="Button" parent="EventPanel/EventVBox" unique_id=2080844723]
+[node name="ContinueButton" type="Button" parent="EventPanel/Margin/EventVBox" unique_id=2080844723]
+visible = false
 layout_mode = 2
-text = "Continuar"
+text = "Continuar Viagem"

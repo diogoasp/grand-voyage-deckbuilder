@@ -2,10 +2,10 @@ extends Control
 
 signal continue_requested
 
-@onready var title_label: Label = $EventPanel/EventVBox/TitleLabel
-@onready var body_label: Label = $EventPanel/EventVBox/BodyLabel
-@onready var choices_vbox: VBoxContainer = $EventPanel/EventVBox/ChoicesVBox
-@onready var continue_button: Button = $EventPanel/EventVBox/ContinueButton
+@onready var title_label: Label = $EventPanel/Margin/EventVBox/TitleLabel
+@onready var body_label: Label = $EventPanel/Margin/EventVBox/BodyLabel
+@onready var choices_vbox: VBoxContainer = $EventPanel/Margin/EventVBox/ChoicesVBox
+@onready var continue_button: Button = $EventPanel/Margin/EventVBox/ContinueButton
 
 var current_event_id: String = "old_port_trainer"
 var current_event_data: Dictionary = {}
@@ -47,6 +47,8 @@ func create_choice_buttons() -> void:
 		var choice: Dictionary = choices[i]
 		var button := Button.new()
 		button.text = str(choice.get("label", "Escolha"))
+		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		button.custom_minimum_size = Vector2(0, 48)
 		button.pressed.connect(_on_choice_pressed.bind(choice))
 		choices_vbox.add_child(button)
 

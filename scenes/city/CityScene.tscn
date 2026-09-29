@@ -27,59 +27,70 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -250.0
-offset_top = -220.0
-offset_right = 250.0
-offset_bottom = 220.0
+offset_left = -280.0
+offset_top = -240.0
+offset_right = 280.0
+offset_bottom = 240.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="CityVBox" type="VBoxContainer" parent="CityPanel"]
+[node name="Margin" type="MarginContainer" parent="CityPanel"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="CityVBox" type="VBoxContainer" parent="CityPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
 alignment = 1
 
-[node name="TitleLabel" type="Label" parent="CityPanel/CityVBox"]
+[node name="TitleLabel" type="Label" parent="CityPanel/Margin/CityVBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Porto de Convalescença"
 horizontal_alignment = 1
 
-[node name="DescriptionLabel" type="Label" parent="CityPanel/CityVBox"]
+[node name="DescriptionLabel" type="Label" parent="CityPanel/Margin/CityVBox"]
 layout_mode = 2
 text = "O navio atraca em um porto seguro. A Marinha patrulha as águas próximas: há tempo para apenas uma ação antes de zarpar."
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="StatusLabel" type="Label" parent="CityPanel/CityVBox"]
+[node name="StatusLabel" type="Label" parent="CityPanel/Margin/CityVBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)
 text = "HP: 70/70 | Ouro: 0 | Comida: 5"
 horizontal_alignment = 1
 
-[node name="FeedbackLabel" type="Label" parent="CityPanel/CityVBox"]
+[node name="FeedbackLabel" type="Label" parent="CityPanel/Margin/CityVBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.9, 0.5, 1)
 text = ""
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="ActionsVBox" type="VBoxContainer" parent="CityPanel/CityVBox"]
+[node name="ActionsVBox" type="VBoxContainer" parent="CityPanel/Margin/CityVBox"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
-[node name="RestButton" type="Button" parent="CityPanel/CityVBox/ActionsVBox"]
+[node name="RestButton" type="Button" parent="CityPanel/Margin/CityVBox/ActionsVBox"]
 layout_mode = 2
+custom_minimum_size = Vector2(0, 42)
 text = "Descansar na Taverna (Recupera 20 HP)"
 
-[node name="TrainButton" type="Button" parent="CityPanel/CityVBox/ActionsVBox"]
+[node name="TrainButton" type="Button" parent="CityPanel/Margin/CityVBox/ActionsVBox"]
 layout_mode = 2
+custom_minimum_size = Vector2(0, 42)
 text = "Treinar Técnicas (Custa 15 Ouro -> +1 Golpe Básico)"
 
-[node name="SuppliesButton" type="Button" parent="CityPanel/CityVBox/ActionsVBox"]
+[node name="SuppliesButton" type="Button" parent="CityPanel/Margin/CityVBox/ActionsVBox"]
 layout_mode = 2
+custom_minimum_size = Vector2(0, 42)
 text = "Comprar Provisões (Custa 10 Ouro -> +3 Comida)"
 
-[node name="DepartButton" type="Button" parent="CityPanel/CityVBox"]
+[node name="DepartButton" type="Button" parent="CityPanel/Margin/CityVBox"]
 layout_mode = 2
+custom_minimum_size = Vector2(0, 42)
 text = "Zarpar"

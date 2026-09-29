@@ -4,6 +4,7 @@ const MAP_SCENE: PackedScene = preload("res://scenes/map/MapScene.tscn")
 const EVENT_SCENE: PackedScene = preload("res://scenes/events/EventScene.tscn")
 const COMBAT_SCENE: PackedScene = preload("res://scenes/combat/CombatScene.tscn")
 const CITY_SCENE: PackedScene = preload("res://scenes/city/CityScene.tscn")
+const MAP_GENERATOR = preload("res://scripts/map/map_generator.gd")
 
 @onready var screen_container: Control = $ScreenContainer
 
@@ -12,6 +13,7 @@ var current_screen: Node = null
 var current_stage: int = 0
 var completed_nodes: Array[String] = []
 var active_node_data: Dictionary = {}
+var sector_map: Array[Array] = []
 
 
 func _ready() -> void:
@@ -23,6 +25,7 @@ func start_run() -> void:
 	current_stage = 0
 	completed_nodes.clear()
 	active_node_data.clear()
+	sector_map = MAP_GENERATOR.generate_sector_map(1)
 	show_map()
 
 
@@ -38,11 +41,17 @@ func show_map() -> void:
 	clear_current_screen()
 
 	var map_scene: Node = MAP_SCENE.instantiate()
+	if "map_stages" in map_scene and not sector_map.is_empty():
+		map_scene.map_stages = sector_map
+
 	if map_scene.has_method("setup_state"):
 		map_scene.setup_state(current_stage, completed_nodes)
 
 	if map_scene.has_signal("node_selected"):
 		map_scene.node_selected.connect(_on_map_node_selected)
+
+	if map_scene.has_signal("new_expedition_requested"):
+		map_scene.new_expedition_requested.connect(start_run)
 
 	current_screen = map_scene
 	screen_container.add_child(map_scene)
@@ -56,7 +65,7 @@ func _on_map_node_selected(node_data: Dictionary) -> void:
 	match node_type:
 		"event":
 			show_event(target_id)
-		"combat":
+		"combat", "boss":
 			show_combat(target_id)
 		"city":
 			show_city()

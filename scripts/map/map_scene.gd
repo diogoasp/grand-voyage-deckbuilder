@@ -1,92 +1,35 @@
 extends Control
 
 signal node_selected(node_data: Dictionary)
+signal new_expedition_requested
+
+const MAP_GENERATOR = preload("res://scripts/map/map_generator.gd")
 
 @onready var title_label: Label = $MainLayout/TopBar/TitleLabel
 @onready var status_label: Label = $MainLayout/TopBar/StatusLabel
 @onready var columns_container: HBoxContainer = $MainLayout/MapPanel/ColumnsContainer
 @onready var prompt_label: Label = $MainLayout/BottomBar/PromptLabel
+@onready var victory_button: Button = $MainLayout/BottomBar/VictoryButton
 
 # Lista de colunas/estágios da rota marítima
-# Cada nó: id, stage, type ("event", "combat", "city"), target_id, label, icon
-var map_stages: Array[Array] = [
-	# Estágio 0: Ponto de partida (Treinamento OU Recrutar Médico no cais)
-	[
-		{
-			"id": "node_0_0",
-			"stage": 0,
-			"type": "event",
-			"target_id": "old_port_trainer",
-			"title": "Velho Lutador",
-			"desc": "Treino de Postura"
-		},
-		{
-			"id": "node_0_1",
-			"stage": 0,
-			"type": "event",
-			"target_id": "wandering_doctor",
-			"title": "Médico do Cais",
-			"desc": "Recrutar Dr. Lin"
-		}
-	],
-	# Estágio 1: Primeira rota de mar (Combate OU Naufrágio com Baú Oculto)
-	[
-		{
-			"id": "node_1_0",
-			"stage": 1,
-			"type": "combat",
-			"target_id": "marine_recruit",
-			"title": "Recruta da Marinha",
-			"desc": "Patrulha costeira"
-		},
-		{
-			"id": "node_1_1",
-			"stage": 1,
-			"type": "combat",
-			"target_id": "bandit_sailor",
-			"title": "Saqueador do Mar",
-			"desc": "Pirataria rival"
-		},
-		{
-			"id": "node_1_2",
-			"stage": 1,
-			"type": "event",
-			"target_id": "mysterious_chest",
-			"title": "Baú Naufragado",
-			"desc": "Fruta da Névoa"
-		}
-	],
-	# Estágio 2: Parada náutica (Porto seguro / Cidade)
-	[
-		{
-			"id": "node_2_0",
-			"stage": 2,
-			"type": "city",
-			"target_id": "port",
-			"title": "Porto Seguro",
-			"desc": "Taverna & Mercado"
-		}
-	],
-	# Estágio 3: Águas profundas (Confronto final do setor)
-	[
-		{
-			"id": "node_3_0",
-			"stage": 3,
-			"type": "combat",
-			"target_id": "bandit_sailor",
-			"title": "Embosca no Estreito",
-			"desc": "Ameaça marítima"
-		}
-	]
-]
+# Cada nó: id, stage, type ("event", "combat", "boss", "city"), target_id, title, desc
+var map_stages: Array[Array] = []
 
 var current_stage: int = 0
 var completed_node_ids: Array[String] = []
 
 
 func _ready() -> void:
+	if victory_button != null:
+		victory_button.pressed.connect(_on_victory_button_pressed)
+	if map_stages.is_empty():
+		generate_default_sector_map()
 	update_status_display()
 	rebuild_map_ui()
+
+
+func generate_default_sector_map() -> void:
+	map_stages = MAP_GENERATOR.generate_sector_map(1)
 
 
 func setup_state(stage: int, completed_nodes: Array[String]) -> void:
@@ -131,8 +74,13 @@ func rebuild_map_ui() -> void:
 		child.queue_free()
 
 	if current_stage >= map_stages.size():
-		prompt_label.text = "Rota do setor concluída! O capitão dominou estas águas."
+		prompt_label.text = "🏆 ROTA DO SETOR CONCLUÍDA! O Capitão Morgan foi derrotado e o mar deste setor foi dominado!"
+		if victory_button != null:
+			victory_button.visible = true
 		return
+
+	if victory_button != null:
+		victory_button.visible = false
 
 	prompt_label.text = "Escolha a próxima ilha/encontro no mapa para traçar o rumo:"
 
@@ -173,6 +121,8 @@ func create_node_button(node_data: Dictionary, stage_idx: int) -> Button:
 			type_prefix = "[Evento] "
 		"city":
 			type_prefix = "[Porto] "
+		"boss":
+			type_prefix = "💀 [CHEFE] "
 
 	button.text = "%s%s\n(%s)" % [type_prefix, title, desc]
 	button.custom_minimum_size = Vector2(170, 75)
@@ -182,18 +132,28 @@ func create_node_button(node_data: Dictionary, stage_idx: int) -> Button:
 
 	if is_completed:
 		button.disabled = true
-		button.text = "[Visitado]\n" + title
+		button.text = "[Derrotado]\n" + title if node_type == "boss" else "[Visitado]\n" + title
 		button.modulate = Color(0.5, 0.5, 0.5, 0.7)
 	elif is_current_reachable:
 		button.disabled = false
-		button.modulate = Color(1.1, 1.1, 0.9, 1.0)
+		if node_type == "boss":
+			button.modulate = Color(1.3, 0.7, 0.7, 1.0)
+		else:
+			button.modulate = Color(1.1, 1.1, 0.9, 1.0)
 		button.pressed.connect(_on_node_pressed.bind(node_data))
 	else:
 		button.disabled = true
-		button.modulate = Color(0.7, 0.7, 0.7, 0.4)
+		if node_type == "boss":
+			button.modulate = Color(0.9, 0.5, 0.5, 0.5)
+		else:
+			button.modulate = Color(0.7, 0.7, 0.7, 0.4)
 
 	return button
 
 
 func _on_node_pressed(node_data: Dictionary) -> void:
 	node_selected.emit(node_data)
+
+
+func _on_victory_button_pressed() -> void:
+	new_expedition_requested.emit()

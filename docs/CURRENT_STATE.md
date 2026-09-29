@@ -337,31 +337,65 @@ Fluxo atual implementado:
 ```text
 Main
 → RunScene (start_run -> GameState.reset_run())
-→ MapScene (Carta Náutica do Setor)
+## Chefe de Setor (Confronto Final do Ato)
+
+Dados:
+`res://data/enemies/enemies.json`
+
+Chefe implementado:
+- `marine_captain_morgan` (Capitão Morgan 'Mão de Machado'):
+  - HP: 65;
+  - Recompensas: 50-75 Ouro, 30 Bounty;
+  - Ciclo de Intenções:
+    - *Golpe de Machado*: 9 de dano;
+    - *Postura do Tirano*: 10 de bloqueio próprio + 4 de dano ao jogador;
+    - *Execução Impiedosa*: 15 de dano massivo;
+  - Conexão: ativado no nó final do setor através do tipo `"boss"`, com destaque visual no mapa (borda avermelhada e ícone de caveira).
+
+## Geração Procedural da Carta Náutica (MapGenerator)
+
+Script:
+`res://scripts/map/map_generator.gd`
+
+Responsabilidades:
+- desacoplar a criação do mapa do script de cena;
+- criar rotas procedurais e balanceadas para cada nova run (estilo *Slay the Spire*);
+- gerar nós dinâmicos para cada estágio:
+  - Estágio 0: Eventos de cais (Mestre/Médico);
+  - Estágio 1: Combates variados com pool de inimigos comuns + oportunidade de Baú de Akuma no Mi;
+  - Estágio 2: Parada portuária (cidade com ações limitadas);
+  - Estágio 3: Batalha de Chefe do Setor;
+- persistir a rota na `RunScene` durante a travessia e gerar novo mapa ao iniciar nova expedição.
+
+## Fluxo atual
+Fluxo atual implementado:
+
+```text
+Main
+→ RunScene (start_run -> GameState.reset_run() -> MapGenerator.generate_sector_map())
+→ MapScene (Carta Náutica Procedural do Setor)
   ├── Setor 1: Escolha Inicial no Cais:
   │     ├── [A] Velho Lutador (Postura defensiva OU Despertar Haki de Armamento: Golpe perfurante)
   │     └── [B] Médico do Cais (Recrutar Dr. Lin: +1 Medicina de Campo, cura por setor)
   │     └── Conclusão -> Aplica passivas de viagem -> Retorna ao Mapa
-  ├── Setor 2: Escolha de Rota de Mar:
+  ├── Setor 2: Rota Procedural de Mar Aberto:
   │     ├── [A] Patrulha Costeira ("marine_recruit")
   │     ├── [B] Pirataria Rival ("bandit_sailor")
   │     └── [C] Baú Naufragado ("mysterious_chest" -> Comer Fruta da Névoa OU Vender por 50 Ouro)
   │     └── Vitória/Conclusão -> Aplica passivas de viagem -> Retorna ao Mapa
   ├── Setor 3: Porto Seguro (CityScene: Taverna, Treino Básico, Treino de Haki de Observação ou Provisões) -> Zarpar
-  └── Setor 4: Águas Profundas ("bandit_sailor") -> Vitória -> Rota concluída
-(Em caso de derrota no combate -> RunScene reinicia o ciclo via start_run())
+  └── Setor 4: Batalha de Chefe (💀 [CHEFE] Capitão Morgan: 65 HP, Golpe 9, Postura Tirano 10/4, Execução 15)
+        ├── Vitória -> Rota concluída -> Botão "Iniciar Nova Expedição" (regenera run e mapa)
+        └── Derrota -> Reinicia a run
 ```
 
 ## Dívida técnica conhecida
 1. Rebuild da mão deve ser observado em mudanças futuras para evitar problemas de `queue_free()` durante sinais.
-2. O sistema de status/buffs temporários em combate ainda não foi generalizado.
+2. O sistema de status/buffs temporários em combate suporta atualmente intangibilidade, devendo ser estendido quando novos status surgirem.
 3. UI visual ainda é de protótipo.
-4. Eventos e cidades ainda resolvem efeitos localmente.
-5. Não há save da run em disco ainda.
+4. Não há save da run em disco ainda.
 
 ## Próximo marco
-Implementar a primeira batalha de Chefe do Setor (Capitão Morgan ou equivalente marítimo) com padrão de fases/intenções desafiadoras para fechar o loop completo do Vertical Slice.
+Conclusão do Vertical Slice alcançada! O próximo marco é aprimorar o polimento audiovisual (transições, SFX/BGM, feedback visual de acerto) ou expandir as regras de metaprogressão (desbloqueio entre runs).
 
-## Regra de escopo
-Manter o chefe focado no padrão mecânico existente (intenções, ataques pesados, buffs/armadura) antes de expandir para o Setor 2 (Grand Line).
 

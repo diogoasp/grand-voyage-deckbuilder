@@ -69,6 +69,12 @@ text = "Escolha a próxima ilha/encontro no mapa para traçar o rumo:"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="VictoryButton" type="Button" parent="MainLayout/BottomBar"]
+visible = false
+layout_mode = 2
+custom_minimum_size = Vector2(220, 42)
+text = "Iniciar Nova Expedição"
+
 [node name="SpacerBottom" type="Control" parent="MainLayout/BottomBar"]
 custom_minimum_size = Vector2(0, 16)
 layout_mode = 2

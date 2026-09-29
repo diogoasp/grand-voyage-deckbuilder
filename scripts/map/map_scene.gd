@@ -2,10 +2,10 @@ extends Control
 
 signal node_selected(node_data: Dictionary)
 
-@onready var title_label: Label = $TopBar/TitleLabel
-@onready var status_label: Label = $TopBar/StatusLabel
-@onready var columns_container: HBoxContainer = $MapPanel/ColumnsContainer
-@onready var prompt_label: Label = $BottomBar/PromptLabel
+@onready var title_label: Label = $MainLayout/TopBar/TitleLabel
+@onready var status_label: Label = $MainLayout/TopBar/StatusLabel
+@onready var columns_container: HBoxContainer = $MainLayout/MapPanel/ColumnsContainer
+@onready var prompt_label: Label = $MainLayout/BottomBar/PromptLabel
 
 # Lista de colunas/estágios da rota marítima
 # Cada nó: id, stage, type ("event", "combat", "city"), target_id, label, icon
@@ -125,14 +125,14 @@ func rebuild_map_ui() -> void:
 
 		var column := VBoxContainer.new()
 		column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		column.theme_override_constants/separation = 16
+		column.add_theme_constant_override("separation", 16)
 		column.alignment = BoxContainer.ALIGNMENT_CENTER
 
 		# Cabeçalho da coluna/milha náutica
 		var stage_header := Label.new()
 		stage_header.text = "Setor %d" % (stage_idx + 1)
 		stage_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		stage_header.theme_override_colors/font_color = Color(0.7, 0.7, 0.7)
+		stage_header.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
 		column.add_child(stage_header)
 
 		for node_data in stage_nodes:

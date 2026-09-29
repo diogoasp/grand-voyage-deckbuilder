@@ -195,11 +195,28 @@ Interação:
 - feedback de alvo válido é atualizado durante o drag;
 - validação usa sobreposição/área de destino com tolerância.
 
+## Navegação e Fluxo da Run
+
+### RunScene
+Existe `res://scenes/run/RunScene.tscn`.
+
+Script:
+`res://scripts/run/run_scene.gd`
+
+Responsabilidades:
+- controlar a tela ativa via `ScreenContainer`;
+- instanciar e gerenciar `current_screen`;
+- limpar a tela anterior com segurança (`clear_current_screen`);
+- iniciar a run (`start_run`) com `GameState.reset_run()`;
+- exibir eventos (`show_event`);
+- exibir combates (`show_combat`);
+- escutar o sinal `continue_requested` de `EventScene` para transicionar para o combate.
+
 ## Eventos
 Existe `res://scenes/events/EventScene.tscn`.
 
 Script:
-`res://scripts/events/event_scene.gd`
+`res://scenes/events/event_scene.gd`
 
 Dados:
 `res://data/events/events.json`
@@ -209,57 +226,46 @@ Evento inicial conhecido:
 
 A cena:
 - carrega evento via `DataLoader`;
+- fornece método `setup(event_id)` para configuração desacoplada;
 - mostra título e corpo;
 - cria escolhas dinamicamente;
 - aplica efeitos simples;
 - pode adicionar carta ao deck;
 - pode conceder recursos;
-- mostra botão de continuar depois da escolha.
+- emite sinal `continue_requested` ao clicar em Continuar (totalmente desacoplada de `CombatScene`).
 
 Efeitos de evento atualmente são resolvidos localmente na `EventScene`.
 
 Não extrair `EventEffectResolver` até existir necessidade real em mais de um ou dois eventos adicionais.
 
 ## Fluxo atual
-Fluxo provisório esperado:
+Fluxo atual implementado:
 
 ```text
 Main
-→ reset_run
-→ EventScene
+→ RunScene (start_run -> GameState.reset_run())
+→ EventScene ("old_port_trainer")
 → escolha
-→ Continue
-→ CombatScene
+→ Continue (continue_requested)
+→ RunScene substitui tela
+→ CombatScene ("marine_recruit")
 ```
-
-Atualmente a troca de cena é direta/provisória.
 
 ## Dívida técnica conhecida
-1. `EventScene` instancia diretamente `CombatScene`.
-2. Falta uma cena/controlador de run para trocar entre telas.
-3. Rebuild da mão deve ser observado em mudanças futuras para evitar problemas de `queue_free()` durante sinais.
-4. O sistema de status ainda não existe.
-5. UI visual ainda é de protótipo.
-6. Eventos ainda resolvem efeitos localmente.
-7. Não há mapa náutico ainda.
-8. Não há sistema de cidade ainda.
-9. Não há save da run ainda.
-10. Não há tripulação runtime ainda.
+1. `CombatScene` ainda gerencia vitória/derrota localmente com botões de teste ("Novo Combate" / "Reiniciar Run") em vez de emitir sinais para a `RunScene`.
+2. Rebuild da mão deve ser observado em mudanças futuras para evitar problemas de `queue_free()` durante sinais.
+3. O sistema de status ainda não existe.
+4. UI visual ainda é de protótipo.
+5. Eventos ainda resolvem efeitos localmente.
+6. Não há mapa náutico ainda.
+7. Não há sistema de cidade ainda.
+8. Não há save da run ainda.
+9. Não há tripulação runtime ainda.
 
 ## Próximo marco
-Criar uma camada de navegação da run (`RunScene` / `RunController`) para que cenas de conteúdo não conheçam diretamente umas às outras.
-
-Objetivo:
-
-```text
-RunScene
-├── recebe pedidos de transição
-├── remove a tela atual
-├── instancia a próxima tela
-└── preserva GameState
-```
-
-Depois disso, conectar evento, combate e futuramente mapa/cidade.
+Conectar a saída do combate (`CombatScene`) à `RunScene`:
+- `CombatScene` deve emitir sinais de vitória/derrota em vez de tratar reinício e próximo combate internamente.
+- `RunScene` coordena o pós-combate e decide o próximo passo da run.
 
 ## Regra de escopo
-Não iniciar mapa, cidade, tripulação, frutas ou metaprogressão antes de estabilizar o controlador básico de fluxo da run.
+Não iniciar mapa, cidade, tripulação, frutas ou metaprogressão antes de estabilizar a transição completa de combate -> run.

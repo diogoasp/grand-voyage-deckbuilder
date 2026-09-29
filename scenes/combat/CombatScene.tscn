@@ -200,6 +200,22 @@ text = "Resultado"
 layout_mode = 2
 text = "Texto do resultado."
 
+[node name="RewardTitleLabel" type="Label" parent="ResultPanel/ResultVBox" unique_id=561234891]
+visible = false
+layout_mode = 2
+text = "Escolha uma Carta de Recompensa:"
+
+[node name="RewardCardsContainer" type="HBoxContainer" parent="ResultPanel/ResultVBox" unique_id=782341902]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="SkipRewardButton" type="Button" parent="ResultPanel/ResultVBox" unique_id=892341903]
+visible = false
+layout_mode = 2
+text = "Pular Recompensa de Carta"
+
 [node name="NextCombatButton" type="Button" parent="ResultPanel/ResultVBox" unique_id=900189964]
 layout_mode = 2
 text = "Novo Combate"

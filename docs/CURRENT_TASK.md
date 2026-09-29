@@ -1,29 +1,27 @@
 # Tarefa Atual
 
 ## Nome
-Polimento audiovisual e feedback de combate (Juice, SFX, transições e animação básica de acerto).
+Sistema de Recompensa de Cartas (Draft pós-combate estilo roguelite).
 
 ## Objetivo
-Elevar a sensação de impacto ("game feel / juice") do combate e da navegação náutica após a consolidação do Vertical Slice:
-- efeitos visuais ao causar/receber dano (shake leve na câmera ou flash de dano no alvo);
-- feedback numérico de dano/bloqueio flutuante (floating combat text);
-- transições visuais suaves entre as telas da run (Fade In / Fade Out);
-- integração de áudio básico (efeitos sonoros para jogar carta, golpe e clique).
+Permitir que o jogador construa e especialize seu deck de combate após vencer batalhas marítimas:
+- ao vencer um combate, apresentar 3 opções de cartas retiradas da pool permitida de recompensas;
+- permitir que o jogador escolha uma para adicionar ao deck (`GameState.add_card_to_deck`) ou opte por pular ("Pular Recompensa de Carta") para não inflar o deck;
+- transicionar de volta para o mapa após a escolha ou salto.
 
 ## Escopo
 Implementar:
-- feedback visual de impacto no `Combatant` ou `CombatScene` (flash ao levar dano);
-- tela de vitória polida e transição limpa entre telas;
-- sons de ação se houver arquivos de áudio disponíveis ou estrutura pronta para áudio.
-
-Não implementar:
-- sistemas pesados de shader complexo 3D;
-- trilhas orquestradas completas sem assets definidos.
+- novas cartas de recompensa náutica em `data/cards/cards.json` (`cutlass_slash`, `brace_impact`, `sailors_gambit`);
+- método `DataLoader.get_all_card_ids()` para consulta da pool de cartas;
+- interface de escolha de recompensas dinâmicas em `CombatScene.tscn` e `combat_scene.gd`;
+- suporte a pular a recompensa sem adicionar cartas.
 
 ## Critérios de aceite
-1. O combate transmite sensação clara de impacto nos golpes.
-2. Transições suaves entre Mapa, Eventos, Cidades e Combate.
-3. Sem erros ou warnings no depurador do Godot.
+1. Vitória em combate exibe o painel de recompensas com ouro, bounty e a escolha de cartas.
+2. Clicar em uma carta a adiciona imediatamente ao deck e libera o botão de avançar.
+3. Clicar em "Pular Recompensa" ignora a aquisição e avança para a próxima etapa.
+4. Sem erros ou warnings no parser/depurador do Godot.
+
 
 
 

@@ -60,6 +60,13 @@ func get_card(card_id: String) -> Dictionary:
 func has_card(card_id: String) -> bool:
 	return cards.has(card_id)
 
+
+func get_all_card_ids() -> Array[String]:
+	var result: Array[String] = []
+	for cid in cards.keys():
+		result.append(str(cid))
+	return result
+
 func get_enemy(enemy_id: String) -> Dictionary:
 	if not enemies.has(enemy_id):
 		push_warning("Inimigo não encontrado: %s" % enemy_id)

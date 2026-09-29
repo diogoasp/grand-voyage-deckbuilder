@@ -135,15 +135,25 @@ Cartas conhecidas:
 - `quick_thinking`
 - `second_wind`
 - `field_medicine`
+- `mist_form`
+- `dense_fog`
+- `buso_strike`
+- `kenbun_focus`
+- `cutlass_slash` (Corte de Alfanje: 9 de dano)
+- `brace_impact` (Aparar Impacto: 8 de bloqueio)
+- `sailors_gambit` (Artimanha do Marujo: 4 de dano + 1 compra)
 
 Efeitos usados:
 - dano;
 - block;
 - draw;
 - energia;
-- cura.
+- cura;
+- intangível;
+- perfurante (ignore_block).
 
-O deck inicial deve permanecer simples. Cartas de teste avançadas podem ser obtidas via eventos em vez de fazerem parte permanentemente do deck inicial.
+O deck inicial permanece simples (Golpes e Defesas Básicas). Após vitórias em combate, o jogador tem a opção de fazer um Draft escolhendo 1 entre 3 cartas aleatórias ou pular a recompensa para manter o deck enxuto.
+
 
 ## Inimigos
 Dados: `res://data/enemies/enemies.json`

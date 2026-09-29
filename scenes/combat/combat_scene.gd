@@ -33,6 +33,9 @@ const CARD_SLOT_SIZE: Vector2 = Vector2(130, 190)
 @onready var result_panel: PanelContainer = $ResultPanel
 @onready var result_title_label: Label = $ResultPanel/ResultVBox/ResultTitleLabel
 @onready var result_body_label: Label = $ResultPanel/ResultVBox/ResultBodyLabel
+@onready var reward_title_label: Label = $ResultPanel/ResultVBox/RewardTitleLabel
+@onready var reward_cards_container: HBoxContainer = $ResultPanel/ResultVBox/RewardCardsContainer
+@onready var skip_reward_button: Button = $ResultPanel/ResultVBox/SkipRewardButton
 @onready var next_combat_button: Button = $ResultPanel/ResultVBox/NextCombatButton
 @onready var reset_run_button: Button = $ResultPanel/ResultVBox/ResetRunButton
 
@@ -70,6 +73,7 @@ var starting_deck_ids: Array[String] = [
 func _ready() -> void:
 	randomize()
 	end_turn_button.pressed.connect(_on_end_turn_pressed)
+	skip_reward_button.pressed.connect(_on_skip_reward_pressed)
 	next_combat_button.pressed.connect(_on_next_combat_pressed)
 	reset_run_button.pressed.connect(_on_reset_run_pressed)
 	start_combat()
@@ -530,12 +534,92 @@ func show_result_panel(title: String, body: String, victory: bool) -> void:
 	result_title_label.text = title
 	result_body_label.text = body
 
-	next_combat_button.visible = victory
 	reset_run_button.visible = true
+
+	if victory:
+		setup_victory_card_rewards()
+	else:
+		reward_title_label.visible = false
+		reward_cards_container.visible = false
+		skip_reward_button.visible = false
+		next_combat_button.visible = false
 
 	result_panel.visible = true
 	update_ui()
-	
+
+
+func setup_victory_card_rewards() -> void:
+	for child in reward_cards_container.get_children():
+		child.queue_free()
+
+	var reward_candidates: Array[String] = get_combat_card_reward_pool()
+	reward_candidates.shuffle()
+
+	var chosen_rewards: Array[String] = []
+	for i in range(mini(3, reward_candidates.size())):
+		chosen_rewards.append(reward_candidates[i])
+
+	if chosen_rewards.is_empty():
+		reward_title_label.visible = false
+		reward_cards_container.visible = false
+		skip_reward_button.visible = false
+		next_combat_button.visible = true
+		return
+
+	reward_title_label.visible = true
+	reward_cards_container.visible = true
+	skip_reward_button.visible = true
+	next_combat_button.visible = false
+
+	for card_id in chosen_rewards:
+		var card_data: Dictionary = DataLoader.get_card(card_id)
+		if card_data.is_empty():
+			continue
+
+		var card_button := Button.new()
+		card_button.custom_minimum_size = Vector2(140, 180)
+		var c_name: String = str(card_data.get("name", card_id))
+		var c_cost: int = int(card_data.get("cost", 0))
+		var c_desc: String = str(card_data.get("description", ""))
+		var c_type: String = str(card_data.get("type", "carta")).to_upper()
+		card_button.text = "[%s]\n%s\nCusto: %d\n\n%s" % [c_type, c_name, c_cost, c_desc]
+		card_button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		card_button.pressed.connect(_on_reward_card_chosen.bind(card_id))
+		reward_cards_container.add_child(card_button)
+
+
+func get_combat_card_reward_pool() -> Array[String]:
+	var pool: Array[String] = []
+	var all_cards: Array[String] = DataLoader.get_all_card_ids()
+
+	for cid in all_cards:
+		var data: Dictionary = DataLoader.get_card(cid)
+		var source: String = str(data.get("source", ""))
+		# Only offer combat drops, training techniques, or starter basics as rewards
+		if source in ["combat_reward", "training", "starter_deck"]:
+			pool.append(cid)
+
+	return pool
+
+
+func _on_reward_card_chosen(card_id: String) -> void:
+	GameState.add_card_to_deck(card_id)
+	var card_data: Dictionary = DataLoader.get_card(card_id)
+	var card_name: String = str(card_data.get("name", card_id))
+
+	reward_title_label.text = "✓ %s adicionado ao seu deck!" % card_name
+	reward_cards_container.visible = false
+	skip_reward_button.visible = false
+	next_combat_button.visible = true
+
+
+func _on_skip_reward_pressed() -> void:
+	reward_title_label.text = "Recompensa de carta pulada."
+	reward_cards_container.visible = false
+	skip_reward_button.visible = false
+	next_combat_button.visible = true
+
+
 func _on_next_combat_pressed() -> void:
 	combat_victory.emit()
 

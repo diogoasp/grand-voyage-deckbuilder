@@ -167,7 +167,64 @@
 		  "target": "player"
 		}
 	  ]
+	},
+	"cutlass_slash": {
+	  "id": "cutlass_slash",
+	  "name": "Corte de Alfanje",
+	  "description": "Ataque rápido com lâmina curva. Cause 9 de dano.",
+	  "cost": 1,
+	  "type": "attack",
+	  "rarity": "common",
+	  "source": "combat_reward",
+	  "tags": ["attack", "physical", "slash"],
+	  "effects": [
+		{
+		  "type": "damage",
+		  "value": 9,
+		  "target": "enemy"
+		}
+	  ]
+	},
+	"brace_impact": {
+	  "id": "brace_impact",
+	  "name": "Aparar Impacto",
+	  "description": "Firme os pés no convés. Ganhe 8 de bloqueio.",
+	  "cost": 1,
+	  "type": "skill",
+	  "rarity": "common",
+	  "source": "combat_reward",
+	  "tags": ["defense", "skill"],
+	  "effects": [
+		{
+		  "type": "block",
+		  "value": 8,
+		  "target": "player"
+		}
+	  ]
+	},
+	"sailors_gambit": {
+	  "id": "sailors_gambit",
+	  "name": "Artimanha do Marujo",
+	  "description": "Cause 4 de dano e compre 1 carta.",
+	  "cost": 1,
+	  "type": "attack",
+	  "rarity": "uncommon",
+	  "source": "combat_reward",
+	  "tags": ["attack", "utility", "draw"],
+	  "effects": [
+		{
+		  "type": "damage",
+		  "value": 4,
+		  "target": "enemy"
+		},
+		{
+		  "type": "draw",
+		  "value": 1,
+		  "target": "player"
+		}
+	  ]
 	}
 }
+
 
 

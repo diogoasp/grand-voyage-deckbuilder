@@ -256,21 +256,36 @@ Responsabilidades:
 - botão de Zarpar (`depart_requested`) para continuar a viagem náutica;
 - feedback visual em tempo real do estado dos recursos (`HP`, `Ouro`, `Comida`).
 
+## Mapa Náutico
+
+### MapScene
+Existe `res://scenes/map/MapScene.tscn`.
+
+Script:
+`res://scripts/map/map_scene.gd`
+
+Responsabilidades:
+- materializar a carta marítima com setores/estágios em colunas;
+- nós com tipos distintos: `combate`, `evento` e `porto` (cidade);
+- indicar nós visitados e habilitar apenas os nós alcançáveis do estágio atual da rota;
+- permitir que o jogador escolha o rumo (bifurcação de rotas);
+- emitir o sinal `node_selected(node_data)`.
+
 ## Fluxo atual
 Fluxo atual implementado:
 
 ```text
 Main
 → RunScene (start_run -> GameState.reset_run())
-→ EventScene ("old_port_trainer")
-→ escolha
-→ Continue (continue_requested)
-→ RunScene substitui tela
-→ CombatScene ("marine_recruit")
-→ Vitória (combat_victory)
-→ CityScene (porto seguro: 1 ação)
-→ Zarpar (depart_requested)
-→ CombatScene ("bandit_sailor")
+→ MapScene (Carta Náutica do Setor)
+  ├── Setor 1: Evento ("old_port_trainer") -> Conclusão -> Retorna ao Mapa
+  ├── Setor 2: Escolha de Rota de Combate:
+  │     ├── [A] Patrulha Costeira ("marine_recruit")
+  │     └── [B] Pirataria Rival ("bandit_sailor")
+  │     └── Vitória -> Retorna ao Mapa
+  ├── Setor 3: Porto Seguro (CityScene: 1 ação) -> Zarpar -> Retorna ao Mapa
+  └── Setor 4: Águas Profundas ("bandit_sailor") -> Vitória -> Rota concluída
+(Em caso de derrota no combate -> RunScene reinicia o ciclo via start_run())
 ```
 
 ## Dívida técnica conhecida
@@ -278,12 +293,11 @@ Main
 2. O sistema de status ainda não existe.
 3. UI visual ainda é de protótipo.
 4. Eventos e cidades ainda resolvem efeitos localmente.
-5. Não há mapa náutico ainda.
-6. Não há save da run ainda.
-7. Não há tripulação runtime ainda.
+5. Não há save da run em disco ainda.
+6. Não há tripulação runtime ainda.
 
 ## Próximo marco
-Implementar a estrutura básica do Mapa Náutico (seleção de rotas com nós de combate, evento e cidade) gerenciado pela `RunScene`.
+Implementar o primeiro Tripulante funcional (Médico ou Navegador) como relíquia viva, seguindo a ordem conceitual do projeto.
 
 ## Regra de escopo
-Não iniciar tripulação, frutas ou metaprogressão antes de estabilizar o mapa náutico que interliga os tipos de nós já implementados.
+Não iniciar metaprogressão persistente nem múltiplas classes antes de validar o primeiro tripulante e seus impactos no ciclo de gameplay.

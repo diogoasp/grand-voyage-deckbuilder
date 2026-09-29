@@ -1,5 +1,6 @@
 extends Control
 
+const MAP_SCENE: PackedScene = preload("res://scenes/map/MapScene.tscn")
 const EVENT_SCENE: PackedScene = preload("res://scenes/events/EventScene.tscn")
 const COMBAT_SCENE: PackedScene = preload("res://scenes/combat/CombatScene.tscn")
 const CITY_SCENE: PackedScene = preload("res://scenes/city/CityScene.tscn")
@@ -8,6 +9,10 @@ const CITY_SCENE: PackedScene = preload("res://scenes/city/CityScene.tscn")
 
 var current_screen: Node = null
 
+var current_stage: int = 0
+var completed_nodes: Array[String] = []
+var active_node_data: Dictionary = {}
+
 
 func _ready() -> void:
 	start_run()
@@ -15,7 +20,10 @@ func _ready() -> void:
 
 func start_run() -> void:
 	GameState.reset_run()
-	show_event("old_port_trainer")
+	current_stage = 0
+	completed_nodes.clear()
+	active_node_data.clear()
+	show_map()
 
 
 func clear_current_screen() -> void:
@@ -24,6 +32,47 @@ func clear_current_screen() -> void:
 			screen_container.remove_child(current_screen)
 		current_screen.queue_free()
 		current_screen = null
+
+
+func show_map() -> void:
+	clear_current_screen()
+
+	var map_scene: Node = MAP_SCENE.instantiate()
+	if map_scene.has_method("setup_state"):
+		map_scene.setup_state(current_stage, completed_nodes)
+
+	if map_scene.has_signal("node_selected"):
+		map_scene.node_selected.connect(_on_map_node_selected)
+
+	current_screen = map_scene
+	screen_container.add_child(map_scene)
+
+
+func _on_map_node_selected(node_data: Dictionary) -> void:
+	active_node_data = node_data
+	var node_type: String = str(node_data.get("type", ""))
+	var target_id: String = str(node_data.get("target_id", ""))
+
+	match node_type:
+		"event":
+			show_event(target_id)
+		"combat":
+			show_combat(target_id)
+		"city":
+			show_city()
+		_:
+			push_warning("Tipo de nó desconhecido no mapa: %s" % node_type)
+			show_map()
+
+
+func complete_active_node() -> void:
+	var node_id: String = str(active_node_data.get("id", ""))
+	if node_id != "" and not completed_nodes.has(node_id):
+		completed_nodes.append(node_id)
+
+	current_stage += 1
+	active_node_data.clear()
+	show_map()
 
 
 func show_event(event_id: String) -> void:
@@ -69,15 +118,15 @@ func show_city() -> void:
 
 
 func _on_event_continue_requested() -> void:
-	show_combat("marine_recruit")
+	complete_active_node()
 
 
 func _on_combat_victory() -> void:
-	show_city()
+	complete_active_node()
 
 
 func _on_city_depart_requested() -> void:
-	show_combat("bandit_sailor")
+	complete_active_node()
 
 
 func _on_combat_defeat() -> void:

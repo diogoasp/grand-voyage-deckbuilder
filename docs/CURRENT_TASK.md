@@ -1,29 +1,31 @@
 # Tarefa Atual
 
 ## Nome
-Implementar estrutura básica de Mapa Náutico na RunScene.
+Implementar o primeiro Tripulante funcional (Médico) como Relíquia Viva.
 
 ## Objetivo
-Criar uma representação simples de mapa náutico (carta de navegação) com escolha de rota entre nós:
-- nós representam os tipos de encontros já existentes (`combate`, `evento`, `cidade`);
-- o jogador escolhe o próximo destino a partir da rota ativa;
-- a `RunScene` coordena a transição do mapa para o nó selecionado e retorna ao mapa ao término do nó.
+Materializar o conceito central de tripulante definido no documento de direção:
+- tripulantes não são apenas bônus passivos nem apenas cartas: são entidades que atuam entre encontros e trazem sinergias;
+- implementar o Médico da Tripulação:
+  - passiva de viagem: cura uma quantidade moderada de HP ao término de cada nó do mapa;
+  - custo de manutenção: consome comida ao viajar;
+  - carta associada: garante a carta `field_medicine` no deck enquanto estiver na tripulação;
+- gerenciar a tripulação ativa no `GameState`.
 
 ## Escopo
 Implementar:
-- `MapScene` com nós visíveis e selecionáveis em colunas/níveis simples;
-- tipos de nós: Combate, Evento e Porto (Cidade);
-- `RunScene` transiciona entre `MapScene` e a cena correspondente do nó;
-- ao concluir o nó, a `RunScene` reabre o mapa com o nó marcado como visitado e os nós alcançáveis habilitados.
+- modelo de dados de tripulante em `GameState` (`crew_members`);
+- oportunidade de recrutamento via evento ou cidade;
+- aplicação da passiva do médico ao concluir nós navegados no mapa;
+- exibição da tripulação ativa na interface do mapa náutico.
 
 Não implementar:
-- geração procedural complexa ou regras complexas de vento/correntes marítimas;
-- perda de comida por travessia sem navegador (ainda);
-- salvar estado do mapa em disco.
+- sistema complexo de lealdade/traição ou demissão complexa;
+- múltiplos tripulantes simultâneos antes de validar o primeiro.
 
 ## Critérios de aceite
-1. O jogador consegue escolher o próximo nó navegável em uma rota.
-2. Clicar no nó abre o encontro correto (`EventScene`, `CombatScene` ou `CityScene`).
-3. Concluir o encontro retorna ao mapa para a próxima escolha.
-4. GameState preserva recursos durante todo o fluxo do mapa.
-5. Sem erros ou avisos no depurador do Godot.
+1. O jogador consegue recrutar o médico durante a jornada.
+2. A passiva do médico cura o capitão entre setores do mapa náutico.
+3. A carta de medicina fica vinculada à presença do médico.
+4. O consumo de comida reflete o custo logístico da tripulação.
+5. Sem erros ou warnings no depurador do Godot.

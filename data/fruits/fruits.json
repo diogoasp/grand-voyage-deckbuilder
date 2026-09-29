@@ -1,0 +1,15 @@
+{
+  "kiri_kiri_no_mi": {
+	"id": "kiri_kiri_no_mi",
+	"name": "Kiri Kiri no Mi (Fruta da Névoa)",
+	"type": "Paramecia/Logia",
+	"category": "devil_fruit",
+	"description": "Permite ao capitão transformar seu corpo em névoa densa. Concede bloqueio etéreo e cartas exclusivas de ocultamento, mas o usuário perde a capacidade de nadar caso o navio naufrague.",
+	"flavor": "Uma fruta espiralada de tom cinza-azulado com pequenas volutas esculpidas na casca. Seu gosto é amargo e cinzento.",
+	"passive_description": "Corpo de Névoa: Inicia cada combate com +4 de Bloqueio etéreo.",
+	"associated_cards": [
+	  "mist_form",
+	  "dense_fog"
+	]
+  }
+}

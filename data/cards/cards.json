@@ -68,20 +68,60 @@
 	]
   },
 	"field_medicine": {
-  "id": "field_medicine",
-  "name": "Medicina de Campo",
-  "description": "Recupere 6 de HP.",
-  "cost": 1,
-  "type": "skill",
-  "rarity": "common",
-  "source": "crew",
-  "tags": ["healing", "doctor"],
-  "effects": [
-	{
-	  "type": "heal",
-	  "value": 6,
-	  "target": "player"
+	  "id": "field_medicine",
+	  "name": "Medicina de Campo",
+	  "description": "Recupere 6 de HP.",
+	  "cost": 1,
+	  "type": "skill",
+	  "rarity": "common",
+	  "source": "crew",
+	  "tags": ["healing", "doctor"],
+	  "effects": [
+		{
+		  "type": "heal",
+		  "value": 6,
+		  "target": "player"
+		}
+	  ]
+	},
+	"mist_form": {
+	  "id": "mist_form",
+	  "name": "Forma de Névoa",
+	  "description": "Seu corpo se dispersa em névoa. Ganhe 8 de bloqueio.",
+	  "cost": 1,
+	  "type": "skill",
+	  "rarity": "rare",
+	  "source": "devil_fruit",
+	  "tags": ["devil_fruit", "logia", "defense"],
+	  "effects": [
+		{
+		  "type": "block",
+		  "value": 8,
+		  "target": "player"
+		}
+	  ]
+	},
+	"dense_fog": {
+	  "id": "dense_fog",
+	  "name": "Névoa Espessa",
+	  "description": "Envolva o combate em bruma. Ganhe 4 de bloqueio e compre 1 carta.",
+	  "cost": 1,
+	  "type": "skill",
+	  "rarity": "rare",
+	  "source": "devil_fruit",
+	  "tags": ["devil_fruit", "utility", "draw"],
+	  "effects": [
+		{
+		  "type": "block",
+		  "value": 4,
+		  "target": "player"
+		},
+		{
+		  "type": "draw",
+		  "value": 1,
+		  "target": "player"
+		}
+	  ]
 	}
-  ]
 }
-}
+

@@ -20,6 +20,7 @@ var current_deck: Array[String] = [
 ]
 
 var crew_members: Array[String] = []
+var eaten_fruit: String = ""
 
 func reset_run() -> void:
 	player_hp = player_max_hp
@@ -28,6 +29,7 @@ func reset_run() -> void:
 	ship_integrity = 100
 	bounty = 0
 	crew_members.clear()
+	eaten_fruit = ""
 	current_deck = [
 		"strike_basic",
 		"strike_basic",
@@ -105,4 +107,29 @@ func recruit_crew(crew_id: String) -> bool:
 		add_card_to_deck(str(card_id))
 
 	print("Tripulante recrutado: %s (%s)" % [crew_data.get("name", crew_id), crew_data.get("role", "")])
+	return true
+
+
+func has_eaten_fruit() -> bool:
+	return eaten_fruit != ""
+
+
+func consume_fruit(fruit_id: String) -> bool:
+	if has_eaten_fruit():
+		push_warning("O capitão já consumiu uma fruta: %s. Uma segunda fruta seria fatal!" % eaten_fruit)
+		return false
+
+	if not DataLoader.has_fruit(fruit_id):
+		push_warning("Fruta não encontrada no DataLoader: %s" % fruit_id)
+		return false
+
+	var fruit_data: Dictionary = DataLoader.get_fruit(fruit_id)
+	eaten_fruit = fruit_id
+
+	# Adiciona cartas de poder da fruta ao deck
+	var associated_cards: Array = fruit_data.get("associated_cards", [])
+	for card_id in associated_cards:
+		add_card_to_deck(str(card_id))
+
+	print("Fruta consumida: %s! Cartas de poder adicionadas ao deck." % fruit_data.get("name", fruit_id))
 	return true

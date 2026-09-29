@@ -1,33 +1,31 @@
 # Tarefa Atual
 
 ## Nome
-Implementar a primeira Akuma no Mi simples com micro-mecânica e cartas de poder.
+Implementar a primeira camada de Haki simples com postura/recurso e cartas dedicadas.
 
 ## Objetivo
-Materializar o pilar de design de Akuma no Mi conforme definido em `GRAND_VOYAGE_CONCEITO_E_DIRECAO.md`:
-- frutas funcionam como fonte de identidade de build;
-- implementar uma fruta original/simples: **Fruta da Névoa (Kiri Kiri no Mi / Fog-Fog Fruit - Logia/Paramecia Utilitária)**;
+Materializar o pilar de design de Haki conforme definido em `GRAND_VOYAGE_CONCEITO_E_DIRECAO.md`:
+- Haki funciona como disciplina marcial acessível a qualquer capitão, sem a penalidade de fraqueza ao mar das Akuma no Mi;
+- implementar uma forma de Haki: **Haki de Armamento (Busoshoku Haki)** ou **Haki de Observação (Kenbunshoku Haki)**;
 - mecânica:
-  - concede estado passivo/carta de poder que gera camuflagem/esquiva ou bloqueio etéreo;
-  - cartas de poder associadas da fruta adicionadas ao deck ao consumir;
-  - vulnerabilidade temática da fruta: fraqueza ao mar/água (ou penalidade de integridade/dano em tempestade/naufrágio);
-- oportunidade de descoberta/consumo através de evento ou nó de tesouro.
+  - Armamento: potencializa o próximo ataque ou converte dano em penetração de armadura/anulação de resistências;
+  - Observação: prevê com exatidão dano futuro ou concede esquiva/bloqueio reativo;
+- treinamento através de mentor/evento ou cidade.
 
 ## Escopo
 Implementar:
-- dados da fruta em `res://data/fruits/fruits.json` e carregamento em `DataLoader`;
-- cartas da fruta em `res://data/cards/cards.json`;
-- registro da fruta ativa no `GameState` (`eaten_fruit`);
-- efeito de consumir fruta em evento/encontro;
-- exibição do poder ativo na UI do capitão.
+- dados e cartas de Haki em `res://data/cards/cards.json`;
+- suporte de treino de Haki em eventos ou no porto (`CityScene` / `EventScene`);
+- resolução de efeitos específicos de Haki no `EffectResolver` e `CombatContext`;
+- validação com o fluxo atual.
 
 Não implementar:
-- árvore gigantesca de dezenas de frutas;
-- sistema complexo de despertar (awakening);
-- múltiplas frutas por personagem.
+- sistema complexo de Haki do Conquistador em área;
+- árvore completa com dezenas de técnicas de Haki avançado.
 
 ## Critérios de aceite
-1. O jogador pode encontrar e comer a fruta durante a run.
-2. `GameState` registra a fruta comida e adiciona suas cartas de poder ao deck.
-3. Cartas da fruta funcionam no combate através do `EffectResolver`.
+1. O capitão pode adquirir técnicas de Haki durante a run.
+2. Cartas de Haki funcionam em combate sem gerar erros.
+3. Diferenciação clara entre cartas físicas, de Akuma no Mi e de Haki.
 4. Sem erros ou warnings no depurador do Godot.
+

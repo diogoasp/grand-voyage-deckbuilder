@@ -54,5 +54,32 @@
 		]
 	  }
 	]
+  },
+  "mysterious_chest": {
+	"id": "mysterious_chest",
+	"title": "Baú do Naufrágio Oculto",
+	"body": "Entre destroços envoltos em uma névoa sobrenatural na praia rochosa, você encontra uma arca trancada. Dentro repousa uma fruta misteriosa com espirais cintilantes: a Kiri Kiri no Mi (Fruta da Névoa). As lendas dizem que concede poderes de bruma e intangibilidade, mas rouba a bênção dos mares.",
+	"choices": [
+	  {
+		"label": "Consumir a Fruta da Névoa (Ganha Corpo de Névoa + Cartas Forma de Névoa e Névoa Espessa)",
+		"effects": [
+		  {
+			"type": "consume_fruit",
+			"fruit_id": "kiri_kiri_no_mi"
+		  }
+		]
+	  },
+	  {
+		"label": "Vender a Fruta no Mercado Negro do Porto (+50 Ouro)",
+		"effects": [
+		  {
+			"type": "gain_resource",
+			"resource": "gold",
+			"value": 50
+		  }
+		]
+	  }
+	]
   }
 }
+

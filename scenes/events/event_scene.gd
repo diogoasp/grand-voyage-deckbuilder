@@ -90,6 +90,10 @@ func resolve_event_effect(effect: Dictionary) -> void:
 			var heal_val: int = int(effect.get("value", 0))
 			GameState.heal_player(heal_val)
 
+		"consume_fruit":
+			var fruit_id: String = str(effect.get("fruit_id", ""))
+			GameState.consume_fruit(fruit_id)
+
 		_:
 			push_warning("Efeito de evento desconhecido: %s" % effect_type)
 

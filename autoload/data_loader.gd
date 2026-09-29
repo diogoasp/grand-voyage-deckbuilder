@@ -4,6 +4,7 @@ var cards: Dictionary = {}
 var enemies: Dictionary = {}
 var events: Dictionary = {}
 var crew: Dictionary = {}
+var fruits: Dictionary = {}
 
 func _ready() -> void:
 	load_all_data()
@@ -14,11 +15,13 @@ func load_all_data() -> void:
 	enemies = load_json_dictionary("res://data/enemies/enemies.json")
 	events = load_json_dictionary("res://data/events/events.json")
 	crew = load_json_dictionary("res://data/crew/crew.json")
+	fruits = load_json_dictionary("res://data/fruits/fruits.json")
 
 	print("DataLoader: %d cartas carregadas." % cards.size())
 	print("DataLoader: %d inimigos carregados." % enemies.size())
 	print("DataLoader: %d eventos carregados." % events.size())
 	print("DataLoader: %d tripulantes carregados." % crew.size())
+	print("DataLoader: %d frutas carregadas." % fruits.size())
 
 
 func load_json_dictionary(path: String) -> Dictionary:
@@ -90,3 +93,15 @@ func get_crew(crew_id: String) -> Dictionary:
 
 func has_crew(crew_id: String) -> bool:
 	return crew.has(crew_id)
+
+
+func get_fruit(fruit_id: String) -> Dictionary:
+	if not fruits.has(fruit_id):
+		push_warning("Fruta não encontrada: %s" % fruit_id)
+		return {}
+
+	return fruits[fruit_id]
+
+
+func has_fruit(fruit_id: String) -> bool:
+	return fruits.has(fruit_id)

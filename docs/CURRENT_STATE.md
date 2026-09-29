@@ -288,6 +288,27 @@ Suporte arquitetural:
 - `RunScene` aplica passivas de exploração e custos logísticos ao término de cada nó (`apply_crew_travel_effects()`);
 - `MapScene` exibe em tempo real os membros da tripulação embarcados.
 
+## Akuma no Mi (Frutas do Diabo)
+
+Dados:
+`res://data/fruits/fruits.json`
+
+Primeira fruta implementada:
+- `kiri_kiri_no_mi` (Kiri Kiri no Mi / Fruta da Névoa):
+  - Tipo: Paramecia/Logia utilitária;
+  - Passiva de combate: Corpo de Névoa (+4 de Bloqueio etéreo inicial ao abrir qualquer combate);
+  - Cartas de poder adicionadas ao deck ao consumir:
+    - `mist_form` (Forma de Névoa): 1 Energia, 8 de Bloqueio;
+    - `dense_fog` (Névoa Espessa): 1 Energia, 4 de Bloqueio + 1 Compra de carta;
+  - Risco/Penalidade temática: consome slot único de fruta do capitão (`eaten_fruit` no `GameState`).
+
+Suporte arquitetural:
+- `DataLoader` carrega e fornece dados de frutas (`get_fruit`, `has_fruit`);
+- `GameState` rastreia `eaten_fruit`, método `consume_fruit(fruit_id)` que injeta cartas ao deck e impede comer uma segunda fruta;
+- `EventScene` suporta efeito `"consume_fruit"` (evento `mysterious_chest`);
+- `CombatScene` aplica automaticamente a passiva etérea da fruta no início da batalha;
+- `MapScene` exibe em tempo real a fruta consumida no painel de status do capitão.
+
 ## Fluxo atual
 Fluxo atual implementado:
 
@@ -299,10 +320,11 @@ Main
   │     ├── [A] Velho Lutador (Postura defensiva / Recursos)
   │     └── [B] Médico do Cais (Recrutar Dr. Lin: +1 Medicina de Campo, cura por setor)
   │     └── Conclusão -> Aplica passivas de viagem -> Retorna ao Mapa
-  ├── Setor 2: Escolha de Rota de Combate:
+  ├── Setor 2: Escolha de Rota de Mar:
   │     ├── [A] Patrulha Costeira ("marine_recruit")
-  │     └── [B] Pirataria Rival ("bandit_sailor")
-  │     └── Vitória -> Aplica passivas de viagem -> Retorna ao Mapa
+  │     ├── [B] Pirataria Rival ("bandit_sailor")
+  │     └── [C] Baú Naufragado ("mysterious_chest" -> Comer Fruta da Névoa OU Vender por 50 Ouro)
+  │     └── Vitória/Conclusão -> Aplica passivas de viagem -> Retorna ao Mapa
   ├── Setor 3: Porto Seguro (CityScene: 1 ação) -> Zarpar -> Retorna ao Mapa
   └── Setor 4: Águas Profundas ("bandit_sailor") -> Vitória -> Rota concluída
 (Em caso de derrota no combate -> RunScene reinicia o ciclo via start_run())
@@ -310,13 +332,14 @@ Main
 
 ## Dívida técnica conhecida
 1. Rebuild da mão deve ser observado em mudanças futuras para evitar problemas de `queue_free()` durante sinais.
-2. O sistema de status ainda não existe.
+2. O sistema de status/buffs temporários em combate ainda não foi generalizado (passiva aplicada diretamente no init).
 3. UI visual ainda é de protótipo.
 4. Eventos e cidades ainda resolvem efeitos localmente.
 5. Não há save da run em disco ainda.
 
 ## Próximo marco
-Implementar a primeira Akuma no Mi simples (Fruta de Paramecia ou Logia) com micro-mecânica própria, seguindo a ordem conceitual do projeto.
+Implementar a primeira camada de Haki simples (Haki de Observação / Kenbunshoku Haki ou Armamento / Busoshoku Haki) como mecânica distinta e complementar às Akuma no Mi.
 
 ## Regra de escopo
-Não iniciar metaprogressão persistente nem múltiplas classes antes de validar a primeira fruta e seus impactos no combate/deck.
+Não iniciar metaprogressão persistente nem múltiplas classes antes de validar Haki e sua coexistência com Akuma no Mi.
+

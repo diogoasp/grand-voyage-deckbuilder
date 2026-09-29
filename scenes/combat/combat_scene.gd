@@ -101,6 +101,11 @@ func start_combat() -> void:
 		max_energy
 	)
 
+	# Aplica efeitos passivos de Akuma no Mi no início do combate
+	if GameState.eaten_fruit == "kiri_kiri_no_mi":
+		player.gain_block(4)
+		print("Passiva Akuma no Mi [Kiri Kiri no Mi]: Corpo de Névoa concedeu 4 de bloqueio inicial.")
+
 	rebuild_hand_ui()
 	update_ui()
 

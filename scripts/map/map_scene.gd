@@ -29,7 +29,7 @@ var map_stages: Array[Array] = [
 			"desc": "Recrutar Dr. Lin"
 		}
 	],
-	# Estágio 1: Primeira rota de mar (Combate: Patrulha da Marinha OU Saqueador)
+	# Estágio 1: Primeira rota de mar (Combate OU Naufrágio com Baú Oculto)
 	[
 		{
 			"id": "node_1_0",
@@ -46,6 +46,14 @@ var map_stages: Array[Array] = [
 			"target_id": "bandit_sailor",
 			"title": "Saqueador do Mar",
 			"desc": "Pirataria rival"
+		},
+		{
+			"id": "node_1_2",
+			"stage": 1,
+			"type": "event",
+			"target_id": "mysterious_chest",
+			"title": "Baú Naufragado",
+			"desc": "Fruta da Névoa"
 		}
 	],
 	# Estágio 2: Parada náutica (Porto seguro / Cidade)
@@ -100,13 +108,21 @@ func update_status_display() -> void:
 
 	var crew_str := "Nenhum" if crew_names.is_empty() else ", ".join(crew_names)
 
-	status_label.text = "HP: %d/%d | Ouro: %d | Comida: %d | Bounty: %d\nTripulação: %s" % [
+	var fruit_str := "Nenhuma"
+	if GameState.has_eaten_fruit():
+		if DataLoader.has_fruit(GameState.eaten_fruit):
+			fruit_str = DataLoader.get_fruit(GameState.eaten_fruit).get("name", GameState.eaten_fruit)
+		else:
+			fruit_str = GameState.eaten_fruit
+
+	status_label.text = "HP: %d/%d | Ouro: %d | Comida: %d | Bounty: %d\nTripulação: %s | Fruta: %s" % [
 		GameState.player_hp,
 		GameState.player_max_hp,
 		GameState.gold,
 		GameState.food,
 		GameState.bounty,
-		crew_str
+		crew_str,
+		fruit_str
 	]
 
 

@@ -8,23 +8,22 @@ const CARD_SLOT_SIZE: Vector2 = Vector2(130, 190)
 
 @onready var player_area: Control = $PlayerArea
 @onready var player_name_label: Label = $PlayerArea/PlayerNameLabel
+@onready var player_hp_label: Label = $PlayerArea/PlayerHPContainer/PlayerHPLabel
+@onready var player_block_badge: Label = $PlayerArea/PlayerHPContainer/PlayerBlockBadge
 @onready var player_placeholder: ColorRect = $PlayerArea/PlayerPlaceholder
 @onready var player_status_container: HBoxContainer = $PlayerArea/PlayerStatusContainer
-@onready var player_hp_label: Label = $TopBar/PlayerHPLabel
 
 @onready var energy_label: Label = $TopBar/EnergyLabel
-@onready var block_label: Label = $TopBar/BlockLabel
-
 @onready var draw_pile_label: Label = $TopBar/DrawPileLabel
 @onready var discard_pile_label: Label = $TopBar/DiscardPileLabel
-
 @onready var gold_label: Label = $TopBar/GoldLabel
 @onready var bounty_label: Label = $TopBar/BountyLabel
 
-@onready var enemy_hp_label: Label = $TopBar/EnemyHPLabel
 @onready var enemy_area: VBoxContainer = $EnemyArea
+@onready var enemy_intent_container: HBoxContainer = $EnemyArea/EnemyIntentContainer
 @onready var enemy_name_label: Label = $EnemyArea/EnemyNameLabel
-@onready var enemy_intent_label: Label = $EnemyArea/EnemyIntentLabel
+@onready var enemy_hp_label: Label = $EnemyArea/EnemyHPContainer/EnemyHPLabel
+@onready var enemy_block_badge: Label = $EnemyArea/EnemyHPContainer/EnemyBlockBadge
 @onready var enemy_sprite: AnimatedSprite2D = $EnemyArea/EnemySprite
 
 @onready var hand_area: HBoxContainer = $HandArea
@@ -222,22 +221,32 @@ func clear_hand_ui() -> void:
 func update_ui() -> void:
 	player_name_label.text = player.display_name
 	player_hp_label.text = "HP: %s" % player.get_hp_text()
-	enemy_hp_label.text = "Inimigo: %s | Bloqueio: %d" % [
-		enemy.get_hp_text(),
-		enemy.block
-	]
+
+	if player.block > 0:
+		player_block_badge.text = "🛡 %d" % player.block
+		player_block_badge.visible = true
+	else:
+		player_block_badge.visible = false
+
+	enemy_name_label.text = enemy.display_name
+	enemy_hp_label.text = "HP: %s" % enemy.get_hp_text()
+
+	if enemy.block > 0:
+		enemy_block_badge.text = "🛡 %d" % enemy.block
+		enemy_block_badge.visible = true
+	else:
+		enemy_block_badge.visible = false
+
 	energy_label.text = "Energia: %d/%d" % [
 		combat_context.energy,
 		combat_context.max_energy
 	]
-	block_label.text = "Bloqueio: %d" % player.block
 	draw_pile_label.text = "Deck: %d" % deck_manager.get_draw_count()
 	discard_pile_label.text = "Descarte: %d" % deck_manager.get_discard_count()
 	gold_label.text = "Ouro: %d" % GameState.gold
 	bounty_label.text = "Bounty: %d" % GameState.bounty
 
-	enemy_name_label.text = enemy.display_name
-	enemy_intent_label.text = get_enemy_intent_text()
+	update_enemy_intent_display()
 
 	for card_view in get_card_views_in_hand():
 		var can_play := not combat_finished and combat_context.can_spend_energy(card_view.cost)
@@ -252,6 +261,68 @@ func update_ui() -> void:
 
 	end_turn_button.disabled = combat_finished
 	update_status_icons()
+
+
+func update_enemy_intent_display() -> void:
+	if enemy_intent_container == null:
+		return
+
+	for child in enemy_intent_container.get_children():
+		child.queue_free()
+
+	if combat_finished:
+		return
+
+	if enemy_intent.is_empty():
+		var label := Label.new()
+		label.text = "❓"
+		label.tooltip_text = "Intenção desconhecida"
+		enemy_intent_container.add_child(label)
+		return
+
+	var effects: Array = enemy_intent.get("effects", [])
+	if effects.is_empty():
+		return
+
+	for effect in effects:
+		if not effect is Dictionary:
+			continue
+
+		var effect_type: String = str(effect.get("type", ""))
+		var value: int = int(effect.get("value", 0))
+		var target: String = str(effect.get("target", ""))
+
+		var badge := PanelContainer.new()
+		badge.mouse_filter = Control.MOUSE_FILTER_PASS
+
+		var hbox := HBoxContainer.new()
+		hbox.add_theme_constant_override("separation", 4)
+		badge.add_child(hbox)
+
+		var icon_label := Label.new()
+		var value_label := Label.new()
+		hbox.add_child(icon_label)
+		hbox.add_child(value_label)
+
+		if effect_type == "damage" and target == "player":
+			icon_label.text = "⚔"
+			icon_label.add_theme_color_override("font_color", Color(1.0, 0.25, 0.25))
+			value_label.text = "%d" % value
+			value_label.add_theme_color_override("font_color", Color(1.0, 0.25, 0.25))
+			badge.tooltip_text = "Intenção: Atacar causando %d de dano." % value
+		elif effect_type == "block" and target == "self":
+			icon_label.text = "🛡"
+			icon_label.add_theme_color_override("font_color", Color(0.3, 0.7, 1.0))
+			value_label.text = "%d" % value
+			value_label.add_theme_color_override("font_color", Color(0.3, 0.7, 1.0))
+			badge.tooltip_text = "Intenção: Defender ganhando %d de bloqueio." % value
+		else:
+			icon_label.text = "✦"
+			icon_label.add_theme_color_override("font_color", Color(0.9, 0.8, 0.4))
+			value_label.text = "%s %d" % [effect_type, value]
+			badge.tooltip_text = "Intenção: Aplicar %s (%d)." % [effect_type, value]
+
+		enemy_intent_container.add_child(badge)
 
 
 func update_status_icons() -> void:
@@ -271,6 +342,7 @@ func update_status_icons() -> void:
 		status_badge.tooltip_text = "Intangibilidade (Forma de Névoa): Dano recebido reduzido a no máximo 1 por %d turno(s)." % player.intangible
 		player_status_container.add_child(status_badge)
 
+
 func get_card_views_in_hand() -> Array[CardView]:
 	var card_views: Array[CardView] = []
 
@@ -281,33 +353,7 @@ func get_card_views_in_hand() -> Array[CardView]:
 
 	return card_views
 
-func get_enemy_intent_text() -> String:
-	if combat_finished:
-		return "Combate encerrado"
 
-	if enemy_intent.is_empty():
-		return "Intenção: desconhecida"
-
-	var effects: Array = enemy_intent.get("effects", [])
-
-	if effects.is_empty():
-		return "Intenção: nenhuma"
-
-	var parts: Array[String] = []
-
-	for effect in effects:
-		var effect_type: String = str(effect["type"])
-		var value: int = int(effect["value"])
-		var target: String = str(effect["target"])
-
-		if effect_type == "damage" and target == "player":
-			parts.append("atacar causando %d de dano" % value)
-		elif effect_type == "block" and target == "self":
-			parts.append("defender ganhando %d de bloqueio" % value)
-		else:
-			parts.append("%s %d" % [effect_type, value])
-
-	return "Intenção: " + ", ".join(parts)
 
 
 func _on_card_play_requested(card_view: CardView, _drop_position: Vector2) -> void:

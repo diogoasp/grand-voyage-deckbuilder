@@ -126,6 +126,18 @@ Responsabilidades atuais:
 - recompensas;
 - persistência do HP da run.
 
+#### Padrão Visual de Status e Intenções em Combate:
+1. **Vida e Bloqueio (Player e Inimigo):**
+   - Localizados diretamente sobre ou adjacentes a cada combatente (`PlayerArea` e `EnemyArea`).
+   - HP representado por texto conciso (`HP: X/Y`).
+   - Bloqueio exibido dinamicamente em badge azul celeste (`🛡 X`) ao lado do HP apenas quando `block > 0`.
+   - A TopBar superior é reservada exclusivamente para recursos globais da batalha/run: Energia (`⚡`), Ouro, Bounty e contagem de cartas (Deck e Descarte).
+2. **Padrão de Ícones de Intenção do Inimigo:**
+   - **Ataque:** Ícone de espada (`⚔`) com o valor numérico de dano ao lado, ambos com fonte vermelha (`Color(1.0, 0.25, 0.25)`). Hover exibe tooltip: `"Intenção: Atacar causando X de dano."`.
+   - **Defesa/Bloqueio:** Ícone de escudo (`🛡`) com o valor numérico de armadura ao lado, ambos com fonte azul (`Color(0.3, 0.7, 1.0)`). Hover exibe tooltip: `"Intenção: Defender ganhando X de bloqueio."`.
+   - **Efeitos Utilitários / Buffs futuros:** Ícone estelar (`✦`) com valor numérico em tom âmbar/amarelo (`Color(0.9, 0.8, 0.4)`), exibindo tooltip explicativa da intenção ao sobrepor.
+
+
 ## Cartas
 Dados: `res://data/cards/cards.json`
 

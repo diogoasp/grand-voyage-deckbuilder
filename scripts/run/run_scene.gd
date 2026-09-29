@@ -2,6 +2,7 @@ extends Control
 
 const EVENT_SCENE: PackedScene = preload("res://scenes/events/EventScene.tscn")
 const COMBAT_SCENE: PackedScene = preload("res://scenes/combat/CombatScene.tscn")
+const CITY_SCENE: PackedScene = preload("res://scenes/city/CityScene.tscn")
 
 @onready var screen_container: Control = $ScreenContainer
 
@@ -56,11 +57,26 @@ func show_combat(enemy_id: String = "marine_recruit") -> void:
 	screen_container.add_child(combat_scene)
 
 
+func show_city() -> void:
+	clear_current_screen()
+
+	var city_scene: Node = CITY_SCENE.instantiate()
+	if city_scene.has_signal("depart_requested"):
+		city_scene.depart_requested.connect(_on_city_depart_requested)
+
+	current_screen = city_scene
+	screen_container.add_child(city_scene)
+
+
 func _on_event_continue_requested() -> void:
 	show_combat("marine_recruit")
 
 
 func _on_combat_victory() -> void:
+	show_city()
+
+
+func _on_city_depart_requested() -> void:
 	show_combat("bandit_sailor")
 
 

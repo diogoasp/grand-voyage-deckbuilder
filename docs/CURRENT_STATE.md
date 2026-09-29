@@ -238,6 +238,24 @@ Efeitos de evento atualmente são resolvidos localmente na `EventScene`.
 
 Não extrair `EventEffectResolver` até existir necessidade real em mais de um ou dois eventos adicionais.
 
+## Cidades e Portos
+
+### CityScene
+Existe `res://scenes/city/CityScene.tscn`.
+
+Script:
+`res://scripts/city/city_scene.gd`
+
+Responsabilidades:
+- materializar a parada portuária (equivalente náutico à fogueira de Slay the Spire);
+- aplicar a regra de **uma única ação principal** por visita;
+- ações implementadas:
+  - Descansar na Taverna (+20 HP);
+  - Treinar Técnicas (-15 Ouro, +1 Golpe Básico ao deck);
+  - Comprar Provisões (-10 Ouro, +3 Comida);
+- botão de Zarpar (`depart_requested`) para continuar a viagem náutica;
+- feedback visual em tempo real do estado dos recursos (`HP`, `Ouro`, `Comida`).
+
 ## Fluxo atual
 Fluxo atual implementado:
 
@@ -249,23 +267,23 @@ Main
 → Continue (continue_requested)
 → RunScene substitui tela
 → CombatScene ("marine_recruit")
+→ Vitória (combat_victory)
+→ CityScene (porto seguro: 1 ação)
+→ Zarpar (depart_requested)
+→ CombatScene ("bandit_sailor")
 ```
 
 ## Dívida técnica conhecida
-1. `CombatScene` ainda gerencia vitória/derrota localmente com botões de teste ("Novo Combate" / "Reiniciar Run") em vez de emitir sinais para a `RunScene`.
-2. Rebuild da mão deve ser observado em mudanças futuras para evitar problemas de `queue_free()` durante sinais.
-3. O sistema de status ainda não existe.
-4. UI visual ainda é de protótipo.
-5. Eventos ainda resolvem efeitos localmente.
-6. Não há mapa náutico ainda.
-7. Não há sistema de cidade ainda.
-8. Não há save da run ainda.
-9. Não há tripulação runtime ainda.
+1. Rebuild da mão deve ser observado em mudanças futuras para evitar problemas de `queue_free()` durante sinais.
+2. O sistema de status ainda não existe.
+3. UI visual ainda é de protótipo.
+4. Eventos e cidades ainda resolvem efeitos localmente.
+5. Não há mapa náutico ainda.
+6. Não há save da run ainda.
+7. Não há tripulação runtime ainda.
 
 ## Próximo marco
-Conectar a saída do combate (`CombatScene`) à `RunScene`:
-- `CombatScene` deve emitir sinais de vitória/derrota em vez de tratar reinício e próximo combate internamente.
-- `RunScene` coordena o pós-combate e decide o próximo passo da run.
+Implementar a estrutura básica do Mapa Náutico (seleção de rotas com nós de combate, evento e cidade) gerenciado pela `RunScene`.
 
 ## Regra de escopo
-Não iniciar mapa, cidade, tripulação, frutas ou metaprogressão antes de estabilizar a transição completa de combate -> run.
+Não iniciar tripulação, frutas ou metaprogressão antes de estabilizar o mapa náutico que interliga os tipos de nós já implementados.

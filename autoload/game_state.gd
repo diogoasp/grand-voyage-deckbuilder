@@ -50,6 +50,29 @@ func gain_bounty(amount: int) -> void:
 func set_player_hp(value: int) -> void:
 	player_hp = clamp(value, 0, player_max_hp)
 
+
+func heal_player(amount: int) -> void:
+	set_player_hp(player_hp + max(amount, 0))
+
+
+func spend_gold(amount: int) -> bool:
+	if amount < 0:
+		return false
+	if gold < amount:
+		return false
+	gold -= amount
+	return true
+
+
+func spend_food(amount: int) -> bool:
+	if amount < 0:
+		return false
+	if food < amount:
+		return false
+	food -= amount
+	return true
+
+
 func add_card_to_deck(card_id: String) -> void:
 	if not DataLoader.has_card(card_id):
 		push_warning("Tentativa de adicionar carta inexistente ao deck: %s" % card_id)

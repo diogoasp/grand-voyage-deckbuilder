@@ -16,9 +16,10 @@ var current_deck: Array[String] = [
 	"defend_basic",
 	"defend_basic",
 	"quick_thinking",
-	"second_wind",
-	"field_medicine"
+	"second_wind"
 ]
+
+var crew_members: Array[String] = []
 
 func reset_run() -> void:
 	player_hp = player_max_hp
@@ -26,6 +27,7 @@ func reset_run() -> void:
 	food = 5
 	ship_integrity = 100
 	bounty = 0
+	crew_members.clear()
 	current_deck = [
 		"strike_basic",
 		"strike_basic",
@@ -34,8 +36,7 @@ func reset_run() -> void:
 		"defend_basic",
 		"defend_basic",
 		"quick_thinking",
-		"second_wind",
-		"field_medicine"
+		"second_wind"
 	]
 
 
@@ -80,3 +81,28 @@ func add_card_to_deck(card_id: String) -> void:
 
 	current_deck.append(card_id)
 	print("Carta adicionada ao deck: %s" % card_id)
+
+
+func has_crew_member(crew_id: String) -> bool:
+	return crew_members.has(crew_id)
+
+
+func recruit_crew(crew_id: String) -> bool:
+	if has_crew_member(crew_id):
+		push_warning("Tripulante já faz parte da tripulação: %s" % crew_id)
+		return false
+
+	if not DataLoader.has_crew(crew_id):
+		push_warning("Tripulante não encontrado no banco de dados: %s" % crew_id)
+		return false
+
+	var crew_data: Dictionary = DataLoader.get_crew(crew_id)
+	crew_members.append(crew_id)
+
+	# Adiciona cartas associadas ao deck
+	var associated_cards: Array = crew_data.get("associated_cards", [])
+	for card_id in associated_cards:
+		add_card_to_deck(str(card_id))
+
+	print("Tripulante recrutado: %s (%s)" % [crew_data.get("name", crew_id), crew_data.get("role", "")])
+	return true

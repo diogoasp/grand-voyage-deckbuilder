@@ -5,11 +5,11 @@
 	"body": "Um veterano observa seus movimentos no cais. Ele não diz muito, apenas aponta falhas na sua guarda e oferece uma breve lição antes da maré virar.",
 	"choices": [
 	  {
-		"label": "Treinar defesa",
+		"label": "Treinar postura defensiva",
 		"effects": [
 		  {
 			"type": "add_card_to_deck",
-			"card_id": "field_medicine"
+			"card_id": "defend_basic"
 		  }
 		]
 	  },
@@ -19,6 +19,36 @@
 		  {
 			"type": "gain_resource",
 			"resource": "gold",
+			"value": 15
+		  }
+		]
+	  }
+	]
+  },
+  "wandering_doctor": {
+	"id": "wandering_doctor",
+	"title": "Médico do Cais",
+	"body": "Em um recanto do porto, um médico de olhar calmo trata feridos com ervas e bandagens. Ele procura uma embarcação que navegue rumo a novas ilhas medicinais.",
+	"choices": [
+	  {
+		"label": "Recrutar Dr. Lin (Cura +6 HP por setor viajado, gasta 1 Comida/setor, +1 Medicina de Campo ao deck)",
+		"effects": [
+		  {
+			"type": "recruit_crew",
+			"crew_id": "doctor_lin"
+		  }
+		]
+	  },
+	  {
+		"label": "Apenas comprar tratamento rápido (+15 HP)",
+		"effects": [
+		  {
+			"type": "gain_resource",
+			"resource": "gold",
+			"value": 0
+		  },
+		  {
+			"type": "heal",
 			"value": 15
 		  }
 		]

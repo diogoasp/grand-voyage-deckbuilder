@@ -2,8 +2,8 @@ extends Node
 
 var cards: Dictionary = {}
 var enemies: Dictionary = {}
-
 var events: Dictionary = {}
+var crew: Dictionary = {}
 
 func _ready() -> void:
 	load_all_data()
@@ -13,10 +13,12 @@ func load_all_data() -> void:
 	cards = load_json_dictionary("res://data/cards/cards.json")
 	enemies = load_json_dictionary("res://data/enemies/enemies.json")
 	events = load_json_dictionary("res://data/events/events.json")
+	crew = load_json_dictionary("res://data/crew/crew.json")
 
 	print("DataLoader: %d cartas carregadas." % cards.size())
 	print("DataLoader: %d inimigos carregados." % enemies.size())
 	print("DataLoader: %d eventos carregados." % events.size())
+	print("DataLoader: %d tripulantes carregados." % crew.size())
 
 
 func load_json_dictionary(path: String) -> Dictionary:
@@ -76,3 +78,15 @@ func get_event(event_id: String) -> Dictionary:
 
 func has_event(event_id: String) -> bool:
 	return events.has(event_id)
+
+
+func get_crew(crew_id: String) -> Dictionary:
+	if not crew.has(crew_id):
+		push_warning("Tripulante não encontrado: %s" % crew_id)
+		return {}
+
+	return crew[crew_id]
+
+
+func has_crew(crew_id: String) -> bool:
+	return crew.has(crew_id)

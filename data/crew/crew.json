@@ -1,0 +1,13 @@
+{
+  "doctor_lin": {
+	"id": "doctor_lin",
+	"name": "Dr. Lin",
+	"role": "Médico",
+	"rarity": "common",
+	"description": "Um médico errante que cuida da saúde da tripulação em troca de sustento na viagem.",
+	"food_cost_per_sector": 1,
+	"passive_heal_per_sector": 6,
+	"associated_cards": ["field_medicine"],
+	"tags": ["doctor", "support"]
+  }
+}

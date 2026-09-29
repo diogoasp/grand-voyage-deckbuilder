@@ -70,9 +70,33 @@ func complete_active_node() -> void:
 	if node_id != "" and not completed_nodes.has(node_id):
 		completed_nodes.append(node_id)
 
+	apply_crew_travel_effects()
+
 	current_stage += 1
 	active_node_data.clear()
 	show_map()
+
+
+func apply_crew_travel_effects() -> void:
+	for crew_id in GameState.crew_members:
+		if not DataLoader.has_crew(crew_id):
+			continue
+
+		var crew_data: Dictionary = DataLoader.get_crew(crew_id)
+
+		# Custo de manutenção (comida)
+		var food_cost: int = int(crew_data.get("food_cost_per_sector", 0))
+		if food_cost > 0:
+			GameState.spend_food(food_cost)
+
+		# Passiva de cura em viagem (Médico)
+		var heal_amount: int = int(crew_data.get("passive_heal_per_sector", 0))
+		if heal_amount > 0:
+			GameState.heal_player(heal_amount)
+			print("Passiva da tripulação [%s]: capitão recuperou +%d HP na travessia." % [
+				crew_data.get("name", crew_id),
+				heal_amount
+			])
 
 
 func show_event(event_id: String) -> void:

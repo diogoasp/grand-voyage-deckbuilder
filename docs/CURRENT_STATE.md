@@ -271,6 +271,23 @@ Responsabilidades:
 - permitir que o jogador escolha o rumo (bifurcação de rotas);
 - emitir o sinal `node_selected(node_data)`.
 
+## Tripulação (Relíquias Vivas)
+
+Dados:
+`res://data/crew/crew.json`
+
+Tripulante inicial implementado:
+- `doctor_lin` (Médico):
+  - Passiva de viagem: cura o capitão em +6 HP a cada transição de setor no mapa náutico;
+  - Custo de manutenção: consome 1 de Comida por setor viajado;
+  - Cartas associadas: adiciona a carta `field_medicine` ao deck no recrutamento.
+
+Suporte arquitetural:
+- `DataLoader` carrega e fornece dados da tripulação (`get_crew`, `has_crew`);
+- `GameState` rastreia `crew_members` ativos e fornece método `recruit_crew()`;
+- `RunScene` aplica passivas de exploração e custos logísticos ao término de cada nó (`apply_crew_travel_effects()`);
+- `MapScene` exibe em tempo real os membros da tripulação embarcados.
+
 ## Fluxo atual
 Fluxo atual implementado:
 
@@ -278,11 +295,14 @@ Fluxo atual implementado:
 Main
 → RunScene (start_run -> GameState.reset_run())
 → MapScene (Carta Náutica do Setor)
-  ├── Setor 1: Evento ("old_port_trainer") -> Conclusão -> Retorna ao Mapa
+  ├── Setor 1: Escolha Inicial no Cais:
+  │     ├── [A] Velho Lutador (Postura defensiva / Recursos)
+  │     └── [B] Médico do Cais (Recrutar Dr. Lin: +1 Medicina de Campo, cura por setor)
+  │     └── Conclusão -> Aplica passivas de viagem -> Retorna ao Mapa
   ├── Setor 2: Escolha de Rota de Combate:
   │     ├── [A] Patrulha Costeira ("marine_recruit")
   │     └── [B] Pirataria Rival ("bandit_sailor")
-  │     └── Vitória -> Retorna ao Mapa
+  │     └── Vitória -> Aplica passivas de viagem -> Retorna ao Mapa
   ├── Setor 3: Porto Seguro (CityScene: 1 ação) -> Zarpar -> Retorna ao Mapa
   └── Setor 4: Águas Profundas ("bandit_sailor") -> Vitória -> Rota concluída
 (Em caso de derrota no combate -> RunScene reinicia o ciclo via start_run())
@@ -294,10 +314,9 @@ Main
 3. UI visual ainda é de protótipo.
 4. Eventos e cidades ainda resolvem efeitos localmente.
 5. Não há save da run em disco ainda.
-6. Não há tripulação runtime ainda.
 
 ## Próximo marco
-Implementar o primeiro Tripulante funcional (Médico ou Navegador) como relíquia viva, seguindo a ordem conceitual do projeto.
+Implementar a primeira Akuma no Mi simples (Fruta de Paramecia ou Logia) com micro-mecânica própria, seguindo a ordem conceitual do projeto.
 
 ## Regra de escopo
-Não iniciar metaprogressão persistente nem múltiplas classes antes de validar o primeiro tripulante e seus impactos no ciclo de gameplay.
+Não iniciar metaprogressão persistente nem múltiplas classes antes de validar a primeira fruta e seus impactos no combate/deck.

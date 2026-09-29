@@ -82,6 +82,14 @@ func resolve_event_effect(effect: Dictionary) -> void:
 			var value: int = int(effect.get("value", 0))
 			apply_gain_resource(resource, value)
 
+		"recruit_crew":
+			var crew_id: String = str(effect.get("crew_id", ""))
+			GameState.recruit_crew(crew_id)
+
+		"heal":
+			var heal_val: int = int(effect.get("value", 0))
+			GameState.heal_player(heal_val)
+
 		_:
 			push_warning("Efeito de evento desconhecido: %s" % effect_type)
 

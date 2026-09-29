@@ -10,7 +10,7 @@ signal node_selected(node_data: Dictionary)
 # Lista de colunas/estágios da rota marítima
 # Cada nó: id, stage, type ("event", "combat", "city"), target_id, label, icon
 var map_stages: Array[Array] = [
-	# Estágio 0: Ponto de partida (Treinamento / Evento no cais)
+	# Estágio 0: Ponto de partida (Treinamento OU Recrutar Médico no cais)
 	[
 		{
 			"id": "node_0_0",
@@ -18,7 +18,15 @@ var map_stages: Array[Array] = [
 			"type": "event",
 			"target_id": "old_port_trainer",
 			"title": "Velho Lutador",
-			"desc": "Treinamento no cais"
+			"desc": "Treino de Postura"
+		},
+		{
+			"id": "node_0_1",
+			"stage": 0,
+			"type": "event",
+			"target_id": "wandering_doctor",
+			"title": "Médico do Cais",
+			"desc": "Recrutar Dr. Lin"
 		}
 	],
 	# Estágio 1: Primeira rota de mar (Combate: Patrulha da Marinha OU Saqueador)
@@ -82,12 +90,23 @@ func setup_state(stage: int, completed_nodes: Array[String]) -> void:
 
 
 func update_status_display() -> void:
-	status_label.text = "HP: %d/%d | Ouro: %d | Comida: %d | Bounty: %d" % [
+	var crew_names: Array[String] = []
+	for crew_id in GameState.crew_members:
+		if DataLoader.has_crew(crew_id):
+			var data: Dictionary = DataLoader.get_crew(crew_id)
+			crew_names.append("%s (%s)" % [data.get("name", crew_id), data.get("role", "")])
+		else:
+			crew_names.append(crew_id)
+
+	var crew_str := "Nenhum" if crew_names.is_empty() else ", ".join(crew_names)
+
+	status_label.text = "HP: %d/%d | Ouro: %d | Comida: %d | Bounty: %d\nTripulação: %s" % [
 		GameState.player_hp,
 		GameState.player_max_hp,
 		GameState.gold,
 		GameState.food,
-		GameState.bounty
+		GameState.bounty,
+		crew_str
 	]
 
 

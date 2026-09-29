@@ -24,10 +24,10 @@ color = Color(0.08, 0.11, 0.16, 1)
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_top = 20.0
-offset_bottom = 85.0
+offset_top = 16.0
+offset_bottom = 110.0
 grow_horizontal = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
 [node name="TitleLabel" type="Label" parent="TopBar"]
 layout_mode = 2

@@ -271,7 +271,7 @@ func get_enemy_intent_text() -> String:
 	return "Intenção: " + ", ".join(parts)
 
 
-func _on_card_play_requested(card_view: CardView, drop_position: Vector2) -> void:
+func _on_card_play_requested(card_view: CardView, _drop_position: Vector2) -> void:
 	if combat_finished:
 		card_view.return_to_original_position()
 		return
@@ -553,9 +553,9 @@ func is_card_over_control(card_view: CardView, control: Control, padding: Vector
 
 	return card_rect.intersects(target_rect)
 			
-func is_position_inside_control(position: Vector2, control: Control) -> bool:
+func is_position_inside_control(target_position: Vector2, control: Control) -> bool:
 	var rect := Rect2(control.global_position, control.size)
-	return rect.has_point(position)
+	return rect.has_point(target_position)
 
 func _on_card_drag_started(card_view: CardView) -> void:
 	dragged_card_view = card_view

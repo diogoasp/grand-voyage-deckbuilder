@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://dvwt0iugl7tbk" path="res://scenes/combat/combat_scene.gd" id="1_cetgp"]
 [ext_resource type="Texture2D" uid="uid://bd5kcqgtcftvk" path="res://assets/art/Marine_Swordsman_1_-removebg-preview.png" id="2_2ussv"]
-[ext_resource type="Texture2D" uid="uid://bju3ywjmvuun6" path="res://assets/art/3DS - One Piece_ Great Pirate Colosseum (JPN) - Fighters - Monkey D. Luffy.png" id="2_7pc1q"]
 [ext_resource type="Texture2D" uid="uid://bou1ouens75dm" path="res://assets/art/Boss 1 Morgan_bg.png" id="2_gvrxc"]
 [ext_resource type="Texture2D" uid="uid://crgr6k283tg4y" path="res://assets/art/Boss 1 Morgan_bg_front.png" id="3_i18os"]
 
@@ -33,36 +32,6 @@ animations = [{
 "loop": true,
 "name": &"default",
 "speed": 3.0
-}]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_i18os"]
-atlas = ExtResource("2_7pc1q")
-region = Rect2(116, 741, 110, 117)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_dqp6h"]
-atlas = ExtResource("2_7pc1q")
-region = Rect2(231, 741, 110, 117)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_6khhl"]
-atlas = ExtResource("2_7pc1q")
-region = Rect2(346, 741, 110, 117)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_dqp6h"]
-resource_name = "player"
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_i18os")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_dqp6h")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_6khhl")
-}],
-"loop": true,
-"name": &"idle",
-"speed": 5.0
 }]
 
 [node name="CombatScene" type="Control" unique_id=1447061713]
@@ -179,13 +148,10 @@ offset_bottom = 501.0
 [node name="PlayerNameLabel" type="Label" parent="PlayerArea" unique_id=1006205033]
 layout_mode = 2
 
-[node name="Player" type="AnimatedSprite2D" parent="PlayerArea" unique_id=1194753351]
-position = Vector2(63, 114)
-scale = Vector2(1.0803572, 1.0737705)
-sprite_frames = SubResource("SpriteFrames_dqp6h")
-animation = &"idle"
-frame_progress = 0.09269306
-flip_h = true
+[node name="PlayerPlaceholder" type="ColorRect" parent="PlayerArea" unique_id=1194753351]
+custom_minimum_size = Vector2(110, 120)
+layout_mode = 2
+color = Color(0.2, 0.45, 0.75, 0.8)
 
 [node name="HandArea" type="HBoxContainer" parent="." unique_id=767289767]
 layout_mode = 0

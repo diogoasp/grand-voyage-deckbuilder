@@ -7,6 +7,10 @@ const CITY_SCENE: PackedScene = preload("res://scenes/city/CityScene.tscn")
 const MAP_GENERATOR = preload("res://scripts/map/map_generator.gd")
 
 @onready var screen_container: Control = $ScreenContainer
+@onready var settings_button: Button = $TopRightUI/SettingsButton
+@onready var settings_overlay: ColorRect = $SettingsOverlay
+@onready var reset_run_button: Button = $SettingsOverlay/SettingsPanel/Margin/VBox/ResetRunButton
+@onready var close_settings_button: Button = $SettingsOverlay/SettingsPanel/Margin/VBox/CloseSettingsButton
 
 var current_screen: Node = null
 
@@ -17,7 +21,25 @@ var sector_map: Array[Array] = []
 
 
 func _ready() -> void:
+	settings_button.pressed.connect(_on_settings_button_pressed)
+	close_settings_button.pressed.connect(_on_close_settings_button_pressed)
+	reset_run_button.pressed.connect(_on_reset_run_pressed)
+	settings_overlay.visible = false
 	start_run()
+
+
+func _on_settings_button_pressed() -> void:
+	settings_overlay.visible = true
+
+
+func _on_close_settings_button_pressed() -> void:
+	settings_overlay.visible = false
+
+
+func _on_reset_run_pressed() -> void:
+	settings_overlay.visible = false
+	start_run()
+
 
 
 func start_run() -> void:

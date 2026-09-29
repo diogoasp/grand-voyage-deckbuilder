@@ -31,13 +31,12 @@ const CARD_SLOT_SIZE: Vector2 = Vector2(130, 190)
 @onready var end_turn_button: Button = $EndTurnButton
 
 @onready var result_panel: PanelContainer = $ResultPanel
-@onready var result_title_label: Label = $ResultPanel/ResultVBox/ResultTitleLabel
-@onready var result_body_label: Label = $ResultPanel/ResultVBox/ResultBodyLabel
-@onready var reward_title_label: Label = $ResultPanel/ResultVBox/RewardTitleLabel
-@onready var reward_cards_container: HBoxContainer = $ResultPanel/ResultVBox/RewardCardsContainer
-@onready var skip_reward_button: Button = $ResultPanel/ResultVBox/SkipRewardButton
-@onready var next_combat_button: Button = $ResultPanel/ResultVBox/NextCombatButton
-@onready var reset_run_button: Button = $ResultPanel/ResultVBox/ResetRunButton
+@onready var result_title_label: Label = $ResultPanel/ResultMargin/ResultVBox/ResultTitleLabel
+@onready var result_body_label: Label = $ResultPanel/ResultMargin/ResultVBox/ResultBodyLabel
+@onready var reward_title_label: Label = $ResultPanel/ResultMargin/ResultVBox/RewardTitleLabel
+@onready var reward_cards_container: HBoxContainer = $ResultPanel/ResultMargin/ResultVBox/RewardCardsContainer
+@onready var skip_reward_button: Button = $ResultPanel/ResultMargin/ResultVBox/SkipRewardButton
+@onready var next_combat_button: Button = $ResultPanel/ResultMargin/ResultVBox/NextCombatButton
 
 
 var player: Combatant
@@ -75,7 +74,6 @@ func _ready() -> void:
 	end_turn_button.pressed.connect(_on_end_turn_pressed)
 	skip_reward_button.pressed.connect(_on_skip_reward_pressed)
 	next_combat_button.pressed.connect(_on_next_combat_pressed)
-	reset_run_button.pressed.connect(_on_reset_run_pressed)
 	start_combat()
 
 func start_combat_against(enemy_id: String) -> void:
@@ -534,15 +532,15 @@ func show_result_panel(title: String, body: String, victory: bool) -> void:
 	result_title_label.text = title
 	result_body_label.text = body
 
-	reset_run_button.visible = true
-
 	if victory:
+		next_combat_button.text = "Continuar Viagem"
 		setup_victory_card_rewards()
 	else:
+		next_combat_button.text = "Fim da Expedição"
 		reward_title_label.visible = false
 		reward_cards_container.visible = false
 		skip_reward_button.visible = false
-		next_combat_button.visible = false
+		next_combat_button.visible = true
 
 	result_panel.visible = true
 	update_ui()
@@ -621,11 +619,10 @@ func _on_skip_reward_pressed() -> void:
 
 
 func _on_next_combat_pressed() -> void:
-	combat_victory.emit()
-
-
-func _on_reset_run_pressed() -> void:
-	combat_defeat.emit()
+	if player != null and player.is_defeated():
+		combat_defeat.emit()
+	else:
+		combat_victory.emit()
 
 
 func get_required_drop_target(card_data: Dictionary) -> String:

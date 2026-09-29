@@ -218,6 +218,7 @@ Responsabilidades:
 - instanciar e gerenciar `current_screen`;
 - limpar a tela anterior com segurança (`clear_current_screen`);
 - iniciar a run (`start_run`) com `GameState.reset_run()`;
+- menu de opções/configurações acessível pelo botão de engrenagem (`⚙`) no topo direito da tela, com suporte a reiniciar a run;
 - exibir eventos (`show_event`);
 - exibir combates (`show_combat`);
 - escutar o sinal `continue_requested` de `EventScene` para transicionar para o combate.

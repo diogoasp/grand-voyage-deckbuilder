@@ -60,7 +60,7 @@ texture = ExtResource("3_i18os")
 [node name="TopBar" type="HBoxContainer" parent="." unique_id=481716624]
 layout_mode = 0
 offset_left = 20.0
-offset_right = 1139.0
+offset_right = 1080.0
 offset_bottom = 51.0
 alignment = 1
 
@@ -182,44 +182,52 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -177.0
-offset_top = -104.0
-offset_right = 183.0
-offset_bottom = 116.0
+offset_left = -260.0
+offset_top = -170.0
+offset_right = 260.0
+offset_bottom = 170.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ResultVBox" type="VBoxContainer" parent="ResultPanel" unique_id=1490961352]
+[node name="ResultMargin" type="MarginContainer" parent="ResultPanel" unique_id=1490961351]
 layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
 
-[node name="ResultTitleLabel" type="Label" parent="ResultPanel/ResultVBox" unique_id=791794324]
+[node name="ResultVBox" type="VBoxContainer" parent="ResultPanel/ResultMargin" unique_id=1490961352]
 layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ResultTitleLabel" type="Label" parent="ResultPanel/ResultMargin/ResultVBox" unique_id=791794324]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
 text = "Resultado"
+horizontal_alignment = 1
 
-[node name="ResultBodyLabel" type="Label" parent="ResultPanel/ResultVBox" unique_id=1887818106]
+[node name="ResultBodyLabel" type="Label" parent="ResultPanel/ResultMargin/ResultVBox" unique_id=1887818106]
 layout_mode = 2
 text = "Texto do resultado."
+horizontal_alignment = 1
 
-[node name="RewardTitleLabel" type="Label" parent="ResultPanel/ResultVBox" unique_id=561234891]
+[node name="RewardTitleLabel" type="Label" parent="ResultPanel/ResultMargin/ResultVBox" unique_id=561234891]
 visible = false
 layout_mode = 2
 text = "Escolha uma Carta de Recompensa:"
+horizontal_alignment = 1
 
-[node name="RewardCardsContainer" type="HBoxContainer" parent="ResultPanel/ResultVBox" unique_id=782341902]
+[node name="RewardCardsContainer" type="HBoxContainer" parent="ResultPanel/ResultMargin/ResultVBox" unique_id=782341902]
 visible = false
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 16
 alignment = 1
 
-[node name="SkipRewardButton" type="Button" parent="ResultPanel/ResultVBox" unique_id=892341903]
+[node name="SkipRewardButton" type="Button" parent="ResultPanel/ResultMargin/ResultVBox" unique_id=892341903]
 visible = false
 layout_mode = 2
 text = "Pular Recompensa de Carta"
 
-[node name="NextCombatButton" type="Button" parent="ResultPanel/ResultVBox" unique_id=900189964]
+[node name="NextCombatButton" type="Button" parent="ResultPanel/ResultMargin/ResultVBox" unique_id=900189964]
 layout_mode = 2
-text = "Novo Combate"
-
-[node name="ResetRunButton" type="Button" parent="ResultPanel/ResultVBox" unique_id=214394725]
-layout_mode = 2
-text = "Reiniciar Run"
+text = "Continuar"

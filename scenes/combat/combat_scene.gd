@@ -8,6 +8,7 @@ const CARD_SLOT_SIZE: Vector2 = Vector2(130, 190)
 
 @onready var player_area: Control = $PlayerArea
 @onready var player_name_label: Label = $PlayerArea/PlayerNameLabel
+@onready var player_placeholder: ColorRect = $PlayerArea/PlayerPlaceholder
 @onready var player_status_container: HBoxContainer = $PlayerArea/PlayerStatusContainer
 @onready var player_hp_label: Label = $TopBar/PlayerHPLabel
 
@@ -24,6 +25,7 @@ const CARD_SLOT_SIZE: Vector2 = Vector2(130, 190)
 @onready var enemy_area: VBoxContainer = $EnemyArea
 @onready var enemy_name_label: Label = $EnemyArea/EnemyNameLabel
 @onready var enemy_intent_label: Label = $EnemyArea/EnemyIntentLabel
+@onready var enemy_sprite: AnimatedSprite2D = $EnemyArea/EnemySprite
 
 @onready var hand_area: HBoxContainer = $HandArea
 @onready var end_turn_button: Button = $EndTurnButton
@@ -89,6 +91,12 @@ func start_combat() -> void:
 	effect_resolver = EffectResolver.new()
 
 	load_enemy(current_enemy_id)
+
+	player.damage_taken.connect(_on_player_damage_taken)
+	player.block_gained.connect(_on_player_block_gained)
+
+	enemy.damage_taken.connect(_on_enemy_damage_taken)
+	enemy.block_gained.connect(_on_enemy_block_gained)
 
 	deck_manager = DeckManager.new()
 	deck_manager.setup_from_deck_ids(GameState.current_deck)
@@ -649,3 +657,82 @@ func update_drag_target_feedback() -> void:
 		"none":
 			enemy_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
 			player_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
+
+
+func _on_enemy_damage_taken(result: Dictionary) -> void:
+	var final_damage: int = int(result.get("final_damage", 0))
+	var blocked_damage: int = int(result.get("blocked_damage", 0))
+
+	if final_damage > 0:
+		spawn_floating_text(enemy_area, "-%d" % final_damage, Color(1.0, 0.25, 0.25))
+		flash_target(enemy_area, Color(1.8, 0.3, 0.3, 1.0))
+		shake_target(enemy_area, 6.0)
+	elif blocked_damage > 0:
+		spawn_floating_text(enemy_area, "Bloqueado! (%d)" % blocked_damage, Color(0.3, 0.7, 1.0))
+		flash_target(enemy_area, Color(0.5, 0.8, 1.5, 1.0))
+
+
+func _on_player_damage_taken(result: Dictionary) -> void:
+	var final_damage: int = int(result.get("final_damage", 0))
+	var blocked_damage: int = int(result.get("blocked_damage", 0))
+	var was_intangible: bool = bool(result.get("was_intangible", false))
+
+	if was_intangible:
+		spawn_floating_text(player_area, "☁ Névoa (-%d)" % final_damage, Color(0.6, 0.9, 1.0))
+		flash_target(player_area, Color(0.5, 0.9, 1.5, 1.0))
+		shake_target(player_area, 3.0)
+	elif final_damage > 0:
+		spawn_floating_text(player_area, "-%d" % final_damage, Color(1.0, 0.2, 0.2))
+		flash_target(player_area, Color(1.8, 0.2, 0.2, 1.0))
+		shake_target(player_area, 8.0)
+	elif blocked_damage > 0:
+		spawn_floating_text(player_area, "Bloqueado! (%d)" % blocked_damage, Color(0.3, 0.7, 1.0))
+		flash_target(player_area, Color(0.5, 0.8, 1.5, 1.0))
+
+
+func _on_player_block_gained(amount: int) -> void:
+	spawn_floating_text(player_area, "+%d Bloqueio" % amount, Color(0.4, 0.8, 1.0))
+
+
+func _on_enemy_block_gained(amount: int) -> void:
+	spawn_floating_text(enemy_area, "+%d Bloqueio" % amount, Color(0.4, 0.8, 1.0))
+
+
+func flash_target(target: Control, flash_color: Color) -> void:
+	if not is_instance_valid(target):
+		return
+	var tween := create_tween()
+	target.modulate = flash_color
+	tween.tween_property(target, "modulate", Color.WHITE, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+
+func shake_target(target: Control, intensity: float = 6.0) -> void:
+	if not is_instance_valid(target):
+		return
+	var orig_pos := target.position
+	var tween := create_tween()
+	tween.tween_property(target, "position", orig_pos + Vector2(randf_range(-intensity, intensity), randf_range(-intensity, intensity)), 0.04)
+	tween.tween_property(target, "position", orig_pos + Vector2(randf_range(-intensity * 0.6, intensity * 0.6), randf_range(-intensity * 0.6, intensity * 0.6)), 0.04)
+	tween.tween_property(target, "position", orig_pos, 0.05)
+
+
+func spawn_floating_text(parent_target: Control, text: String, color: Color) -> void:
+	if not is_instance_valid(parent_target):
+		return
+
+	var label := Label.new()
+	label.text = text
+	label.add_theme_font_size_override("font_size", 18)
+	label.add_theme_color_override("font_color", color)
+	label.top_level = true
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var spawn_pos: Vector2 = parent_target.global_position + Vector2(parent_target.size.x * 0.35, 10.0)
+	label.global_position = spawn_pos
+	add_child(label)
+
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(label, "global_position:y", spawn_pos.y - 45.0, 0.75).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label, "modulate:a", 0.0, 0.75).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.finished.connect(label.queue_free)

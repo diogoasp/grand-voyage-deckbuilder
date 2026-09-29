@@ -1,6 +1,9 @@
 class_name Combatant
 extends RefCounted
 
+signal damage_taken(result: Dictionary)
+signal block_gained(amount: int)
+
 var id: String = ""
 var display_name: String = ""
 var max_hp: int = 1
@@ -36,17 +39,22 @@ func take_damage(amount: int, ignore_block: bool = false) -> Dictionary:
 	hp -= final_damage
 	hp = max(hp, 0)
 
-	return {
+	var res := {
 		"incoming_damage": incoming_damage,
 		"blocked_damage": blocked_damage,
 		"final_damage": final_damage,
 		"remaining_hp": hp,
 		"was_intangible": intangible > 0
 	}
+	damage_taken.emit(res)
+	return res
 
 
 func gain_block(amount: int) -> void:
-	block += max(amount, 0)
+	var val: int = maxi(amount, 0)
+	block += val
+	if val > 0:
+		block_gained.emit(val)
 
 
 func clear_block() -> void:

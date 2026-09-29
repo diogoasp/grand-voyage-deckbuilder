@@ -37,9 +37,23 @@ func clear_current_screen() -> void:
 		current_screen = null
 
 
-func show_map() -> void:
-	clear_current_screen()
+func switch_to_screen(new_screen: Node) -> void:
+	if not is_instance_valid(new_screen):
+		return
 
+	clear_current_screen()
+	current_screen = new_screen
+
+	if new_screen is CanvasItem:
+		new_screen.modulate.a = 0.0
+		screen_container.add_child(new_screen)
+		var tween := create_tween()
+		tween.tween_property(new_screen, "modulate:a", 1.0, 0.2).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	else:
+		screen_container.add_child(new_screen)
+
+
+func show_map() -> void:
 	var map_scene: Node = MAP_SCENE.instantiate()
 	if "map_stages" in map_scene and not sector_map.is_empty():
 		map_scene.map_stages = sector_map
@@ -53,8 +67,7 @@ func show_map() -> void:
 	if map_scene.has_signal("new_expedition_requested"):
 		map_scene.new_expedition_requested.connect(start_run)
 
-	current_screen = map_scene
-	screen_container.add_child(map_scene)
+	switch_to_screen(map_scene)
 
 
 func _on_map_node_selected(node_data: Dictionary) -> void:
@@ -109,8 +122,6 @@ func apply_crew_travel_effects() -> void:
 
 
 func show_event(event_id: String) -> void:
-	clear_current_screen()
-
 	var event_scene: Node = EVENT_SCENE.instantiate()
 	if event_scene.has_method("setup"):
 		event_scene.setup(event_id)
@@ -118,13 +129,10 @@ func show_event(event_id: String) -> void:
 	if event_scene.has_signal("continue_requested"):
 		event_scene.continue_requested.connect(_on_event_continue_requested)
 
-	current_screen = event_scene
-	screen_container.add_child(event_scene)
+	switch_to_screen(event_scene)
 
 
 func show_combat(enemy_id: String = "marine_recruit") -> void:
-	clear_current_screen()
-
 	var combat_scene: Node = COMBAT_SCENE.instantiate()
 	if "current_enemy_id" in combat_scene:
 		combat_scene.current_enemy_id = enemy_id
@@ -135,19 +143,15 @@ func show_combat(enemy_id: String = "marine_recruit") -> void:
 	if combat_scene.has_signal("combat_defeat"):
 		combat_scene.combat_defeat.connect(_on_combat_defeat)
 
-	current_screen = combat_scene
-	screen_container.add_child(combat_scene)
+	switch_to_screen(combat_scene)
 
 
 func show_city() -> void:
-	clear_current_screen()
-
 	var city_scene: Node = CITY_SCENE.instantiate()
 	if city_scene.has_signal("depart_requested"):
 		city_scene.depart_requested.connect(_on_city_depart_requested)
 
-	current_screen = city_scene
-	screen_container.add_child(city_scene)
+	switch_to_screen(city_scene)
 
 
 func _on_event_continue_requested() -> void:

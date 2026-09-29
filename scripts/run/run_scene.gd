@@ -25,7 +25,11 @@ func _ready() -> void:
 	close_settings_button.pressed.connect(_on_close_settings_button_pressed)
 	reset_run_button.pressed.connect(_on_reset_run_pressed)
 	settings_overlay.visible = false
-	start_run()
+
+	if GameState.has_saved_run():
+		load_saved_run()
+	else:
+		start_run()
 
 
 func _on_settings_button_pressed() -> void:
@@ -41,14 +45,46 @@ func _on_reset_run_pressed() -> void:
 	start_run()
 
 
-
 func start_run() -> void:
+	GameState.delete_saved_run()
 	GameState.reset_run()
 	current_stage = 0
 	completed_nodes.clear()
 	active_node_data.clear()
 	sector_map = MAP_GENERATOR.generate_sector_map(1)
+	save_run()
 	show_map()
+
+
+func save_run() -> void:
+	var extra: Dictionary = {
+		"current_stage": current_stage,
+		"completed_nodes": completed_nodes,
+		"sector_map": sector_map
+	}
+	GameState.save_run_state(extra)
+
+
+func load_saved_run() -> void:
+	var extra: Dictionary = GameState.load_run_state()
+	current_stage = int(extra.get("current_stage", 0))
+	
+	completed_nodes.clear()
+	for nid in extra.get("completed_nodes", []):
+		completed_nodes.append(str(nid))
+
+	sector_map.clear()
+	var raw_map = extra.get("sector_map", [])
+	if raw_map is Array and not raw_map.is_empty():
+		for stage in raw_map:
+			if stage is Array:
+				sector_map.append(stage)
+	
+	if sector_map.is_empty():
+		sector_map = MAP_GENERATOR.generate_sector_map(1)
+
+	show_map()
+
 
 
 func clear_current_screen() -> void:
@@ -118,7 +154,9 @@ func complete_active_node() -> void:
 
 	current_stage += 1
 	active_node_data.clear()
+	save_run()
 	show_map()
+
 
 
 func apply_crew_travel_effects() -> void:

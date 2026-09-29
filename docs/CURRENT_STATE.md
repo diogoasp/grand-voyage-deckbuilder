@@ -432,13 +432,27 @@ Main
         └── Derrota -> Reinicia a run
 ```
 
+## Sistema de Persistência e Salvamento (Save/Load da Run)
+
+Implementado em `GameState` e orquestrado por `RunScene`:
+- **Serialização da Run:** Salva e restaura com fidelidade o estado completo:
+  - Atributos do Capitão: `player_max_hp`, `player_hp`, `gold`, `food`, `ship_integrity`, `bounty`.
+  - Construção do Deck: lista completa de IDs das cartas acumuladas no `current_deck`.
+  - Tripulação ativa (`crew_members`) e Fruta do Diabo consumida (`eaten_fruit`).
+  - Progresso Náutico: estágio atual do mapa (`current_stage`), nós concluídos (`completed_nodes`) e a matriz procedural do setor (`sector_map`).
+- **Comportamento Automático:**
+  - Auto-save automático ao concluir qualquer etapa marítima (`complete_active_node()`);
+  - Ao iniciar o jogo, se houver save existente, a run é restaurada exatamente de onde o jogador parou;
+  - Ao reiniciar manualmente via menu de opções (`⚙`) ou sofrer derrota em combate, o save anterior é deletado e uma nova expedição começa limpa.
+
 ## Dívida técnica conhecida
 1. Rebuild da mão deve ser observado em mudanças futuras para evitar problemas de `queue_free()` durante sinais.
 2. O sistema de status/buffs temporários em combate suporta atualmente intangibilidade, devendo ser estendido quando novos status surgirem.
 3. UI visual ainda é de protótipo.
-4. Não há save da run em disco ainda.
+4. Trilha e efeitos sonoros (SFX/BGM) ainda não possuem assets de áudio integrados.
 
 ## Próximo marco
-Conclusão do Vertical Slice alcançada! O próximo marco é aprimorar o polimento audiovisual (transições, SFX/BGM, feedback visual de acerto) ou expandir as regras de metaprogressão (desbloqueio entre runs).
+Conclusão do Vertical Slice alcançada e sistema de persistência de run integrado! O próximo marco é aprimorar o polimento sonoro (SFX/BGM) ou expandir as regras de metaprogressão (desbloqueio entre runs).
+
 
 

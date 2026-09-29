@@ -98,17 +98,37 @@ Responsabilidades atuais:
 ### EffectResolver
 Responsável por aplicar efeitos de gameplay ao `CombatContext`.
 
-Efeitos implementados:
-- `damage`
-- `block`
-- `draw`
-- `gain_energy`
-- `heal`
+Efeitos implementados e suportados pelo sistema de cartas e intenções:
 
-Observação:
-- `self` é interpretado em função da origem do efeito.
-- Para `enemy_intent`, `self` aponta para o inimigo.
-- Para cartas, `self` aponta para o jogador.
+1. **`damage` (Dano):**
+   - Propriedades: `value: int`, `target: "enemy" | "player"`, `ignore_block: bool (opcional, padrão false)`.
+   - Comportamento: Deduz da armadura/bloqueio antes da vida, a menos que `ignore_block: true` (Haki de Armamento/perfurante). Se o alvo estiver com `intangible > 0`, o dano final recebido é fixado em no máximo 1.
+
+2. **`block` (Bloqueio):**
+   - Propriedades: `value: int`, `target: "player" | "self"`.
+   - Comportamento: Adiciona armadura temporária ao combatente, protegendo o HP até o início do seu próximo turno.
+
+3. **`draw` (Compra de Cartas):**
+   - Propriedades: `value: int`, `target: "player"`.
+   - Comportamento: Compra `value` cartas do draw pile para a mão do jogador (com reshuffle automático do descarte se necessário).
+
+4. **`gain_energy` (Ganho de Energia):**
+   - Propriedades: `value: int`, `target: "player"`.
+   - Comportamento: Adiciona energia imediata para jogar mais cartas no turno corrente.
+
+5. **`heal` (Cura):**
+   - Propriedades: `value: int`, `target: "player"`.
+   - Comportamento: Recupera o HP do combatente até o limite do seu `max_hp`.
+
+6. **`intangible` (Intangibilidade / Logia / Forma de Névoa):**
+   - Propriedades: `value: int (turnos)`, `target: "player"`.
+   - Comportamento: Concede o status de intangibilidade por `value` turno(s). Durante o efeito, qualquer dano final recebido não pode ultrapassar 1.
+
+Observação sobre alvos:
+- `"enemy"`: aponta para o inimigo ativo.
+- `"player"`: aponta para o capitão/jogador.
+- `"self"`: dinâmico conforme a origem: para `enemy_intent`, aponta para o inimigo; para cartas, aponta para o jogador.
+
 
 ### CombatScene
 Responsabilidades atuais:

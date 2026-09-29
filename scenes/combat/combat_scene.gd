@@ -1,4 +1,8 @@
 extends Control
+
+signal combat_victory
+signal combat_defeat
+
 const CARD_VIEW_SCENE: PackedScene = preload("res://scenes/combat/CardView.tscn")
 const CARD_SLOT_SIZE: Vector2 = Vector2(130, 190)
 
@@ -499,20 +503,13 @@ func show_result_panel(title: String, body: String, victory: bool) -> void:
 	update_ui()
 	
 func _on_next_combat_pressed() -> void:
-	var next_enemy_id := pick_next_test_enemy_id()
-	start_combat_against(next_enemy_id)
+	combat_victory.emit()
 
 
 func _on_reset_run_pressed() -> void:
-	GameState.reset_run()
-	start_combat_against("marine_recruit")
-	
-func pick_next_test_enemy_id() -> String:
-	if current_enemy_id == "marine_recruit":
-		return "bandit_sailor"
+	combat_defeat.emit()
 
-	return "marine_recruit"
-	
+
 func get_required_drop_target(card_data: Dictionary) -> String:
 	var effects: Array = card_data.get("effects", [])
 

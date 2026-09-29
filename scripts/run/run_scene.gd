@@ -46,9 +46,23 @@ func show_combat(enemy_id: String = "marine_recruit") -> void:
 	if "current_enemy_id" in combat_scene:
 		combat_scene.current_enemy_id = enemy_id
 
+	if combat_scene.has_signal("combat_victory"):
+		combat_scene.combat_victory.connect(_on_combat_victory)
+
+	if combat_scene.has_signal("combat_defeat"):
+		combat_scene.combat_defeat.connect(_on_combat_defeat)
+
 	current_screen = combat_scene
 	screen_container.add_child(combat_scene)
 
 
 func _on_event_continue_requested() -> void:
 	show_combat("marine_recruit")
+
+
+func _on_combat_victory() -> void:
+	show_combat("bandit_sailor")
+
+
+func _on_combat_defeat() -> void:
+	start_run()

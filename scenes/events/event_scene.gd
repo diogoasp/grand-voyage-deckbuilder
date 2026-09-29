@@ -1,5 +1,7 @@
 extends Control
 
+signal continue_requested
+
 @onready var title_label: Label = $EventPanel/EventVBox/TitleLabel
 @onready var body_label: Label = $EventPanel/EventVBox/BodyLabel
 @onready var choices_vbox: VBoxContainer = $EventPanel/EventVBox/ChoicesVBox
@@ -12,6 +14,12 @@ var current_event_data: Dictionary = {}
 func _ready() -> void:
 	continue_button.pressed.connect(_on_continue_pressed)
 	load_event(current_event_id)
+
+
+func setup(event_id: String) -> void:
+	current_event_id = event_id
+	if is_node_ready():
+		load_event(current_event_id)
 
 
 func load_event(event_id: String) -> void:
@@ -59,12 +67,7 @@ func _on_choice_pressed(choice: Dictionary) -> void:
 	continue_button.visible = true
 
 func _on_continue_pressed() -> void:
-	var combat_scene := preload("res://scenes/combat/CombatScene.tscn").instantiate()
-
-	var parent := get_parent()
-	parent.add_child(combat_scene)
-
-	queue_free()
+	continue_requested.emit()
 
 func resolve_event_effect(effect: Dictionary) -> void:
 	var effect_type: String = str(effect.get("type", ""))

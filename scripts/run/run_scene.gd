@@ -21,6 +21,7 @@ var sector_map: Array[Array] = []
 
 
 func _ready() -> void:
+	randomize()
 	settings_button.pressed.connect(_on_settings_button_pressed)
 	close_settings_button.pressed.connect(_on_close_settings_button_pressed)
 	reset_run_button.pressed.connect(_on_reset_run_pressed)
@@ -46,6 +47,7 @@ func _on_reset_run_pressed() -> void:
 
 
 func start_run() -> void:
+	randomize()
 	GameState.delete_saved_run()
 	GameState.reset_run()
 	current_stage = 0
@@ -54,6 +56,7 @@ func start_run() -> void:
 	sector_map = MAP_GENERATOR.generate_sector_map(1)
 	save_run()
 	show_map()
+
 
 
 func save_run() -> void:

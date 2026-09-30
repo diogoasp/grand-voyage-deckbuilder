@@ -186,6 +186,33 @@ func has_crew_member(crew_id: String) -> bool:
 	return crew_members.has(crew_id)
 
 
+func has_role_in_crew(role_or_tag: String) -> bool:
+	var target: String = role_or_tag.strip_edges().to_lower()
+	if target == "":
+		return false
+
+	# Verifica se a profissão do próprio jogador coincide
+	if GameState.player_profession.to_lower() == target:
+		return true
+
+	# Verifica entre todos os tripulantes recrutados
+	for cid in crew_members:
+		if not DataLoader.has_crew(cid):
+			continue
+		var cdata: Dictionary = DataLoader.get_crew(cid)
+		var c_role: String = str(cdata.get("role", "")).to_lower()
+		var c_tags: Array = cdata.get("tags", [])
+
+		if target in c_role:
+			return true
+
+		for t in c_tags:
+			if str(t).to_lower() == target:
+				return true
+
+	return false
+
+
 func recruit_crew(crew_id: String) -> bool:
 	if has_crew_member(crew_id):
 		push_warning("Tripulante já faz parte da tripulação: %s" % crew_id)

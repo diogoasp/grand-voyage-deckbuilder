@@ -43,7 +43,7 @@
 	"short_title": "Sora, Meio-Mink",
 	"desc": "Recrutar Sora",
 	"image_path": "res://assets/art/crew_chars/sora/base.png",
-	"allowed_stages": [0],
+	"allowed_stages": [0, 1, 2],
 	"body": "No cais movimentado, uma jovem meio-mink com orelhas atentas limpa a mira de um rifle com precisão cirúrgica. Ao seu lado repousa uma maleta médica com compostos alquímicos e munições restauradoras. Com um olhar analítico e sorriso ousado, ela avalia sua tripulação: 'Um bando audacioso precisa de alguém que saiba remendar feridas... e acertar alvos à distância.'",
 	"choices": [
 	  {
@@ -76,7 +76,7 @@
 	"title": "Cozinha Flutuante do Cais",
 	"short_title": "Cozinheiro Tora",
 	"desc": "Recrutar Cozinheiro",
-	"allowed_stages": [0],
+	"allowed_stages": [0, 1, 2],
 	"body": "O aroma de ensopado temperado com especiarias marinhas invade a enseada. Um homem robusto cozinha com maestria enquanto empunha um cutelo afiado. Ele busca um navio com apetite para grandes aventuras.",
 	"choices": [
 	  {

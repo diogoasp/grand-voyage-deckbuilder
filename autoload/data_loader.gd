@@ -127,9 +127,32 @@ func get_events_for_stage(stage_index: int, act: int = 1) -> Array[Dictionary]:
 				var eff_type: String = str(eff.get("type", ""))
 				if eff_type == "recruit_crew":
 					var cid: String = str(eff.get("crew_id", ""))
-					if cid != "" and not MetaProgression.is_crew_unlocked(cid):
-						is_available = false
-						break
+					if cid != "":
+						# Não oferece se não estiver desbloqueado na metaprogressão
+						if not MetaProgression.is_crew_unlocked(cid):
+							is_available = false
+							break
+						# Não oferece se o membro específico já estiver na tripulação
+						if GameState.has_crew_member(cid):
+							is_available = false
+							break
+						# Não oferece se a tripulação já possuir a profissão do tripulante
+						if has_crew(cid):
+							var cdata: Dictionary = get_crew(cid)
+							var role_str: String = str(cdata.get("role", "")).to_lower()
+							var tags: Array = cdata.get("tags", [])
+							# Verifica por médico/doctor
+							if ("médic" in role_str or "doctor" in role_str or tags.has("doctor")) and (GameState.has_role_in_crew("doctor") or GameState.has_role_in_crew("médico")):
+								is_available = false
+								break
+							# Verifica por cozinheiro/chef
+							if ("cozinh" in role_str or "chef" in role_str or tags.has("chef")) and (GameState.has_role_in_crew("chef") or GameState.has_role_in_crew("cozinheiro")):
+								is_available = false
+								break
+							# Verifica por navegador/navigator
+							if ("navegad" in role_str or "navigator" in role_str or tags.has("navigator")) and (GameState.has_role_in_crew("navigator") or GameState.has_role_in_crew("navegador")):
+								is_available = false
+								break
 				elif eff_type == "consume_fruit":
 					var fid: String = str(eff.get("fruit_id", ""))
 					if fid != "" and not MetaProgression.is_fruit_unlocked(fid):

@@ -223,6 +223,107 @@
 		  "target": "player"
 		}
 	  ]
+	},
+	"hearty_meal": {
+	  "id": "hearty_meal",
+	  "name": "Refeição Revigorante",
+	  "description": "Comida preparada na hora do combate. Recupere 4 de vida e ganhe 4 de bloqueio.",
+	  "cost": 1,
+	  "type": "skill",
+	  "rarity": "uncommon",
+	  "source": "crew_member",
+	  "tags": ["food", "heal", "defense", "support"],
+	  "effects": [
+		{
+		  "type": "heal",
+		  "value": 4,
+		  "target": "player"
+		},
+		{
+		  "type": "block",
+		  "value": 4,
+		  "target": "player"
+		}
+	  ]
+	},
+	"lightning_jolt": {
+	  "id": "lightning_jolt",
+	  "name": "Golpe de Trovão",
+	  "description": "Dispare eletricidade cortante. Cause 10 de dano elétrico.",
+	  "cost": 1,
+	  "type": "attack",
+	  "rarity": "rare",
+	  "source": "devil_fruit",
+	  "tags": ["attack", "lightning", "elemental"],
+	  "effects": [
+		{
+		  "type": "damage",
+		  "value": 10,
+		  "target": "enemy"
+		}
+	  ]
+	},
+	"spark_barrier": {
+	  "id": "spark_barrier",
+	  "name": "Barreira Elétrica",
+	  "description": "Envolva seu corpo em campo magnético. Ganhe 7 de bloqueio e compre 1 carta.",
+	  "cost": 1,
+	  "type": "skill",
+	  "rarity": "rare",
+	  "source": "devil_fruit",
+	  "tags": ["defense", "lightning", "draw"],
+	  "effects": [
+		{
+		  "type": "block",
+		  "value": 7,
+		  "target": "player"
+		},
+		{
+		  "type": "draw",
+		  "value": 1,
+		  "target": "player"
+		}
+	  ]
+	},
+	"tactical_feint": {
+	  "id": "tactical_feint",
+	  "name": "Finta Tática",
+	  "description": "Engane o oponente em movimento. Cause 7 de dano e compre 1 carta.",
+	  "cost": 1,
+	  "type": "attack",
+	  "rarity": "uncommon",
+	  "source": "milestone_reward",
+	  "tags": ["attack", "tactical", "draw"],
+	  "effects": [
+		{
+		  "type": "damage",
+		  "value": 7,
+		  "target": "enemy"
+		},
+		{
+		  "type": "draw",
+		  "value": 1,
+		  "target": "player"
+		}
+	  ]
+	},
+	"axe_breaker": {
+	  "id": "axe_breaker",
+	  "name": "Quebra-Defesas",
+	  "description": "Golpe devastador inspirado na vitória sobre Morgan. Cause 13 de dano direto perfurante.",
+	  "cost": 2,
+	  "type": "attack",
+	  "rarity": "rare",
+	  "source": "milestone_reward",
+	  "tags": ["attack", "physical", "heavy"],
+	  "effects": [
+		{
+		  "type": "damage",
+		  "value": 13,
+		  "target": "enemy",
+		  "ignore_block": true
+		}
+	  ]
 	}
 }
 

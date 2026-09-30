@@ -11,5 +11,18 @@
 	  "mist_form",
 	  "dense_fog"
 	]
+  },
+  "goro_goro_no_mi": {
+	"id": "goro_goro_no_mi",
+	"name": "Goro Goro no Mi (Fruta do Trovão)",
+	"type": "Logia",
+	"category": "devil_fruit",
+	"description": "Transforma o usuário no próprio relâmpago. Concede descarga elétrica em todos os inimigos no início do combate e cartas tempestuosas de dano e barreira.",
+	"flavor": "Uma fruta pontiaguda de tom dourado e azul elétrico que estala fagulhas constantes ao toque.",
+	"passive_description": "Descarga Estática: Causa 4 de dano de raio ao inimigo no primeiro turno de cada combate.",
+	"associated_cards": [
+	  "lightning_jolt",
+	  "spark_barrier"
+	]
   }
 }

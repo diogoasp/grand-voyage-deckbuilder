@@ -456,6 +456,29 @@ Implementado em `GameState` e orquestrado por `RunScene`:
   - Ao iniciar o jogo, se houver save existente, a run é restaurada exatamente de onde o jogador parou;
   - Ao reiniciar manualmente via menu de opções (`⚙`) ou sofrer derrota em combate, o save anterior é deletado e uma nova expedição começa limpa.
 
+## Sistema de Metaprogressão e Notoriedade Náutica
+
+Autoload: `MetaProgression` (`res://autoload/meta_progression.gd`)
+Persistência: `user://meta_progression.json`
+
+Responsabilidades:
+- **Conversão de Fim de Expedição:**
+  - Converte o `Bounty` acumulado da run em **Pontos de Infâmia** permanentes da carreira (1 Infâmia para cada 2 Bounty + bônus de 20 Infâmia ao derrotar o chefe do setor).
+  - Rastreia recordes históricos: `total_infamy_earned`, `highest_bounty` e `total_runs_completed`.
+- **Loja Notória (Troca de Pontos de Infâmia):**
+  - **Tripulantes Desbloqueáveis:**
+    - `doctor_lin` (Médico): desbloqueado por padrão.
+    - `chef_tora` (Cozinheiro Tora): Custo 50 Infâmia. Passiva: concede +2 Comida ao visitar portos e adiciona a carta `hearty_meal` (Refeição Revigorante).
+  - **Akuma no Mi Desbloqueáveis:**
+    - `kiri_kiri_no_mi` (Fruta da Névoa): desbloqueada por padrão.
+    - `goro_goro_no_mi` (Fruta do Trovão): Custo 80 Infâmia. Passiva: Descarga Estática inicial de 4 de dano ao inimigo + cartas `lightning_jolt` e `spark_barrier`.
+- **Marcos de Conquista (Desbloqueio Passivo de Cartas por Notoriedade):**
+  - *Pirata em Ascensão* (30 de Infâmia total): desbloqueia a carta `tactical_feint` na pool de combate.
+  - *Queda do Carrasco* (Derrotar Capitão Morgan pela 1ª vez): desbloqueia a carta `axe_breaker` na pool de combate.
+- **Tela de Registros & Desbloqueios:**
+  - `res://scenes/menu/RecordsScene.tscn` acessível diretamente pelo Menu Principal.
+  - Exibe saldo de Infâmia, estatísticas da carreira e abas de mercado e conquistas de marcos.
+
 ## Dívida técnica conhecida
 1. Rebuild da mão deve ser observado em mudanças futuras para evitar problemas de `queue_free()` durante sinais.
 2. O sistema de status/buffs temporários em combate suporta atualmente intangibilidade, devendo ser estendido quando novos status surgirem.
@@ -463,7 +486,7 @@ Implementado em `GameState` e orquestrado por `RunScene`:
 4. Trilha e efeitos sonoros (SFX/BGM) ainda não possuem assets de áudio integrados.
 
 ## Próximo marco
-Conclusão do Vertical Slice alcançada e sistema de persistência de run integrado! O próximo marco é aprimorar o polimento sonoro (SFX/BGM) ou expandir as regras de metaprogressão (desbloqueio entre runs).
+Conclusão da base de Metaprogressão e Mercado Notório alcançada! O próximo marco é aprimorar o polimento sonoro (SFX/BGM) ou expandir as opções de eventos e novos inimigos comuns/elites.
 
 
 

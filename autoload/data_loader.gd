@@ -99,9 +99,36 @@ func get_events_for_stage(stage_index: int) -> Array[Dictionary]:
 	for event_id in events.keys():
 		var ev: Dictionary = events[event_id]
 		var allowed_stages: Array = ev.get("allowed_stages", [])
-		# Se allowed_stages estiver vazio ou contiver o stage_index, o evento é elegível
-		if allowed_stages.is_empty() or allowed_stages.has(stage_index):
+		if not (allowed_stages.is_empty() or allowed_stages.has(stage_index)):
+			continue
+
+		# Filtra eventos que concedem tripulantes ou frutas ainda não desbloqueados na metaprogressão
+		var is_available := true
+		var choices: Array = ev.get("choices", [])
+		for ch in choices:
+			if not (ch is Dictionary):
+				continue
+			var effects: Array = ch.get("effects", [])
+			for eff in effects:
+				if not (eff is Dictionary):
+					continue
+				var eff_type: String = str(eff.get("type", ""))
+				if eff_type == "recruit_crew":
+					var cid: String = str(eff.get("crew_id", ""))
+					if cid != "" and not MetaProgression.is_crew_unlocked(cid):
+						is_available = false
+						break
+				elif eff_type == "consume_fruit":
+					var fid: String = str(eff.get("fruit_id", ""))
+					if fid != "" and not MetaProgression.is_fruit_unlocked(fid):
+						is_available = false
+						break
+			if not is_available:
+				break
+
+		if is_available:
 			result.append(ev)
+
 	return result
 
 

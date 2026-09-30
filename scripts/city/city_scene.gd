@@ -29,7 +29,13 @@ func _ready() -> void:
 	supplies_button.pressed.connect(_on_supplies_pressed)
 	depart_button.pressed.connect(_on_depart_pressed)
 
-	feedback_label.text = ""
+	# Passiva de tripulação: Cozinheiro Tora fornece comida extra ao atracar em portos
+	if GameState.crew_members.has("chef_tora"):
+		GameState.food += 2
+		feedback_label.text = "🍳 O Cozinheiro Tora reabasteceu a despensa do navio com ingredientes locais (+2 Comida)!"
+	else:
+		feedback_label.text = ""
+
 	update_status()
 	update_buttons_state()
 

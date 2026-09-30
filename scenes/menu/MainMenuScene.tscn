@@ -96,8 +96,7 @@ text = "🔒 Diário de Bordo"
 custom_minimum_size = Vector2(260, 38)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_colors/font_color = Color(0.65, 0.65, 0.65, 1)
-text = "🔒 Registros & Conquistas"
+text = "📜 Registros & Desbloqueios"
 
 [node name="SettingsButton" type="Button" parent="VBoxContainer/MenuButtons"]
 custom_minimum_size = Vector2(260, 38)

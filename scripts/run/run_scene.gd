@@ -161,7 +161,7 @@ func show_map() -> void:
 		map_scene.node_selected.connect(_on_map_node_selected)
 
 	if map_scene.has_signal("new_expedition_requested"):
-		map_scene.new_expedition_requested.connect(start_run)
+		map_scene.new_expedition_requested.connect(_on_expedition_victory_requested)
 
 	switch_to_screen(map_scene)
 
@@ -267,4 +267,26 @@ func _on_city_depart_requested() -> void:
 
 
 func _on_combat_defeat() -> void:
+	# Converte o Bounty acumulado na expedição em Pontos de Infâmia permanentes
+	var bounty_earned: int = GameState.bounty
+	var meta_res: Dictionary = MetaProgression.convert_run_end_to_infamy(bounty_earned, false)
+	print("Naufrágio! Bounty: %d -> Infâmia ganha: %d. Saldo total: %d" % [
+		bounty_earned,
+		meta_res.get("earned_infamy", 0),
+		meta_res.get("total_infamy", 0)
+	])
+	start_run()
+
+
+func _on_expedition_victory_requested() -> void:
+	var bounty_earned: int = GameState.bounty
+	var meta_res: Dictionary = MetaProgression.convert_run_end_to_infamy(bounty_earned, true)
+	print("Vitória no Setor! Bounty: %d -> Infâmia ganha: %d (com bônus de vitória!). Saldo total: %d" % [
+		bounty_earned,
+		meta_res.get("earned_infamy", 0),
+		meta_res.get("total_infamy", 0)
+	])
+	var new_cards: Array = meta_res.get("new_cards_unlocked", [])
+	if not new_cards.is_empty():
+		print("Novas cartas desbloqueadas por marco de notoriedade: %s" % str(new_cards))
 	start_run()

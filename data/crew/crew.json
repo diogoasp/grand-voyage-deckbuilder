@@ -9,5 +9,16 @@
 	"passive_heal_per_sector": 6,
 	"associated_cards": ["field_medicine"],
 	"tags": ["doctor", "support"]
+  },
+  "chef_tora": {
+	"id": "chef_tora",
+	"name": "Tora, o Cozinheiro dos Mares",
+	"role": "Cozinheiro",
+	"rarity": "uncommon",
+	"description": "Cozinheiro marcial habilidoso que transforma ingredientes simples em banquetes fortificantes para a tripulação.",
+	"food_cost_per_sector": 0,
+	"passive_bonus_food_at_port": 2,
+	"associated_cards": ["hearty_meal"],
+	"tags": ["chef", "support", "food"]
   }
 }

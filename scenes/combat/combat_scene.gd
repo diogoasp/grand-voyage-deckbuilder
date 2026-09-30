@@ -115,6 +115,9 @@ func start_combat() -> void:
 	if GameState.eaten_fruit == "kiri_kiri_no_mi":
 		player.gain_block(4)
 		print("Passiva Akuma no Mi [Kiri Kiri no Mi]: Corpo de Névoa concedeu 4 de bloqueio inicial.")
+	elif GameState.eaten_fruit == "goro_goro_no_mi":
+		enemy.take_damage(4, true)
+		print("Passiva Akuma no Mi [Goro Goro no Mi]: Descarga Estática causou 4 de dano de raio inicial.")
 
 	rebuild_hand_ui()
 	update_ui()
@@ -641,6 +644,8 @@ func get_combat_card_reward_pool() -> Array[String]:
 		var source: String = str(data.get("source", ""))
 		# Only offer combat drops, training techniques, or starter basics as rewards
 		if source in ["combat_reward", "training", "starter_deck"]:
+			pool.append(cid)
+		elif source == "milestone_reward" and MetaProgression.is_card_unlocked(cid):
 			pool.append(cid)
 
 	return pool

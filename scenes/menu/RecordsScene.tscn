@@ -1,0 +1,149 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/menu/records_scene.gd" id="1_records"]
+
+[node name="RecordsScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_records")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.06, 0.08, 0.12, 1)
+
+[node name="MainLayout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = 20.0
+offset_right = -32.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="TopBar" type="HBoxContainer" parent="MainLayout"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="BackButton" type="Button" parent="MainLayout/TopBar"]
+custom_minimum_size = Vector2(110, 38)
+layout_mode = 2
+text = "← Voltar"
+
+[node name="TitleVBox" type="VBoxContainer" parent="MainLayout/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="InfamyLabel" type="Label" parent="MainLayout/TopBar/TitleVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.8, 0.35, 1)
+theme_override_font_sizes/font_size = 20
+text = "☠ Pontos de Infâmia: 0"
+
+[node name="StatsLabel" type="Label" parent="MainLayout/TopBar/TitleVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.8, 1)
+theme_override_font_sizes/font_size = 13
+text = "Infâmia Histórica: 0 | Maior Bounty: 0 | Expedições Vencidas: 0"
+
+[node name="TabContainer" type="TabContainer" parent="MainLayout"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Mercado" type="Control" parent="MainLayout/TabContainer"]
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="MainLayout/TabContainer/Mercado"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Scroll" type="ScrollContainer" parent="MainLayout/TabContainer/Mercado/Margin"]
+layout_mode = 2
+
+[node name="ContentVBox" type="VBoxContainer" parent="MainLayout/TabContainer/Mercado/Margin/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 24
+
+[node name="CrewSection" type="VBoxContainer" parent="MainLayout/TabContainer/Mercado/Margin/Scroll/ContentVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="CrewHeader" type="Label" parent="MainLayout/TabContainer/Mercado/Margin/Scroll/ContentVBox/CrewSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 0.6, 1)
+theme_override_font_sizes/font_size = 18
+text = "👥 Tripulação Desbloqueável (Mercado dos Mares)"
+
+[node name="CrewList" type="VBoxContainer" parent="MainLayout/TabContainer/Mercado/Margin/Scroll/ContentVBox/CrewSection"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="FruitSection" type="VBoxContainer" parent="MainLayout/TabContainer/Mercado/Margin/Scroll/ContentVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="FruitHeader" type="Label" parent="MainLayout/TabContainer/Mercado/Margin/Scroll/ContentVBox/FruitSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.6, 0.8, 1)
+theme_override_font_sizes/font_size = 18
+text = "🌀 Akuma no Mi Desbloqueáveis (Tesouros Místicos)"
+
+[node name="FruitList" type="VBoxContainer" parent="MainLayout/TabContainer/Mercado/Margin/Scroll/ContentVBox/FruitSection"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Conquistas" type="Control" parent="MainLayout/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="MainLayout/TabContainer/Conquistas"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Scroll" type="ScrollContainer" parent="MainLayout/TabContainer/Conquistas/Margin"]
+layout_mode = 2
+
+[node name="MilestonesList" type="VBoxContainer" parent="MainLayout/TabContainer/Conquistas/Margin/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="BottomBar" type="HBoxContainer" parent="MainLayout"]
+layout_mode = 2
+alignment = 1
+
+[node name="FeedbackLabel" type="Label" parent="MainLayout/BottomBar"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.8, 0.4, 1)
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1

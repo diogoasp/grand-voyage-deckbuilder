@@ -70,6 +70,40 @@
 	  }
 	]
   },
+  "sea_chef_encounter": {
+	"id": "sea_chef_encounter",
+	"title": "Cozinha Flutuante do Cais",
+	"short_title": "Cozinheiro Tora",
+	"desc": "Recrutar Cozinheiro",
+	"allowed_stages": [0],
+	"body": "O aroma de ensopado temperado com especiarias marinhas invade a enseada. Um homem robusto cozinha com maestria enquanto empunha um cutelo afiado. Ele busca um navio com apetite para grandes aventuras.",
+	"choices": [
+	  {
+		"label": "Recrutar Tora (+2 Comida extra ao visitar portos, +1 Refeição Revigorante ao deck)",
+		"effects": [
+		  {
+			"type": "recruit_crew",
+			"crew_id": "chef_tora"
+		  }
+		]
+	  },
+	  {
+		"label": "Comprar provisões deliciosas (-15 Ouro, +3 Comida)",
+		"effects": [
+		  {
+			"type": "gain_resource",
+			"resource": "gold",
+			"value": -15
+		  },
+		  {
+			"type": "gain_resource",
+			"resource": "food",
+			"value": 3
+		  }
+		]
+	  }
+	]
+  },
   "mysterious_chest": {
 	"id": "mysterious_chest",
 	"title": "Baú do Naufrágio Oculto",
@@ -94,6 +128,35 @@
 			"type": "gain_resource",
 			"resource": "gold",
 			"value": 50
+		  }
+		]
+	  }
+	]
+  },
+  "thunder_ruins": {
+	"id": "thunder_ruins",
+	"title": "Ruínas do Trovão Antigo",
+	"short_title": "Ruínas do Trovão",
+	"desc": "Fruta do Trovão",
+	"allowed_stages": [1],
+	"body": "No topo de um pico escarpado fustigado por tempestades eternas, repousa um relicário faiscante. Dentro dele, faíscas azuis e douradas circulam a mítica Goro Goro no Mi (Fruta do Trovão). O poder elemental dos céus aguarda quem tiver coragem de tomá-lo.",
+	"choices": [
+	  {
+		"label": "Consumir a Fruta do Trovão (Descarga Estática de 4 dano em combates + Cartas Golpe de Trovão e Barreira Elétrica)",
+		"effects": [
+		  {
+			"type": "consume_fruit",
+			"fruit_id": "goro_goro_no_mi"
+		  }
+		]
+	  },
+	  {
+		"label": "Canalizar a energia para carregar os canhões (+60 Ouro)",
+		"effects": [
+		  {
+			"type": "gain_resource",
+			"resource": "gold",
+			"value": 60
 		  }
 		]
 	  }

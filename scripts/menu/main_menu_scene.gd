@@ -3,6 +3,7 @@ extends Control
 
 signal new_run_selected
 signal continue_run_selected
+signal records_selected
 
 @onready var continue_button: Button = $VBoxContainer/MenuButtons/ContinueButton
 @onready var new_game_button: Button = $VBoxContainer/MenuButtons/NewGameButton
@@ -22,7 +23,7 @@ func _ready() -> void:
 	continue_button.pressed.connect(_on_continue_pressed)
 	new_game_button.pressed.connect(_on_new_game_pressed)
 	diary_button.pressed.connect(_on_locked_feature_pressed.bind("Diário"))
-	records_button.pressed.connect(_on_locked_feature_pressed.bind("Registros"))
+	records_button.pressed.connect(_on_records_pressed)
 	settings_button.pressed.connect(_on_locked_feature_pressed.bind("Configurações"))
 	quit_button.pressed.connect(_on_quit_pressed)
 
@@ -69,6 +70,10 @@ func _on_continue_pressed() -> void:
 
 func _on_new_game_pressed() -> void:
 	new_run_selected.emit()
+
+
+func _on_records_pressed() -> void:
+	records_selected.emit()
 
 
 var feedback_tween: Tween = null

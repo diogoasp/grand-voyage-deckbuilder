@@ -1,22 +1,27 @@
 # Tarefa Atual
 
 ## Nome
-Sistema de Metaprogressão, Mercado de Infâmia & Desbloqueio de Marcos de Cartas.
+Geografia Canônica do South Blue (Ato 1), Seleção Temática de Chefes & Transição para Grand Line (Ato 2).
 
 ## Objetivo
-Implementar o loop de metaprogressão roguelite:
-- Conversão de Bounty em Pontos de Infâmia ao concluir a run (vitória sobre Morgan ou derrota);
-- Loja do Mercado Notório: troca de Pontos de Infâmia para desbloquear Tripulantes (`chef_tora`) e Akuma no Mi (`goro_goro_no_mi`);
-- Desbloqueio passivo de cartas por Marcos de Notoriedade (`tactical_feint` e `axe_breaker`);
-- Tela de Registros & Desbloqueios acessível pelo Menu Principal.
+Implementar a estrutura canônica de Atos/Fases do mundo de One Piece:
+- Geração da rota do **South Blue (Ato 1)** partindo da ilhota desconhecida:
+  - Setor 1: Karate Island, Sorbet Kingdom ou Ilha Misteriosa (sempre Evento);
+  - Setor 2: Centaurea Kingdom, Judo Island ou Torino Kingdom;
+  - Setor 3: Ilha Misteriosa (sempre Evento) ou Baterilla Island;
+  - Setor 4: Briss Kingdom (Grande Porto Seguro antes da Grande Travessia);
+  - Setor 5: Batalha de Chefe do South Blue (Capitão Morgan ou Comodoro Pudding-Pudding).
+- **Restrição de Akuma no Mi:** Frutas são extremamente raras e **não aparecem nos Blues** (`allowed_acts: [2]`); disponíveis apenas na Grand Line.
+- **Sorteio e Balanceamento de Chefes:** Suporte ao atributo `allowed_acts` em `enemies.json` para sortear chefes condizentes com a fase da narrativa.
+- **Transição Multi-Atos:** Ao derrotar o chefe de Briss Kingdom / South Blue, o jogador pode zarpar rumo à Grand Line (Ato 2: Reverse Mountain / Whiskey Peak), preservando HP, ouro, deck e tripulação.
 
 ## Critérios de aceite
-1. Autoload `MetaProgression` salva e carrega dados persistentes (`infamy_points`, itens desbloqueados e marcos).
-2. Fim de combate (derrota) e vitória de setor convertem Bounty em Infâmia com persistência.
-3. Tela de Registros & Desbloqueios permite comprar tripulantes e frutas se houver saldo suficiente.
-4. Marcos de Notoriedade liberam novas cartas para a pool de draft pós-combate quando preenchidos.
-5. Filtro dinâmico de eventos no `DataLoader` respeita os tripulantes e frutas desbloqueados.
-6. Validação completa sem erros de parser/script no Godot headless.
+1. Mapa do South Blue gera exatamente as ilhas e tipos especificados em cada setor.
+2. Ilhas Misteriosas contêm exclusivamente nós do tipo `event`.
+3. Eventos de Akuma no Mi não aparecem no South Blue (Ato 1).
+4. Chefes são filtrados por `allowed_acts`, sorteando Morgan ou Pudding-Pudding no South Blue.
+5. Vencer o chefe do South Blue permite zarpar para a Grand Line (Ato 2) mantendo o estado da expedição.
+6. Validação do Godot headless sem erros de parser/script.
 
 
 

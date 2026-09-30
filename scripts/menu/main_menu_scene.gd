@@ -55,8 +55,11 @@ func refresh_save_status() -> void:
 			else:
 				fruit_info = fruit_name
 
-		save_info_label.text = "⚓ EXPEDIÇÃO EM CURSO (Setor %d)\n• Vida: %d/%d  |  Ouro: %d  |  Comida: %d  |  Bounty: %d\n• Deck: %d cartas  |  Tripulação: %d  |  Akuma no Mi: %s" % [
-			stage_idx, hp, max_hp, gold, food, bounty, deck_size, crew_count, fruit_info
+		var act_num: int = int(summary.get("current_act", 1))
+		var sea_name := "South Blue" if act_num == 1 else "Grand Line"
+
+		save_info_label.text = "⚓ EXPEDIÇÃO EM CURSO: %s (Setor %d)\n• Vida: %d/%d  |  Ouro: %d  |  Comida: %d  |  Bounty: %d\n• Deck: %d cartas  |  Tripulação: %d  |  Akuma no Mi: %s" % [
+			sea_name, stage_idx, hp, max_hp, gold, food, bounty, deck_size, crew_count, fruit_info
 		]
 		save_info_panel.visible = true
 	else:

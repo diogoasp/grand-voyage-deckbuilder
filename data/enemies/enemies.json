@@ -82,6 +82,8 @@
 	"id": "marine_captain_morgan",
 	"name": "Capitão Morgan 'Mão de Machado'",
 	"category": "boss",
+	"allowed_acts": [1],
+	"story_intro": "O carrasco da 153ª Divisão da Marinha bloqueia as rotas de fuga do South Blue.",
 	"max_hp": 65,
 	"intent_pool": [
 	  {
@@ -130,6 +132,57 @@
 	  "gold_min": 50,
 	  "gold_max": 75,
 	  "bounty": 30
+	}
+  },
+  "commodore_pudding_pudding": {
+	"id": "commodore_pudding_pudding",
+	"name": "Comodoro Pudding-Pudding",
+	"category": "boss",
+	"allowed_acts": [1],
+	"story_intro": "A 77ª Frota da Marinha patrulha as águas do South Blue para conter piratas em ascensão.",
+	"max_hp": 60,
+	"intent_pool": [
+	  {
+		"id": "naval_barrage",
+		"name": "Salva de Canhões",
+		"weight": 40,
+		"effects": [
+		  {
+			"type": "damage",
+			"value": 8,
+			"target": "player"
+		  }
+		]
+	  },
+	  {
+		"id": "iron_discipline",
+		"name": "Disciplina de Ferro",
+		"weight": 35,
+		"effects": [
+		  {
+			"type": "block",
+			"value": 12,
+			"target": "self"
+		  }
+		]
+	  },
+	  {
+		"id": "full_broadside",
+		"name": "Bombardeio Cerrado",
+		"weight": 25,
+		"effects": [
+		  {
+			"type": "damage",
+			"value": 14,
+			"target": "player"
+		  }
+		]
+	  }
+	],
+	"rewards": {
+	  "gold_min": 55,
+	  "gold_max": 80,
+	  "bounty": 35
 	}
   }
 }

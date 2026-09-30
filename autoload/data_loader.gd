@@ -94,10 +94,16 @@ func get_all_events() -> Dictionary:
 	return events
 
 
-func get_events_for_stage(stage_index: int) -> Array[Dictionary]:
+func get_events_for_stage(stage_index: int, act: int = 1) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
 	for event_id in events.keys():
 		var ev: Dictionary = events[event_id]
+
+		# Filtra por ato/fase (ex: South Blue = 1, Grand Line = 2)
+		var allowed_acts: Array = ev.get("allowed_acts", [])
+		if not (allowed_acts.is_empty() or allowed_acts.has(act)):
+			continue
+
 		var allowed_stages: Array = ev.get("allowed_stages", [])
 		if not (allowed_stages.is_empty() or allowed_stages.has(stage_index)):
 			continue

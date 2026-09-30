@@ -90,10 +90,21 @@ func rebuild_map_ui() -> void:
 	for child in columns_container.get_children():
 		child.queue_free()
 
+	var sea_name := "South Blue (Ato 1)" if GameState.current_act == 1 else "Grand Line (Ato 2)"
+	if title_label != null:
+		title_label.text = "Carta de Navegação Náutica — %s" % sea_name
+
 	if current_stage >= map_stages.size():
-		prompt_label.text = "🏆 ROTA DO SETOR CONCLUÍDA! O Capitão Morgan foi derrotado e o mar deste setor foi dominado!"
-		if victory_button != null:
-			victory_button.visible = true
+		if GameState.current_act == 1:
+			prompt_label.text = "🏆 O SOUTH BLUE FOI DOMINADO! Os portões da Reverse Mountain estão abertos!"
+			if victory_button != null:
+				victory_button.text = "Zarpar rumo à Grand Line ⛵"
+				victory_button.visible = true
+		else:
+			prompt_label.text = "🏆 CONQUISTA DA GRAND LINE CONCLUÍDA! O mar deste setor foi dominado!"
+			if victory_button != null:
+				victory_button.text = "Iniciar Nova Expedição"
+				victory_button.visible = true
 		if map_lines_overlay != null:
 			map_lines_overlay.queue_redraw()
 		return

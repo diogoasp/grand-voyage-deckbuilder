@@ -405,42 +405,43 @@ Chefe implementado:
     - *Execução Impiedosa*: 15 de dano massivo;
   - Conexão: ativado no nó final do setor através do tipo `"boss"`, com destaque visual no mapa (borda avermelhada e ícone de caveira).
 
-## Geração Procedural da Carta Náutica (MapGenerator)
+## Geração Procedural da Carta Náutica (MapGenerator) & Fases/Atos
 
 Script:
 `res://scripts/map/map_generator.gd`
 
 Responsabilidades:
-- desacoplar a criação do mapa do script de cena;
-- criar rotas procedurais e balanceadas para cada nova run (estilo *Slay the Spire*);
-- consultar o `DataLoader` dinamicamente para sortear nós de acordo com o agrupamento por fase (`allowed_stages`):
-  - **Estágio 0:** Eventos de cais elegíveis para fase 0 (`old_port_trainer`, `wandering_doctor`);
-  - **Estágio 1:** Combates procedurais variados com pool dinâmico de inimigos comuns + eventos marítimos sorteados da pool da fase 1 (`mysterious_chest`, `stranded_merchant`, `siren_shallows`);
-  - **Estágio 2:** Parada portuária (cidade com ações estratégicas de descanso/treino);
-  - **Estágio 3:** Batalha de Chefe do Setor consultando dinamicamente a pool de chefes;
-- persistir a rota na `RunScene` durante a travessia e gerar novo mapa ao iniciar nova expedição.
-
+- Gerar a rota marítima com a geografia canônica do **South Blue (Ato 1)**:
+  - **Setor 1:** Karate Island (Dojô Marcial), Sorbet Kingdom (Monarquia) ou Ilha Misteriosa (sempre Evento);
+  - **Setor 2:** Centaurea Kingdom (Combates/Eventos), Judo Island ou Torino Kingdom (Ervas/Medicina);
+  - **Setor 3:** Ilha Misteriosa (sempre Evento) ou Baterilla Island (História Náutica/Pousada);
+  - **Setor 4:** Briss Kingdom (Grande Porto Seguro com Taverna, Treinamentos e Provisões antes da Grande Travessia);
+  - **Setor 5:** Batalha de Chefe do South Blue (sorteio entre chefes elegíveis para o Ato 1: Capitão Morgan ou Comodoro Pudding-Pudding).
+- **Regras Canônicas de Frutas e Chefes por Ato:**
+  - Akuma no Mi são extremamente raras e **não aparecem nos Blues** (`allowed_acts: [2]`); elas só passam a ser encontradas em baús/ruínas na **Grand Line (Ato 2)**.
+  - Inimigos e Chefes possuem o atributo `allowed_acts` no `enemies.json` para garantir balanceamento e narrativa coesa por mar.
+  - Ao vencer o Chefe do South Blue, o jogador pode zarpar rumo à **Grand Line (Ato 2)**, avançando com deck, vida, ouro e tripulação intactos para um novo mapa procedural de mar aberto!
 
 ## Fluxo atual
 Fluxo atual implementado:
 
 ```text
-Main
-→ RunScene (start_run -> GameState.reset_run() -> MapGenerator.generate_sector_map())
-→ MapScene (Carta Náutica Procedural do Setor)
-  ├── Setor 1: Escolha Inicial no Cais:
-  │     ├── [A] Velho Lutador (Postura defensiva OU Despertar Haki de Armamento: Golpe perfurante)
-  │     └── [B] Médico do Cais (Recrutar Dr. Lin: +1 Medicina de Campo, cura por setor)
-  │     └── Conclusão -> Aplica passivas de viagem -> Retorna ao Mapa
-  ├── Setor 2: Rota Procedural de Mar Aberto:
-  │     ├── [A] Patrulha Costeira ("marine_recruit")
-  │     ├── [B] Pirataria Rival ("bandit_sailor")
-  │     └── [C] Baú Naufragado ("mysterious_chest" -> Comer Fruta da Névoa OU Vender por 50 Ouro)
-  │     └── Vitória/Conclusão -> Aplica passivas de viagem -> Retorna ao Mapa
-  ├── Setor 3: Porto Seguro (CityScene: Taverna, Treino Básico, Treino de Haki de Observação ou Provisões) -> Zarpar
-  └── Setor 4: Batalha de Chefe (💀 [CHEFE] Capitão Morgan: 65 HP, Golpe 9, Postura Tirano 10/4, Execução 15)
-        ├── Vitória -> Rota concluída -> Botão "Iniciar Nova Expedição" (regenera run e mapa)
-        └── Derrota -> Reinicia a run
+Main (Tela Inicial)
+├── Continuar Campanha (com resumo de Atos, Setor, HP, Ouro, Deck, Tripulação e Fruta)
+├── Nova Campanha
+└── Registros & Desbloqueios (Mercado Notório com Tripulantes, Frutas e Marcos de Cartas)
+     │
+     ▼
+RunScene (start_run -> GameState.reset_run())
+→ MapScene (South Blue - Ato 1)
+  ├── Setor 1: Karate Island | Sorbet Kingdom | Ilha Misteriosa (Evento)
+  ├── Setor 2: Centaurea Kingdom | Judo Island | Torino Kingdom
+  ├── Setor 3: Ilha Misteriosa (Evento) | Baterilla Island
+  ├── Setor 4: Briss Kingdom (Porto Seguro Final do South Blue)
+  └── Setor 5: Chefe do Mar (💀 Capitão Morgan OU Comodoro Pudding-Pudding)
+        ├── Derrota -> Converte Bounty em Infâmia -> Reinicia run
+        └── Vitória -> Converte Bounty em Infâmia (+20 bônus) -> "Zarpar rumo à Grand Line ⛵"
+              └── Avança para o Ato 2 (Grand Line: Reverse Mountain / Whiskey Peak)
 ```
 
 ## Sistema de Persistência e Salvamento (Save/Load da Run)

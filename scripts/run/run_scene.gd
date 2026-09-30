@@ -281,7 +281,7 @@ func _on_combat_defeat() -> void:
 func _on_expedition_victory_requested() -> void:
 	var bounty_earned: int = GameState.bounty
 	var meta_res: Dictionary = MetaProgression.convert_run_end_to_infamy(bounty_earned, true)
-	print("Vitória no Setor! Bounty: %d -> Infâmia ganha: %d (com bônus de vitória!). Saldo total: %d" % [
+	print("Vitória no Mar! Bounty: %d -> Infâmia ganha: %d (com bônus de vitória!). Saldo total: %d" % [
 		bounty_earned,
 		meta_res.get("earned_infamy", 0),
 		meta_res.get("total_infamy", 0)
@@ -289,4 +289,20 @@ func _on_expedition_victory_requested() -> void:
 	var new_cards: Array = meta_res.get("new_cards_unlocked", [])
 	if not new_cards.is_empty():
 		print("Novas cartas desbloqueadas por marco de notoriedade: %s" % str(new_cards))
-	start_run()
+
+	if GameState.current_act == 1:
+		# Avança para o Ato 2 (Entrada da Grand Line) mantendo vida, deck, ouro e tripulação!
+		advance_to_grand_line()
+	else:
+		start_run()
+
+
+func advance_to_grand_line() -> void:
+	GameState.current_act = 2
+	current_stage = 0
+	completed_nodes.clear()
+	active_node_data.clear()
+	last_selected_node_id = ""
+	sector_map = MAP_GENERATOR.generate_sector_map(2)
+	save_run()
+	show_map()

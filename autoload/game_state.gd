@@ -21,8 +21,10 @@ var current_deck: Array[String] = [
 
 var crew_members: Array[String] = []
 var eaten_fruit: String = ""
+var current_act: int = 1 # 1 = South Blue, 2 = Grand Line
 
 func reset_run() -> void:
+	current_act = 1
 	player_hp = player_max_hp
 	gold = 0
 	food = 5
@@ -155,6 +157,7 @@ func has_saved_run() -> bool:
 
 func save_run_state(extra_data: Dictionary = {}) -> bool:
 	var state_dict: Dictionary = {
+		"current_act": current_act,
 		"player_max_hp": player_max_hp,
 		"player_hp": player_hp,
 		"gold": gold,
@@ -238,6 +241,7 @@ func load_run_state() -> Dictionary:
 
 	var data: Dictionary = parsed
 
+	current_act = int(data.get("current_act", 1))
 	player_max_hp = int(data.get("player_max_hp", 70))
 	player_hp = int(data.get("player_hp", 70))
 	gold = int(data.get("gold", 0))

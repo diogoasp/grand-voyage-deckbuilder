@@ -109,6 +109,7 @@
 	"title": "Baú do Naufrágio Oculto",
 	"short_title": "Baú Naufragado",
 	"desc": "Fruta da Névoa",
+	"allowed_acts": [2],
 	"allowed_stages": [1],
 	"body": "Entre destroços envoltos em uma névoa sobrenatural na praia rochosa, você encontra uma arca trancada. Dentro repousa uma fruta misteriosa com espirais cintilantes: a Kiri Kiri no Mi (Fruta da Névoa). As lendas dizem que concede poderes de bruma e intangibilidade, mas rouba a bênção dos mares.",
 	"choices": [
@@ -138,6 +139,7 @@
 	"title": "Ruínas do Trovão Antigo",
 	"short_title": "Ruínas do Trovão",
 	"desc": "Fruta do Trovão",
+	"allowed_acts": [2],
 	"allowed_stages": [1],
 	"body": "No topo de um pico escarpado fustigado por tempestades eternas, repousa um relicário faiscante. Dentro dele, faíscas azuis e douradas circulam a mítica Goro Goro no Mi (Fruta do Trovão). O poder elemental dos céus aguarda quem tiver coragem de tomá-lo.",
 	"choices": [

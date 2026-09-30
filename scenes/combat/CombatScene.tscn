@@ -5,6 +5,30 @@
 [ext_resource type="Texture2D" uid="uid://bou1ouens75dm" path="res://assets/art/Boss 1 Morgan_bg.png" id="2_gvrxc"]
 [ext_resource type="Texture2D" uid="uid://crgr6k283tg4y" path="res://assets/art/Boss 1 Morgan_bg_front.png" id="3_i18os"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_bg"]
+bg_color = Color(0.12, 0.14, 0.18, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.35, 0.45, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_fill"]
+bg_color = Color(0.18, 0.72, 0.36, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.35, 0.9, 0.5, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_0x2iq"]
 atlas = ExtResource("2_2ussv")
 region = Rect2(0, 0, 57, 59)
@@ -34,6 +58,32 @@ animations = [{
 "speed": 3.0
 }]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_energy_orb"]
+bg_color = Color(0.08, 0.22, 0.42, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.8, 1, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+shadow_color = Color(0.2, 0.6, 1, 0.35)
+shadow_size = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pile_card"]
+bg_color = Color(0.12, 0.15, 0.2, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.38, 0.48, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
 [node name="CombatScene" type="Control" unique_id=1447061713]
 layout_mode = 3
 anchors_preset = 0
@@ -41,11 +91,13 @@ offset_right = 1270.0
 offset_bottom = 720.0
 script = ExtResource("1_cetgp")
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=1163839127]
-layout_mode = 0
-offset_right = 1151.0
-offset_bottom = 150.0
-color = Color(0.16543144, 0.16543144, 0.16543144, 1)
+[node name="TopBarBackground" type="ColorRect" parent="." unique_id=1163839127]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 44.0
+grow_horizontal = 2
+color = Color(0.1, 0.12, 0.16, 0.95)
 
 [node name="Boss1MorganBg" type="Sprite2D" parent="." unique_id=1623098963]
 position = Vector2(577, 328)
@@ -59,16 +111,65 @@ texture = ExtResource("3_i18os")
 
 [node name="TopBar" type="HBoxContainer" parent="." unique_id=481716624]
 layout_mode = 0
-offset_left = 20.0
-offset_right = 1060.0
-offset_bottom = 51.0
-theme_override_constants/separation = 24
+offset_left = 16.0
+offset_top = 4.0
+offset_right = 1090.0
+offset_bottom = 40.0
+theme_override_constants/separation = 16
 
-[node name="EnergyLabel" type="Label" parent="TopBar" unique_id=498130580]
+[node name="PlayerHUD" type="HBoxContainer" parent="TopBar" unique_id=198302194]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PlayerNameLabel" type="Label" parent="TopBar/PlayerHUD" unique_id=1006205033]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
-text = "Energia: 3/3"
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 18
+text = "Capitão"
 vertical_alignment = 1
+
+[node name="PlayerHPContainer" type="HBoxContainer" parent="TopBar/PlayerHUD" unique_id=1764902482]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="PlayerHPBar" type="ProgressBar" parent="TopBar/PlayerHUD/PlayerHPContainer" unique_id=208394812]
+custom_minimum_size = Vector2(170, 24)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
+value = 100.0
+show_percentage = false
+
+[node name="PlayerHPLabel" type="Label" parent="TopBar/PlayerHUD/PlayerHPContainer/PlayerHPBar" unique_id=1764902483]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 13
+text = "HP: 60/60"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayerBlockBadge" type="Label" parent="TopBar/PlayerHUD/PlayerHPContainer" unique_id=1764902484]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.85, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "🛡 0"
+vertical_alignment = 1
+
+[node name="Separator" type="VSeparator" parent="TopBar" unique_id=184918231]
+layout_mode = 2
 
 [node name="GoldLabel" type="Label" parent="TopBar" unique_id=1263058213]
 layout_mode = 2
@@ -80,16 +181,6 @@ vertical_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.3, 0.3, 1)
 text = "Bounty: 0"
-vertical_alignment = 1
-
-[node name="DrawPileLabel" type="Label" parent="TopBar" unique_id=1259792803]
-layout_mode = 2
-text = "Deck: 0"
-vertical_alignment = 1
-
-[node name="DiscardPileLabel" type="Label" parent="TopBar" unique_id=253655563]
-layout_mode = 2
-text = "Descarte: 0"
 vertical_alignment = 1
 
 [node name="ColorRect2" type="ColorRect" parent="." unique_id=1042119628]
@@ -145,25 +236,7 @@ offset_left = 180.0
 offset_top = 200.0
 offset_right = 320.0
 offset_bottom = 420.0
-
-[node name="PlayerNameLabel" type="Label" parent="PlayerArea" unique_id=1006205033]
-layout_mode = 2
-horizontal_alignment = 1
-
-[node name="PlayerHPContainer" type="HBoxContainer" parent="PlayerArea" unique_id=1764902482]
-layout_mode = 2
-theme_override_constants/separation = 8
 alignment = 1
-
-[node name="PlayerHPLabel" type="Label" parent="PlayerArea/PlayerHPContainer" unique_id=1764902483]
-layout_mode = 2
-text = "HP: 60/60"
-
-[node name="PlayerBlockBadge" type="Label" parent="PlayerArea/PlayerHPContainer" unique_id=1764902484]
-visible = false
-layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.8, 1, 1)
-text = "🛡 0"
 
 [node name="PlayerPlaceholder" type="ColorRect" parent="PlayerArea" unique_id=1194753351]
 custom_minimum_size = Vector2(110, 120)
@@ -175,21 +248,94 @@ layout_mode = 2
 theme_override_constants/separation = 4
 alignment = 1
 
+[node name="LeftHUD" type="VBoxContainer" parent="." unique_id=1582910471]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 445.0
+offset_right = 114.0
+offset_bottom = 635.0
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="EnergyContainer" type="PanelContainer" parent="LeftHUD" unique_id=892304195]
+custom_minimum_size = Vector2(96, 76)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_energy_orb")
+
+[node name="EnergyVBox" type="VBoxContainer" parent="LeftHUD/EnergyContainer" unique_id=129847192]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="EnergyIcon" type="Label" parent="LeftHUD/EnergyContainer/EnergyVBox" unique_id=192837194]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.85, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "⚡"
+horizontal_alignment = 1
+
+[node name="EnergyLabel" type="Label" parent="LeftHUD/EnergyContainer/EnergyVBox" unique_id=498130580]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.6, 1)
+theme_override_font_sizes/font_size = 16
+text = "3/3"
+horizontal_alignment = 1
+
+[node name="DeckContainer" type="PanelContainer" parent="LeftHUD" unique_id=749182341]
+custom_minimum_size = Vector2(96, 52)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_pile_card")
+
+[node name="DeckVBox" type="VBoxContainer" parent="LeftHUD/DeckContainer" unique_id=891238472]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="DrawPileLabel" type="Label" parent="LeftHUD/DeckContainer/DeckVBox" unique_id=1259792803]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.9, 0.95, 1)
+theme_override_font_sizes/font_size = 14
+text = "🎴 Deck: 0"
+horizontal_alignment = 1
+
 [node name="HandArea" type="HBoxContainer" parent="." unique_id=767289767]
 layout_mode = 0
-offset_left = 16.0
+offset_left = 124.0
 offset_top = 426.0
 offset_right = 970.0
 offset_bottom = 648.0
 theme_override_constants/separation = 6
 alignment = 1
 
-[node name="EndTurnButton" type="Button" parent="." unique_id=352398968]
+[node name="RightHUD" type="VBoxContainer" parent="." unique_id=1849102834]
 layout_mode = 0
 offset_left = 985.0
-offset_top = 515.0
+offset_top = 450.0
 offset_right = 1135.0
-offset_bottom = 575.0
+offset_bottom = 630.0
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="DiscardContainer" type="PanelContainer" parent="RightHUD" unique_id=892347102]
+custom_minimum_size = Vector2(150, 52)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_pile_card")
+
+[node name="DiscardVBox" type="VBoxContainer" parent="RightHUD/DiscardContainer" unique_id=481923719]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="DiscardPileLabel" type="Label" parent="RightHUD/DiscardContainer/DiscardVBox" unique_id=253655563]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.75, 0.75, 1)
+theme_override_font_sizes/font_size = 14
+text = "🗑 Descarte: 0"
+horizontal_alignment = 1
+
+[node name="EndTurnButton" type="Button" parent="RightHUD" unique_id=352398968]
+custom_minimum_size = Vector2(150, 56)
+layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "Finalizar turno ➔"
 

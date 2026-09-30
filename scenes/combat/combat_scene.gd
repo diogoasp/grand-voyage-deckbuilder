@@ -7,17 +7,22 @@ const CARD_VIEW_SCENE: PackedScene = preload("res://scenes/combat/CardView.tscn"
 const CARD_SLOT_SIZE: Vector2 = Vector2(154, 220)
 
 @onready var player_area: Control = $PlayerArea
-@onready var player_name_label: Label = $PlayerArea/PlayerNameLabel
-@onready var player_hp_label: Label = $PlayerArea/PlayerHPContainer/PlayerHPLabel
-@onready var player_block_badge: Label = $PlayerArea/PlayerHPContainer/PlayerBlockBadge
 @onready var player_placeholder: ColorRect = $PlayerArea/PlayerPlaceholder
 @onready var player_status_container: HBoxContainer = $PlayerArea/PlayerStatusContainer
 
-@onready var energy_label: Label = $TopBar/EnergyLabel
-@onready var draw_pile_label: Label = $TopBar/DrawPileLabel
-@onready var discard_pile_label: Label = $TopBar/DiscardPileLabel
+@onready var top_bar: HBoxContainer = $TopBar
+@onready var player_hud: HBoxContainer = $TopBar/PlayerHUD
+@onready var player_name_label: Label = $TopBar/PlayerHUD/PlayerNameLabel
+@onready var player_hp_bar: ProgressBar = $TopBar/PlayerHUD/PlayerHPContainer/PlayerHPBar
+@onready var player_hp_label: Label = $TopBar/PlayerHUD/PlayerHPContainer/PlayerHPBar/PlayerHPLabel
+@onready var player_block_badge: Label = $TopBar/PlayerHUD/PlayerHPContainer/PlayerBlockBadge
+
 @onready var gold_label: Label = $TopBar/GoldLabel
 @onready var bounty_label: Label = $TopBar/BountyLabel
+
+@onready var energy_label: Label = $LeftHUD/EnergyContainer/EnergyVBox/EnergyLabel
+@onready var draw_pile_label: Label = $LeftHUD/DeckContainer/DeckVBox/DrawPileLabel
+@onready var discard_pile_label: Label = $RightHUD/DiscardContainer/DiscardVBox/DiscardPileLabel
 
 @onready var enemy_area: VBoxContainer = $EnemyArea
 @onready var enemy_intent_container: HBoxContainer = $EnemyArea/EnemyIntentContainer
@@ -27,7 +32,7 @@ const CARD_SLOT_SIZE: Vector2 = Vector2(154, 220)
 @onready var enemy_sprite: AnimatedSprite2D = $EnemyArea/EnemySprite
 
 @onready var hand_area: HBoxContainer = $HandArea
-@onready var end_turn_button: Button = $EndTurnButton
+@onready var end_turn_button: Button = $RightHUD/EndTurnButton
 
 @onready var result_panel: PanelContainer = $ResultPanel
 @onready var result_title_label: Label = $ResultPanel/ResultMargin/ResultVBox/ResultTitleLabel
@@ -224,6 +229,8 @@ func clear_hand_ui() -> void:
 func update_ui() -> void:
 	player_name_label.text = player.display_name
 	player_hp_label.text = "HP: %s" % player.get_hp_text()
+	player_hp_bar.max_value = player.max_hp
+	player_hp_bar.value = player.hp
 
 	if player.block > 0:
 		player_block_badge.text = "🛡 %d" % player.block
@@ -240,12 +247,12 @@ func update_ui() -> void:
 	else:
 		enemy_block_badge.visible = false
 
-	energy_label.text = "Energia: %d/%d" % [
+	energy_label.text = "%d/%d" % [
 		combat_context.energy,
 		combat_context.max_energy
 	]
-	draw_pile_label.text = "Deck: %d" % deck_manager.get_draw_count()
-	discard_pile_label.text = "Descarte: %d" % deck_manager.get_discard_count()
+	draw_pile_label.text = "🎴 Deck: %d" % deck_manager.get_draw_count()
+	discard_pile_label.text = "🗑 Descarte: %d" % deck_manager.get_discard_count()
 	gold_label.text = "Ouro: %d" % GameState.gold
 	bounty_label.text = "Bounty: %d" % GameState.bounty
 

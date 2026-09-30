@@ -1,26 +1,36 @@
 # Tarefa Atual
-
+ 
 ## Nome
-Redesign Visual das Cartas em Combate (Proporções, Cristal de Custo, Área de Arte e Descrição Formatada).
+Reposicionamento e Estilização do HUD de Combate (Jogador no Topo Esquerdo com Barra de HP Dinâmica, Botão de Configurações no Topo Direito, Energia e Deck à Esquerda, Descarte e Botão de Turno à Direita).
 
 ## Objetivo
-Implementar a nova estrutura visual das cartas no combate:
-- **Novas Dimensões e Proporção:** Aumento do tamanho das cartas de `120x180` para `150x215` (slot: `154x220`), garantindo legibilidade e presença visual de card game de qualidade.
-- **Cristal de Energia (Custo):** Indicador circular/cristalino no canto superior esquerdo com brilho azul celeste (`#66ccff`) e valor numérico contrastante.
-- **Cabeçalho:** Nome da carta alinhado ao topo ao lado do cristal com corte limpo de texto.
-- **Espaço Dedicado para Arte:** Moldura central (altura 72px) pronta para receber texturas (`art_path` em `cards.json`), contendo fallback com ícone representativo por tipo (`⚔` Ataque, `🛡` Habilidade, `⚡` Poder).
-- **Badge de Tipo e Bordas por Raridade:**
-  - Borda e contorno da carta reativos à raridade (`Comum`, `Incomum`, `Rara`, `Lendária`).
-  - Badge indicando o arquétipo (`• ATAQUE •`, `• HABILIDADE •`, `• PODER •`).
-- **Caixa de Descrição (RichText):** Área inferior destacada com texto claro, auto-quebra de linha e suporte a bbcode.
-- **Ajustes de Layout na Cena de Combate:** `HandArea`, painel de fundo da mão e botão de "Finalizar turno" reposicionados para acomodar o novo formato sem sobreposição.
+Implementar o novo layout e ergonomia da tela de combate:
+- **Barra Superior Integrada (`TopBar`):**
+  - **Nome e HP do Jogador no Canto Superior Esquerdo:**
+    - `PlayerHUD` alinhado à esquerda no topo com nome dourado e estilizado.
+    - Barra de HP dinâmica (`ProgressBar` com visual estilizado em tons verdes e fundo escuro) exibindo `HP: atual/máx` em texto centralizado contrastante.
+    - Badge de bloqueio (`🛡`) ao lado da barra de vida.
+  - **Informações Centrais:** Indicadores de Ouro e Bounty da run.
+  - **Canto Superior Direito:** Botão de Configurações (`⚙`) integrado à barra superior, conectado para abrir o painel de opções e pausa da expedição.
+- **Energia Atual à Esquerda das Cartas:**
+  - `EnergyContainer` com visual destacado de orbe/cristal (`⚡`), exibindo claramente o valor atual/máximo (`X/Y`).
+- **Deck (Draw Pile) Abaixo da Energia:**
+  - `DeckContainer` posicionado logo abaixo da energia e visualmente menor (`🎴 Deck: X`).
+- **Pilha de Descarte à Direita:**
+  - `DiscardContainer` posicionado acima do botão de "Finalizar turno" (`🗑 Descarte: X`).
+- **Área Central da Mão (`HandArea`):**
+  - Posicionada confortavelmente entre a coluna esquerda e direita sem sobreposição.
+- **Preservação de Lógica:**
+  - Todas as referências de drop target, arraste de cartas e atualização de estado continuam 100% funcionais.
 
 ## Critérios de aceite
-1. `CardView.tscn` reflete a nova hierarquia (Cristal de Custo + Nome + Moldura de Arte + Badge de Tipo + Descrição).
-2. `card_view.gd` aplica o setup com dimensões `150x215` e coloração de borda por raridade.
-3. Arrastar e soltar cartas funciona normalmente com as novas proporções e detecção de alvo.
-4. Botões de recompensa de vitória exibem formato harmonizado com o cristal e tamanho ampliado.
-5. Validação do Godot headless sem erros de parser/script.
+1. Nome do jogador e barra de vida alinhados à esquerda na barra superior.
+2. Botão de configurações (`⚙`) integrado no canto direito da barra superior.
+3. Barra de vida dinâmica atualizada em tempo real conforme dano e cura.
+4. Elemento visual de energia posicionado à esquerda das cartas.
+5. Deck posicionado abaixo da energia e em formato menor.
+6. Pilha de descarte localizada à direita acima do botão de finalizar turno.
+7. Validação do Godot headless sem erros de script/parser.
 
 
 

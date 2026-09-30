@@ -2,6 +2,18 @@
 
 [ext_resource type="Script" path="res://scripts/run/run_scene.gd" id="1_run"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_settings_btn"]
+bg_color = Color(0.16, 0.2, 0.26, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.35, 0.45, 0.55, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
 [node name="RunScene" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -24,10 +36,10 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -60.0
-offset_top = 10.0
-offset_right = -12.0
-offset_bottom = 54.0
+offset_left = -46.0
+offset_top = 4.0
+offset_right = -10.0
+offset_bottom = 40.0
 grow_horizontal = 0
 
 [node name="SettingsButton" type="Button" parent="TopRightUI"]
@@ -38,6 +50,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 tooltip_text = "Configurações e Opções"
+theme_override_styles/normal = SubResource("StyleBoxFlat_settings_btn")
+theme_override_font_sizes/font_size = 17
 text = "⚙"
 
 [node name="SettingsOverlay" type="ColorRect" parent="."]

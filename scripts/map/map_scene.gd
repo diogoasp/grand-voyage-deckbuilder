@@ -7,8 +7,10 @@ const MAP_GENERATOR = preload("res://scripts/map/map_generator.gd")
 
 @onready var title_label: Label = $MainLayout/TopBar/TitleLabel
 @onready var status_label: Label = $MainLayout/TopBar/StatusLabel
-@onready var map_lines_overlay: Control = $MainLayout/MapPanel/MapLinesOverlay
-@onready var columns_container: HBoxContainer = $MainLayout/MapPanel/ColumnsContainer
+@onready var map_scroll: ScrollContainer = $MainLayout/MapPanel/MapScroll
+@onready var scroll_content: Control = $MainLayout/MapPanel/MapScroll/ScrollContent
+@onready var columns_container: HBoxContainer = $MainLayout/MapPanel/MapScroll/ScrollContent/ColumnsContainer
+@onready var map_lines_overlay: Control = $MainLayout/MapPanel/MapScroll/ScrollContent/MapLinesOverlay
 @onready var prompt_label: Label = $MainLayout/BottomBar/PromptLabel
 @onready var victory_button: Button = $MainLayout/BottomBar/VictoryButton
 
@@ -136,12 +138,31 @@ func rebuild_map_ui() -> void:
 
 		columns_container.add_child(column)
 
+	# Ajusta o tamanho mínimo horizontal dinamicamente conforme a quantidade de estágios
+	if scroll_content != null:
+		var target_min_width: float = maxf(1200.0, float(map_stages.size() * 260 + 100))
+		scroll_content.custom_minimum_size = Vector2(target_min_width, 0)
+
 	# Conecta redimensionamento do container para recalcular as linhas se a janela ou painel mudar
 	if not columns_container.resized.is_connected(_request_overlay_redraw):
 		columns_container.resized.connect(_request_overlay_redraw)
 
 	# Aguarda frames de layout para posições e tamanhos dos botões estarem definidos no container
 	_request_overlay_redraw()
+	_scroll_to_current_stage()
+
+
+func _scroll_to_current_stage() -> void:
+	if map_scroll == null or not is_inside_tree():
+		return
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if map_scroll != null and is_instance_valid(map_scroll) and map_stages.size() > 0:
+		var progress_ratio: float = float(current_stage) / float(maxi(map_stages.size() - 1, 1))
+		var max_h_scroll: float = maxf(0.0, scroll_content.custom_minimum_size.x - map_scroll.size.x)
+		var target_h: float = progress_ratio * max_h_scroll
+		var tween := create_tween()
+		tween.tween_property(map_scroll, "scroll_horizontal", int(target_h), 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 
 func _request_overlay_redraw() -> void:
@@ -179,29 +200,36 @@ func create_node_button(node_data: Dictionary, stage_idx: int) -> Button:
 	var button := Button.new()
 	var node_id: String = node_data.get("id", "")
 	var node_type: String = node_data.get("type", "")
+	var island_name: String = str(node_data.get("island_name", ""))
 	var title: String = node_data.get("title", "")
 	var desc: String = node_data.get("desc", "")
 
 	var type_prefix := ""
 	match node_type:
 		"combat":
-			type_prefix = "[Combate] "
+			type_prefix = "⚔ [Combate] "
 		"event":
-			type_prefix = "[Evento] "
+			type_prefix = "📜 [Evento] "
 		"city":
-			type_prefix = "[Porto] "
+			type_prefix = "⚓ [Porto] "
 		"boss":
-			type_prefix = "💀 [CHEFE] "
+			type_prefix = "💀 [CHEFE DO MAR] "
 
-	button.text = "%s%s\n(%s)" % [type_prefix, title, desc]
-	button.custom_minimum_size = Vector2(170, 75)
+	if island_name != "" and not title.begins_with(island_name):
+		button.text = "%s%s\n%s\n(%s)" % [type_prefix, island_name, title, desc]
+	else:
+		button.text = "%s%s\n(%s)" % [type_prefix, title, desc]
+
+	button.custom_minimum_size = Vector2(210, 85)
+	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 
 	var is_completed: bool = completed_node_ids.has(node_id)
 	var is_current_reachable: bool = is_node_accessible(node_data, stage_idx)
 
 	if is_completed:
 		button.disabled = true
-		button.text = "[Derrotado]\n" + title if node_type == "boss" else "[Visitado]\n" + title
+		var done_label: String = "✓ [Derrotado]" if node_type == "boss" else "✓ [Visitado]"
+		button.text = "%s\n%s" % [done_label, island_name if island_name != "" else title]
 		button.modulate = Color(0.5, 0.5, 0.5, 0.7)
 	elif is_current_reachable:
 		button.disabled = false
@@ -213,9 +241,9 @@ func create_node_button(node_data: Dictionary, stage_idx: int) -> Button:
 	else:
 		button.disabled = true
 		if node_type == "boss":
-			button.modulate = Color(0.9, 0.5, 0.5, 0.35)
+			button.modulate = Color(0.9, 0.5, 0.5, 0.4)
 		else:
-			button.modulate = Color(0.7, 0.7, 0.7, 0.35)
+			button.modulate = Color(0.7, 0.7, 0.7, 0.4)
 
 	return button
 

@@ -3,8 +3,8 @@ extends Control
 
 signal back_requested
 
-@onready var infamy_label: Label = $MainLayout/TopBar/InfamyLabel
-@onready var stats_label: Label = $MainLayout/TopBar/StatsLabel
+@onready var infamy_label: Label = $MainLayout/TopBar/TitleVBox/InfamyLabel
+@onready var stats_label: Label = $MainLayout/TopBar/TitleVBox/StatsLabel
 @onready var back_button: Button = $MainLayout/TopBar/BackButton
 
 @onready var tab_container: TabContainer = $MainLayout/TabContainer
@@ -74,7 +74,7 @@ func create_shop_item_card(item_data: Dictionary, item_type: String) -> PanelCon
 	panel.add_child(margin)
 
 	var hbox := HBoxContainer.new()
-	hbox.theme_override_constants.set("separation", 16)
+	hbox.add_theme_constant_override("separation", 16)
 	margin.add_child(hbox)
 
 	var item_id: String = item_data["id"]
@@ -163,7 +163,7 @@ func rebuild_milestones_ui() -> void:
 		panel.add_child(margin)
 
 		var hbox := HBoxContainer.new()
-		hbox.theme_override_constants.set("separation", 16)
+		hbox.add_theme_constant_override("separation", 16)
 		margin.add_child(hbox)
 
 		var info_vbox := VBoxContainer.new()

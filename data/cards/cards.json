@@ -596,6 +596,45 @@
 		  "target": "player"
 		}
 	  ]
+	},
+	"warning_shot": {
+	  "id": "warning_shot",
+	  "name": "Tiro de Advertência",
+	  "description": "Disparo preciso de advertência. Cause 6 de dano e aplique 1 de Fraqueza (dano causado reduzido em 25%).",
+	  "cost": 2,
+	  "type": "attack",
+	  "rarity": "common",
+	  "source": "crew_member",
+	  "tags": ["sniper", "attack", "weakness", "support"],
+	  "effects": [
+		{
+		  "type": "damage",
+		  "value": 6,
+		  "target": "enemy"
+		},
+		{
+		  "type": "weakness",
+		  "value": 1,
+		  "target": "enemy"
+		}
+	  ]
+	},
+	"restorative_bullets": {
+	  "id": "restorative_bullets",
+	  "name": "Balas Restauradoras",
+	  "description": "Projéteis médicos especiais impregnados com tônicos. Recupere 4 de vida.",
+	  "cost": 1,
+	  "type": "skill",
+	  "rarity": "common",
+	  "source": "crew_member",
+	  "tags": ["medic", "sniper", "heal", "support"],
+	  "effects": [
+		{
+		  "type": "heal",
+		  "value": 4,
+		  "target": "player"
+		}
+	  ]
 	}
 }
 

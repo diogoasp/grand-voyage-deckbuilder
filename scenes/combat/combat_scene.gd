@@ -17,6 +17,7 @@ const CARD_SLOT_SIZE: Vector2 = Vector2(154, 220)
 @onready var player_hp_label: Label = $TopBar/PlayerHUD/PlayerHPContainer/PlayerHPBar/PlayerHPLabel
 @onready var player_block_badge: Label = $TopBar/PlayerHUD/PlayerHPContainer/PlayerBlockBadge
 
+@onready var crew_container: HBoxContainer = $TopBar/CrewContainer
 @onready var gold_label: Label = $TopBar/GoldLabel
 @onready var bounty_label: Label = $TopBar/BountyLabel
 
@@ -271,6 +272,7 @@ func update_ui() -> void:
 
 	end_turn_button.disabled = combat_finished
 	update_status_icons()
+	update_crew_display()
 
 
 func update_enemy_intent_display() -> void:
@@ -351,6 +353,116 @@ func update_status_icons() -> void:
 		status_badge.add_child(label)
 		status_badge.tooltip_text = "Intangibilidade (Forma de Névoa): Dano recebido reduzido a no máximo 1 por %d turno(s)." % player.intangible
 		player_status_container.add_child(status_badge)
+
+
+func update_crew_display() -> void:
+	if crew_container == null:
+		return
+
+	for child in crew_container.get_children():
+		child.queue_free()
+
+	if GameState.crew_members.is_empty():
+		return
+
+	for crew_id in GameState.crew_members:
+		if not DataLoader.has_crew(crew_id):
+			continue
+
+		var crew_data: Dictionary = DataLoader.get_crew(crew_id)
+		var crew_widget := create_crew_icon_widget(crew_data)
+		crew_container.add_child(crew_widget)
+
+
+func create_crew_icon_widget(crew_data: Dictionary) -> Control:
+	var crew_name: String = str(crew_data.get("name", "Tripulante"))
+	var role: String = str(crew_data.get("role", "Aventureiro"))
+	var rarity: String = str(crew_data.get("rarity", "common")).to_lower()
+	var face_path: String = str(crew_data.get("face_path", ""))
+	var passive_desc: String = str(crew_data.get("passive_description", ""))
+
+	var role_lower := role.to_lower()
+	if "combatente" in role_lower or role_lower == "combatant":
+		passive_desc = "Adiciona 5 cartas ao baralho."
+	elif passive_desc == "":
+		passive_desc = str(crew_data.get("description", "Membro valioso da tripulação."))
+
+	var border_color := Color(0.35, 0.42, 0.52) # Comum
+	var rarity_name := "Comum"
+	match rarity:
+		"uncommon":
+			border_color = Color(0.2, 0.7, 0.85) # Azul turquesa
+			rarity_name = "Incomum"
+		"rare":
+			border_color = Color(0.85, 0.4, 0.95) # Roxo místico
+			rarity_name = "Raro"
+		"legendary":
+			border_color = Color(0.95, 0.8, 0.25) # Dourado lendário
+			rarity_name = "Lendário"
+
+	var role_icon := "⚓"
+	match role_lower:
+		"médico", "medico", "doctor":
+			role_icon = "💉"
+		"cozinheiro", "chef":
+			role_icon = "🍖"
+		"navegador", "navigator":
+			role_icon = "🧭"
+		"combatente", "combatant":
+			role_icon = "⚔"
+		"carpinteiro", "carpenter":
+			role_icon = "🔨"
+		"atirador", "sniper":
+			role_icon = "🎯"
+
+	var panel := PanelContainer.new()
+	panel.custom_minimum_size = Vector2(30, 30)
+	panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	panel.mouse_filter = Control.MOUSE_FILTER_PASS
+
+	var stylebox := StyleBoxFlat.new()
+	stylebox.bg_color = Color(0.12, 0.15, 0.2, 0.95)
+	stylebox.border_width_left = 2
+	stylebox.border_width_top = 2
+	stylebox.border_width_right = 2
+	stylebox.border_width_bottom = 2
+	stylebox.border_color = border_color
+	stylebox.corner_radius_top_left = 6
+	stylebox.corner_radius_top_right = 6
+	stylebox.corner_radius_bottom_right = 6
+	stylebox.corner_radius_bottom_left = 6
+	panel.add_theme_stylebox_override("panel", stylebox)
+
+	var has_valid_face := false
+	if face_path != "" and ResourceLoader.exists(face_path):
+		var face_tex: Texture2D = load(face_path)
+		if face_tex != null:
+			var tex_rect := TextureRect.new()
+			tex_rect.texture = face_tex
+			tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			tex_rect.custom_minimum_size = Vector2(26, 26)
+			tex_rect.mouse_filter = Control.MOUSE_FILTER_PASS
+			panel.add_child(tex_rect)
+			has_valid_face = true
+
+	if not has_valid_face:
+		var icon_lbl := Label.new()
+		icon_lbl.text = role_icon
+		icon_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		icon_lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		icon_lbl.add_theme_font_size_override("font_size", 16)
+		icon_lbl.mouse_filter = Control.MOUSE_FILTER_PASS
+		panel.add_child(icon_lbl)
+
+	panel.tooltip_text = "[ %s ]\nProfissão: %s\nRaridade: %s\nHabilidade: %s" % [
+		crew_name,
+		role,
+		rarity_name,
+		passive_desc
+	]
+
+	return panel
 
 
 func get_card_views_in_hand() -> Array[CardView]:

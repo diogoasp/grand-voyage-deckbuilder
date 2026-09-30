@@ -4,9 +4,11 @@
 	"name": "Dr. Lin",
 	"role": "Médico",
 	"rarity": "common",
+	"face_path": "res://assets/art/crew_chars/md_chefe/face.png",
 	"description": "Um médico errante que cuida da saúde da tripulação em troca de sustento na viagem.",
 	"food_cost_per_sector": 1,
 	"passive_heal_per_sector": 6,
+	"passive_description": "Cura +6 HP após cada travessia entre setores (consome 1 de comida).",
 	"associated_cards": ["field_medicine"],
 	"tags": ["doctor", "support"]
   },
@@ -15,9 +17,11 @@
 	"name": "Tora, o Cozinheiro dos Mares",
 	"role": "Cozinheiro",
 	"rarity": "uncommon",
+	"face_path": "res://assets/art/crew_chars/son_lulu_young/face.png",
 	"description": "Cozinheiro marcial habilidoso que transforma ingredientes simples em banquetes fortificantes para a tripulação.",
 	"food_cost_per_sector": 0,
 	"passive_bonus_food_at_port": 2,
+	"passive_description": "Fornece +2 de comida extra ao atracar em portos e cidades.",
 	"associated_cards": ["hearty_meal"],
 	"tags": ["chef", "support", "food"]
   }

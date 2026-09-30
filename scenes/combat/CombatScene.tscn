@@ -168,6 +168,11 @@ theme_override_font_sizes/font_size = 15
 text = "🛡 0"
 vertical_alignment = 1
 
+[node name="CrewContainer" type="HBoxContainer" parent="TopBar" unique_id=1481928341]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
 [node name="Separator" type="VSeparator" parent="TopBar" unique_id=184918231]
 layout_mode = 2
 

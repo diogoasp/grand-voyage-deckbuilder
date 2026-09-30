@@ -16,7 +16,7 @@ var total_infamy_earned: int = 0
 var highest_bounty: int = 0
 var total_runs_completed: int = 0
 
-var unlocked_crew: Array[String] = ["doctor_lin"]
+var unlocked_crew: Array[String] = ["sora"]
 var unlocked_fruits: Array[String] = ["kiri_kiri_no_mi"]
 var unlocked_cards: Array[String] = []
 var claimed_milestones: Array[String] = []
@@ -129,10 +129,10 @@ func load_meta_state() -> void:
 	total_runs_completed = int(data.get("total_runs_completed", 0))
 
 	unlocked_crew.clear()
-	for c in data.get("unlocked_crew", ["doctor_lin"]):
+	for c in data.get("unlocked_crew", ["sora"]):
 		unlocked_crew.append(str(c))
-	if not unlocked_crew.has("doctor_lin"):
-		unlocked_crew.append("doctor_lin")
+	if not unlocked_crew.has("sora"):
+		unlocked_crew.append("sora")
 
 	unlocked_fruits.clear()
 	for f in data.get("unlocked_fruits", ["kiri_kiri_no_mi"]):

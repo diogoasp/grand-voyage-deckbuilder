@@ -39,18 +39,19 @@
   },
   "wandering_doctor": {
 	"id": "wandering_doctor",
-	"title": "Médico do Cais",
-	"short_title": "Médico do Cais",
-	"desc": "Recrutar Dr. Lin",
+	"title": "A Médica Atiradora do Cais",
+	"short_title": "Sora, Meio-Mink",
+	"desc": "Recrutar Sora",
+	"image_path": "res://assets/art/crew_chars/sora/base.png",
 	"allowed_stages": [0],
-	"body": "Em um recanto do porto, um médico de olhar calmo trata feridos com ervas e bandagens. Ele procura uma embarcação que navegue rumo a novas ilhas medicinais.",
+	"body": "No cais movimentado, uma jovem meio-mink com orelhas atentas limpa a mira de um rifle com precisão cirúrgica. Ao seu lado repousa uma maleta médica com compostos alquímicos e munições restauradoras. Com um olhar analítico e sorriso ousado, ela avalia sua tripulação: 'Um bando audacioso precisa de alguém que saiba remendar feridas... e acertar alvos à distância.'",
 	"choices": [
 	  {
-		"label": "Recrutar Dr. Lin (Cura +6 HP por setor viajado, gasta 1 Comida/setor, +1 Medicina de Campo ao deck)",
+		"label": "Recrutar Sora (Cura +6 HP por setor viajado, gasta 1 Comida/setor, +1 Tiro de Advertência e +1 Balas Restauradoras ao deck)",
 		"effects": [
 		  {
 			"type": "recruit_crew",
-			"crew_id": "doctor_lin"
+			"crew_id": "sora"
 		  }
 		]
 	  },

@@ -1,16 +1,20 @@
 {
-  "doctor_lin": {
-	"id": "doctor_lin",
-	"name": "Dr. Lin",
-	"role": "Médico",
+  "sora": {
+	"id": "sora",
+	"name": "Sora",
+	"role": "Médica / Atiradora",
 	"rarity": "common",
-	"face_path": "res://assets/art/crew_chars/md_chefe/face.png",
-	"description": "Um médico errante que cuida da saúde da tripulação em troca de sustento na viagem.",
+	"personality": "Ousada, inteligente e analítica",
+	"race": "Meio-Mink",
+	"face_path": "res://assets/art/crew_chars/sora/face.png",
+	"base_path": "res://assets/art/crew_chars/sora/base.png",
+	"combat_path": "res://assets/art/crew_chars/sora/combat.png",
+	"description": "Uma médica meio-mink e meio-humana perspicaz e atiradora de elite. Ousada e analítica, combina precisão balística com medicina restauradora.",
 	"food_cost_per_sector": 1,
 	"passive_heal_per_sector": 6,
 	"passive_description": "Cura +6 HP após cada travessia entre setores (consome 1 de comida).",
-	"associated_cards": ["field_medicine"],
-	"tags": ["doctor", "support"]
+	"associated_cards": ["warning_shot", "restorative_bullets"],
+	"tags": ["doctor", "sniper", "mink", "support"]
   },
   "chef_tora": {
 	"id": "chef_tora",

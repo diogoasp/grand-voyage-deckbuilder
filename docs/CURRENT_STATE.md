@@ -314,9 +314,14 @@ Script:
 
 Responsabilidades:
 - materializar a carta marítima com setores/estágios em colunas;
-- nós com tipos distintos: `combate`, `evento` e `porto` (cidade);
-- indicar nós visitados e habilitar apenas os nós alcançáveis do estágio atual da rota;
-- permitir que o jogador escolha o rumo (bifurcação de rotas);
+- nós com tipos distintos: `combate`, `evento`, `porto` (cidade) e `boss` (chefe de setor);
+- limitação e ramificação de rotas (estilo *Slay the Spire*): cada ilha conecta proceduralmente a 1 ou 2 ilhas subsequentes via `next_nodes`, impedindo acesso irrestrito a todos os nós do estágio seguinte;
+- rastrear o último nó selecionado (`last_selected_node_id`) com persistência de run;
+- renderizar linhas visuais de navegação via overlay (`MapLinesOverlay`):
+  - linhas ativas/acessíveis desenhadas em tom dourado náutico (`Color(0.9, 0.75, 0.25, 0.85)`);
+  - linhas inativas ou futuras desenhadas em azul-ardósia sutil/translúcido (`Color(0.35, 0.45, 0.6, 0.4)`);
+- indicar nós visitados/derrotados e desabilitar nós fora da rota alcançável;
+- permitir que o jogador traceje estrategicamente seu rumo;
 - emitir o sinal `node_selected(node_data)`.
 
 ## Tripulação (Relíquias Vivas)

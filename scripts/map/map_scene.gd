@@ -7,21 +7,28 @@ const MAP_GENERATOR = preload("res://scripts/map/map_generator.gd")
 
 @onready var title_label: Label = $MainLayout/TopBar/TitleLabel
 @onready var status_label: Label = $MainLayout/TopBar/StatusLabel
+@onready var map_lines_overlay: Control = $MainLayout/MapPanel/MapLinesOverlay
 @onready var columns_container: HBoxContainer = $MainLayout/MapPanel/ColumnsContainer
 @onready var prompt_label: Label = $MainLayout/BottomBar/PromptLabel
 @onready var victory_button: Button = $MainLayout/BottomBar/VictoryButton
 
 # Lista de colunas/estágios da rota marítima
-# Cada nó: id, stage, type ("event", "combat", "boss", "city"), target_id, title, desc
+# Cada nó: id, stage, type ("event", "combat", "boss", "city"), target_id, title, desc, next_nodes
 var map_stages: Array[Array] = []
 
 var current_stage: int = 0
 var completed_node_ids: Array[String] = []
+var last_selected_node_id: String = ""
+
+# Referência aos botões criados indexados por node_id
+var node_buttons: Dictionary = {}
 
 
 func _ready() -> void:
 	if victory_button != null:
 		victory_button.pressed.connect(_on_victory_button_pressed)
+	if map_lines_overlay != null:
+		map_lines_overlay.draw.connect(_on_lines_overlay_draw)
 	if map_stages.is_empty():
 		generate_default_sector_map()
 	update_status_display()
@@ -32,9 +39,10 @@ func generate_default_sector_map() -> void:
 	map_stages = MAP_GENERATOR.generate_sector_map(1)
 
 
-func setup_state(stage: int, completed_nodes: Array[String]) -> void:
+func setup_state(stage: int, completed_nodes: Array[String], last_node_id: String = "") -> void:
 	current_stage = stage
 	completed_node_ids = completed_nodes
+	last_selected_node_id = last_node_id
 	if is_node_ready():
 		update_status_display()
 		rebuild_map_ui()
@@ -69,7 +77,16 @@ func update_status_display() -> void:
 	]
 
 
+func find_node_data(node_id: String) -> Dictionary:
+	for stage in map_stages:
+		for n in stage:
+			if n.get("id", "") == node_id:
+				return n
+	return {}
+
+
 func rebuild_map_ui() -> void:
+	node_buttons.clear()
 	for child in columns_container.get_children():
 		child.queue_free()
 
@@ -77,6 +94,8 @@ func rebuild_map_ui() -> void:
 		prompt_label.text = "🏆 ROTA DO SETOR CONCLUÍDA! O Capitão Morgan foi derrotado e o mar deste setor foi dominado!"
 		if victory_button != null:
 			victory_button.visible = true
+		if map_lines_overlay != null:
+			map_lines_overlay.queue_redraw()
 		return
 
 	if victory_button != null:
@@ -101,9 +120,48 @@ func rebuild_map_ui() -> void:
 
 		for node_data in stage_nodes:
 			var node_button := create_node_button(node_data, stage_idx)
+			node_buttons[node_data.get("id", "")] = node_button
 			column.add_child(node_button)
 
 		columns_container.add_child(column)
+
+	# Conecta redimensionamento do container para recalcular as linhas se a janela ou painel mudar
+	if not columns_container.resized.is_connected(_request_overlay_redraw):
+		columns_container.resized.connect(_request_overlay_redraw)
+
+	# Aguarda frames de layout para posições e tamanhos dos botões estarem definidos no container
+	_request_overlay_redraw()
+
+
+func _request_overlay_redraw() -> void:
+	if map_lines_overlay == null or not is_inside_tree():
+		return
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if map_lines_overlay != null and is_instance_valid(map_lines_overlay):
+		map_lines_overlay.queue_redraw()
+
+
+func is_node_accessible(node_data: Dictionary, stage_idx: int) -> bool:
+	if stage_idx != current_stage:
+		return false
+
+	var node_id: String = node_data.get("id", "")
+	if completed_node_ids.has(node_id):
+		return false
+
+	# No início da run (stage 0), todas as opções do estágio 0 estão disponíveis
+	if current_stage == 0:
+		return true
+
+	# Nos estágios subsequentes, só é acessível se estiver em next_nodes do nó escolhido na etapa anterior
+	if last_selected_node_id != "":
+		var prev_data: Dictionary = find_node_data(last_selected_node_id)
+		var next_list: Array = prev_data.get("next_nodes", [])
+		return next_list.has(node_id)
+
+	# Fallback de segurança se não houver registro prévio
+	return true
 
 
 func create_node_button(node_data: Dictionary, stage_idx: int) -> Button:
@@ -128,7 +186,7 @@ func create_node_button(node_data: Dictionary, stage_idx: int) -> Button:
 	button.custom_minimum_size = Vector2(170, 75)
 
 	var is_completed: bool = completed_node_ids.has(node_id)
-	var is_current_reachable: bool = (stage_idx == current_stage)
+	var is_current_reachable: bool = is_node_accessible(node_data, stage_idx)
 
 	if is_completed:
 		button.disabled = true
@@ -144,11 +202,67 @@ func create_node_button(node_data: Dictionary, stage_idx: int) -> Button:
 	else:
 		button.disabled = true
 		if node_type == "boss":
-			button.modulate = Color(0.9, 0.5, 0.5, 0.5)
+			button.modulate = Color(0.9, 0.5, 0.5, 0.35)
 		else:
-			button.modulate = Color(0.7, 0.7, 0.7, 0.4)
+			button.modulate = Color(0.7, 0.7, 0.7, 0.35)
 
 	return button
+
+
+func _on_lines_overlay_draw() -> void:
+	if map_lines_overlay == null or map_stages.is_empty():
+		return
+
+	# Percorre todas as conexões entre estágios
+	for stage_idx in range(map_stages.size() - 1):
+		var curr_nodes: Array = map_stages[stage_idx]
+		for node in curr_nodes:
+			var node_id: String = node.get("id", "")
+			var from_btn: Button = node_buttons.get(node_id, null)
+			if from_btn == null or not is_instance_valid(from_btn):
+				continue
+
+			var overlay_origin: Vector2 = map_lines_overlay.global_position
+			var from_rect: Rect2 = from_btn.get_global_rect()
+			# Ponto de saída no lado direito do botão de origem
+			var global_from: Vector2 = Vector2(from_rect.end.x, from_rect.position.y + from_rect.size.y * 0.5)
+			var local_from: Vector2 = global_from - overlay_origin
+
+			var next_list: Array = node.get("next_nodes", [])
+			for target_id in next_list:
+				var to_btn: Button = node_buttons.get(target_id, null)
+				if to_btn == null or not is_instance_valid(to_btn):
+					continue
+
+				var to_rect: Rect2 = to_btn.get_global_rect()
+				# Ponto de chegada no lado esquerdo do botão de destino
+				var global_to: Vector2 = Vector2(to_rect.position.x, to_rect.position.y + to_rect.size.y * 0.5)
+				var local_to: Vector2 = global_to - overlay_origin
+
+				# Determina se esta linha está ativa/alcançável
+				var is_active_route := false
+				if current_stage == 0 and stage_idx == 0:
+					# No início, todas as conexões a partir do stage 0 são rotas potenciais ativas
+					is_active_route = true
+				elif stage_idx < current_stage:
+					# Se o nó de origem foi o escolhido, sua conexão é destacada se foi percorrida
+					if node_id == last_selected_node_id or completed_node_ids.has(node_id):
+						is_active_route = true
+				elif stage_idx == current_stage:
+					# Linhas saindo do estágio atual
+					if last_selected_node_id != "" and node_id == last_selected_node_id:
+						is_active_route = true
+
+				var line_color: Color
+				var line_width: float = 2.0
+
+				if is_active_route:
+					line_color = Color(0.9, 0.75, 0.25, 0.85) # Dourado náutico brilhante
+					line_width = 3.0
+				else:
+					line_color = Color(0.35, 0.45, 0.6, 0.4) # Azul-ardósia sutil/translúcido
+
+				map_lines_overlay.draw_line(local_from, local_to, line_color, line_width, true)
 
 
 func _on_node_pressed(node_data: Dictionary) -> void:

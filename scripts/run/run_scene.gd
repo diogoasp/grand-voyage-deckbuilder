@@ -18,6 +18,7 @@ var current_stage: int = 0
 var completed_nodes: Array[String] = []
 var active_node_data: Dictionary = {}
 var sector_map: Array[Array] = []
+var last_selected_node_id: String = ""
 
 
 func _ready() -> void:
@@ -53,6 +54,7 @@ func start_run() -> void:
 	current_stage = 0
 	completed_nodes.clear()
 	active_node_data.clear()
+	last_selected_node_id = ""
 	sector_map = MAP_GENERATOR.generate_sector_map(1)
 	save_run()
 	show_map()
@@ -63,7 +65,8 @@ func save_run() -> void:
 	var extra: Dictionary = {
 		"current_stage": current_stage,
 		"completed_nodes": completed_nodes,
-		"sector_map": sector_map
+		"sector_map": sector_map,
+		"last_selected_node_id": last_selected_node_id
 	}
 	GameState.save_run_state(extra)
 
@@ -71,6 +74,7 @@ func save_run() -> void:
 func load_saved_run() -> void:
 	var extra: Dictionary = GameState.load_run_state()
 	current_stage = int(extra.get("current_stage", 0))
+	last_selected_node_id = str(extra.get("last_selected_node_id", ""))
 	
 	completed_nodes.clear()
 	for nid in extra.get("completed_nodes", []):
@@ -78,13 +82,39 @@ func load_saved_run() -> void:
 
 	sector_map.clear()
 	var raw_map = extra.get("sector_map", [])
+	var map_valid := true
 	if raw_map is Array and not raw_map.is_empty():
 		for stage in raw_map:
-			if stage is Array:
+			if stage is Array and not stage.is_empty():
+				for n in stage:
+					if not (n is Dictionary) or n.is_empty() or not n.has("id"):
+						map_valid = false
+						break
+				if not map_valid:
+					break
 				sector_map.append(stage)
-	
-	if sector_map.is_empty():
+			else:
+				map_valid = false
+				break
+	else:
+		map_valid = false
+
+	if not map_valid or sector_map.is_empty():
 		sector_map = MAP_GENERATOR.generate_sector_map(1)
+	else:
+		# Verifica se os nós possuem 'next_nodes' populados; se não tiverem (save antigo), reconstrói as rotas
+		var needs_connections := false
+		for stage_idx in range(sector_map.size() - 1):
+			var stage_nodes: Array = sector_map[stage_idx]
+			for node in stage_nodes:
+				if not node.has("next_nodes") or (node.get("next_nodes", []) as Array).is_empty():
+					needs_connections = true
+					break
+			if needs_connections:
+				break
+		if needs_connections:
+			for stage_idx in range(sector_map.size() - 1):
+				MAP_GENERATOR.build_stage_connections(sector_map[stage_idx], sector_map[stage_idx + 1])
 
 	show_map()
 
@@ -120,7 +150,7 @@ func show_map() -> void:
 		map_scene.map_stages = sector_map
 
 	if map_scene.has_method("setup_state"):
-		map_scene.setup_state(current_stage, completed_nodes)
+		map_scene.setup_state(current_stage, completed_nodes, last_selected_node_id)
 
 	if map_scene.has_signal("node_selected"):
 		map_scene.node_selected.connect(_on_map_node_selected)
@@ -133,6 +163,8 @@ func show_map() -> void:
 
 func _on_map_node_selected(node_data: Dictionary) -> void:
 	active_node_data = node_data
+	last_selected_node_id = str(node_data.get("id", ""))
+	save_run()
 	var node_type: String = str(node_data.get("type", ""))
 	var target_id: String = str(node_data.get("target_id", ""))
 

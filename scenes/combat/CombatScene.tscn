@@ -229,6 +229,11 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.8, 1, 1)
 text = "🛡 0"
 
+[node name="EnemyStatusContainer" type="HBoxContainer" parent="EnemyArea" unique_id=1982736412]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
 [node name="EnemySprite" type="AnimatedSprite2D" parent="EnemyArea" unique_id=164225054]
 position = Vector2(110, 260)
 scale = Vector2(1.9520063, 2.1188645)

@@ -30,6 +30,7 @@ const CARD_SLOT_SIZE: Vector2 = Vector2(154, 220)
 @onready var enemy_name_label: Label = $EnemyArea/EnemyNameLabel
 @onready var enemy_hp_label: Label = $EnemyArea/EnemyHPContainer/EnemyHPLabel
 @onready var enemy_block_badge: Label = $EnemyArea/EnemyHPContainer/EnemyBlockBadge
+@onready var enemy_status_container: HBoxContainer = $EnemyArea/EnemyStatusContainer
 @onready var enemy_sprite: AnimatedSprite2D = $EnemyArea/EnemySprite
 
 @onready var hand_area: HBoxContainer = $HandArea
@@ -338,21 +339,43 @@ func update_enemy_intent_display() -> void:
 
 
 func update_status_icons() -> void:
-	if player_status_container == null:
-		return
+	if player_status_container != null:
+		for child in player_status_container.get_children():
+			child.queue_free()
 
-	for child in player_status_container.get_children():
-		child.queue_free()
+		if player != null and player.intangible > 0:
+			var status_badge := PanelContainer.new()
+			var label := Label.new()
+			label.text = "☁ Névoa (%d)" % player.intangible
+			label.add_theme_font_size_override("font_size", 12)
+			label.add_theme_color_override("font_color", Color(0.7, 0.9, 1.0))
+			status_badge.add_child(label)
+			status_badge.tooltip_text = "Intangibilidade (Forma de Névoa): Dano recebido reduzido a no máximo 1 por %d turno(s)." % player.intangible
+			player_status_container.add_child(status_badge)
 
-	if player != null and player.intangible > 0:
-		var status_badge := PanelContainer.new()
-		var label := Label.new()
-		label.text = "☁ Névoa (%d)" % player.intangible
-		label.add_theme_font_size_override("font_size", 12)
-		label.add_theme_color_override("font_color", Color(0.7, 0.9, 1.0))
-		status_badge.add_child(label)
-		status_badge.tooltip_text = "Intangibilidade (Forma de Névoa): Dano recebido reduzido a no máximo 1 por %d turno(s)." % player.intangible
-		player_status_container.add_child(status_badge)
+		if player != null and player.weakness > 0:
+			var weak_badge := PanelContainer.new()
+			var label := Label.new()
+			label.text = "💔 Fraco (%d)" % player.weakness
+			label.add_theme_font_size_override("font_size", 12)
+			label.add_theme_color_override("font_color", Color(1.0, 0.6, 0.4))
+			weak_badge.add_child(label)
+			weak_badge.tooltip_text = "Fraqueza: Dano causado reduzido em 25%% por %d turno(s)." % player.weakness
+			player_status_container.add_child(weak_badge)
+
+	if enemy_status_container != null:
+		for child in enemy_status_container.get_children():
+			child.queue_free()
+
+		if enemy != null and enemy.weakness > 0:
+			var enemy_weak_badge := PanelContainer.new()
+			var label := Label.new()
+			label.text = "💔 Fraco (%d)" % enemy.weakness
+			label.add_theme_font_size_override("font_size", 12)
+			label.add_theme_color_override("font_color", Color(1.0, 0.6, 0.4))
+			enemy_weak_badge.add_child(label)
+			enemy_weak_badge.tooltip_text = "Fraqueza: Dano causado reduzido em 25%% por %d turno(s)." % enemy.weakness
+			enemy_status_container.add_child(enemy_weak_badge)
 
 
 func update_crew_display() -> void:
@@ -532,6 +555,7 @@ func play_card(card_instance: CardInstance, card_data: Dictionary) -> void:
 
 	print("Carta jogada: %s" % str(card_data["name"]))
 
+	trigger_crew_assist_visual(str(card_data.get("id", "")))
 	resolve_card_effects(card_data)
 	deck_manager.move_card_from_hand_to_discard(card_instance.instance_id)
 
@@ -540,6 +564,63 @@ func play_card(card_instance: CardInstance, card_data: Dictionary) -> void:
 
 	rebuild_hand_ui()
 	update_ui()
+
+
+func trigger_crew_assist_visual(card_id: String) -> void:
+	if card_id == "":
+		return
+
+	# Procura se algum tripulante recrutado possui esta carta associada
+	var matching_crew: Dictionary = {}
+	for crew_id in GameState.crew_members:
+		if not DataLoader.has_crew(crew_id):
+			continue
+		var cdata: Dictionary = DataLoader.get_crew(crew_id)
+		var associated: Array = cdata.get("associated_cards", [])
+		if associated.has(card_id):
+			matching_crew = cdata
+			break
+
+	if matching_crew.is_empty():
+		return
+
+	var combat_path: String = str(matching_crew.get("combat_path", ""))
+	if combat_path == "" or not ResourceLoader.exists(combat_path):
+		return
+
+	var tex: Texture2D = load(combat_path)
+	if tex == null:
+		return
+
+	# Cria o sprite/TextureRect do aliado ao lado do jogador
+	var assist_rect := TextureRect.new()
+	assist_rect.texture = tex
+	assist_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	assist_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	# Dimensões adequadas para o espaço de combate (ex: 180x225)
+	assist_rect.custom_minimum_size = Vector2(180, 225)
+	assist_rect.size = Vector2(180, 225)
+	assist_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	# Posição inicial: ao lado da PlayerArea, deslizando da esquerda para a direita
+	var target_pos := Vector2(player_area.position.x + 130.0, player_area.position.y - 10.0)
+	var start_pos := target_pos + Vector2(-60.0, 0.0)
+	var exit_pos := target_pos + Vector2(40.0, 0.0)
+
+	assist_rect.position = start_pos
+	assist_rect.modulate = Color(1.0, 1.0, 1.0, 0.0)
+	add_child(assist_rect)
+
+	var tween := create_tween()
+	# Desliza para dentro e surge
+	tween.tween_property(assist_rect, "position", target_pos, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(assist_rect, "modulate:a", 1.0, 0.2)
+	# Permanece brevemente em ação
+	tween.tween_interval(0.4)
+	# Desliza e desaparece
+	tween.tween_property(assist_rect, "position", exit_pos, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.parallel().tween_property(assist_rect, "modulate:a", 0.0, 0.25)
+	tween.tween_callback(assist_rect.queue_free)
 
 
 func can_play_card(cost: int) -> bool:
@@ -581,6 +662,9 @@ func _on_end_turn_pressed() -> void:
 
 func resolve_enemy_turn() -> void:
 	print("Turno do inimigo.")
+
+	enemy.clear_block()
+	enemy.tick_turn_statuses()
 
 	if enemy_intent.is_empty():
 		print("Inimigo não possui intenção.")

@@ -3,6 +3,7 @@ extends Control
 signal continue_requested
 
 @onready var title_label: Label = $EventPanel/Margin/EventVBox/TitleLabel
+@onready var event_image: TextureRect = $EventPanel/Margin/EventVBox/EventImage
 @onready var body_label: Label = $EventPanel/Margin/EventVBox/BodyLabel
 @onready var choices_vbox: VBoxContainer = $EventPanel/Margin/EventVBox/ChoicesVBox
 @onready var continue_button: Button = $EventPanel/Margin/EventVBox/ContinueButton
@@ -34,6 +35,17 @@ func load_event(event_id: String) -> void:
 
 	title_label.text = str(current_event_data.get("title", "Evento"))
 	body_label.text = str(current_event_data.get("body", ""))
+
+	var img_path: String = str(current_event_data.get("image_path", ""))
+	if img_path != "" and ResourceLoader.exists(img_path):
+		var tex: Texture2D = load(img_path)
+		if tex != null:
+			event_image.texture = tex
+			event_image.visible = true
+		else:
+			event_image.visible = false
+	else:
+		event_image.visible = false
 
 	create_choice_buttons()
 

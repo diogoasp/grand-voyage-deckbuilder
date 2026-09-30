@@ -1,26 +1,31 @@
 # Tarefa Atual
  
 ## Nome
-Exibição da Tripulação na Barra Superior em Combate (Representação de Relíquias Estilo Slay the Spire com Ícone, Borda por Raridade e Tooltip Detalhado).
+Integração da Tripulante Sora (Meio-Mink Médica/Atiradora), Mecânica de Fraqueza (Weakness), Cartas Temáticas e Apresentação de Assistência em Combate.
 
 ## Objetivo
-Implementar a exibição da tripulação atual do navio integrada à barra superior entre a vida do jogador e os contadores de recursos:
-- **Posicionamento no TopBar (`CrewContainer`):**
-  - Posicionado entre o `PlayerHUD` (Vida do jogador) e o `Separator` de Ouro/Bounty.
-- **Identidade Visual por Membro:**
-  - Miniatura estilizada (30x30) com cantos arredondados e fundo escuro.
-  - Borda colorida de acordo com a raridade do tripulante (`Comum`, `Incomum`, `Raro`, `Lendário`).
-  - Face do personagem em retrato (`face_path`), com fallback para ícone temático de profissão (`💉` Médico, `🍖` Cozinheiro, `🧭` Navegador, `⚔` Combatente, etc.).
-- **Inspeção / Tooltip ao Sobrepor:**
-  - Exibe o nome do tripulante, profissão, raridade e descrição da habilidade passiva.
-  - Para combatente, exibe especificamente *"Adiciona 5 cartas ao baralho"*.
+1. **Perfil da Sora (`crew.json`):**
+   - Substituição de Dr. Lin por Sora: Médica e Atiradora, raça Meio-Mink, raridade Comum.
+   - Personalidade: Ousada, inteligente e analítica.
+   - Ativos de arte configurados: `face_path`, `base_path` e `combat_path`.
+2. **Novas Cartas de Recrutamento (`cards.json`):**
+   - `warning_shot` (*Tiro de Advertência*): Custo 2, causa 6 de dano e aplica 1 stack de Fraqueza (`weakness`).
+   - `restorative_bullets` (*Balas Restauradoras*): Custo 1, restaura 4 HP do jogador.
+3. **Mecânica de Fraqueza (`Combatant` e `EffectResolver`):**
+   - Reduz em 25% o dano de ataques desferidos por quem possui o status (`outgoing damage * 0.75`).
+   - Consome 1 stack a cada turno/rodada.
+   - Suporte a badges visuais de status tanto no jogador quanto no inimigo.
+4. **Evento de Recrutamento (`events.json` e `EventScene`):**
+   - Atualizado o evento da médica para apresentar Sora e exibir sua ilustração (`base_path`).
+5. **Apresentação de Assistência em Combate (`CombatScene`):**
+   - Ao jogar uma carta associada a um membro recrutado da tripulação (como as da Sora), a ilustração de combate (`combat.png`) do aliado desliza suavemente ao lado do jogador, permanece durante a ação e sai da tela com fade/slide.
 
 ## Critérios de aceite
-1. `CrewContainer` posicionado entre a vida e o ouro no `TopBar`.
-2. Borda reativa à raridade do tripulante.
-3. Hover exibe nome, profissão, raridade e habilidade passiva do membro da tripulação.
-4. Combatente exibe *"Adiciona 5 cartas ao baralho"*.
-5. Validação Godot headless sem erros.
+1. Dr. Lin substituído por Sora com dados de perfil, raridade comum e caminhos de arte.
+2. Cartas `warning_shot` e `restorative_bullets` integradas e funcionando com efeitos de fraqueza e cura.
+3. Fraqueza reduz o dano efetuado em 25% e decai a cada turno.
+4. Apresentação visual de slide-in do aliado ao jogar cartas de tripulante associado.
+5. Validação com Godot headless limpa e sem erros.
 
 
 

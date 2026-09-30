@@ -52,6 +52,14 @@ theme_override_font_sizes/font_size = 20
 text = "Título do Evento"
 horizontal_alignment = 1
 
+[node name="EventImage" type="TextureRect" parent="EventPanel/Margin/EventVBox" unique_id=918237142]
+visible = false
+custom_minimum_size = Vector2(0, 140)
+layout_mode = 2
+size_flags_horizontal = 4
+expand_mode = 3
+stretch_mode = 5
+
 [node name="BodyLabel" type="Label" parent="EventPanel/Margin/EventVBox" unique_id=1282740428]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.85, 0.85, 1)

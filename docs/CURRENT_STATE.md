@@ -264,8 +264,12 @@ Script:
 Dados:
 `res://data/events/events.json`
 
-Evento inicial conhecido:
-- `old_port_trainer`
+Eventos conhecidos e agrupamento por fase (`allowed_stages`):
+- `old_port_trainer` (Fase 0 - Cais): Treino de Defesa Básica, Haki de Armamento ou Ouro.
+- `wandering_doctor` (Fase 0 - Cais): Recrutamento do Dr. Lin (+1 Medicina de Campo) ou Cura rápida.
+- `mysterious_chest` (Fase 1 - Mar Aberto): Consumir Akuma no Mi (Kiri Kiri no Mi) ou Vender por 50 Ouro.
+- `stranded_merchant` (Fases 1 e 2 - Águas de Travessia): Doar mantimentos por ouro, resgatar cartógrafo (+1 Pensamento Rápido) ou orientar (+Bounty).
+- `siren_shallows` (Fases 1 e 2 - Baixios Perigosos): Risco de dano por ouro em destroços ou ritmo firme (+1 Segundo Fôlego).
 
 A cena:
 - carrega evento via `DataLoader`;
@@ -278,6 +282,7 @@ A cena:
 - emite sinal `continue_requested` ao clicar em Continuar (totalmente desacoplada de `CombatScene`).
 
 Efeitos de evento atualmente são resolvidos localmente na `EventScene`.
+
 
 Não extrair `EventEffectResolver` até existir necessidade real em mais de um ou dois eventos adicionais.
 
@@ -403,12 +408,13 @@ Script:
 Responsabilidades:
 - desacoplar a criação do mapa do script de cena;
 - criar rotas procedurais e balanceadas para cada nova run (estilo *Slay the Spire*);
-- gerar nós dinâmicos para cada estágio:
-  - Estágio 0: Eventos de cais (Mestre/Médico);
-  - Estágio 1: Combates variados com pool de inimigos comuns + oportunidade de Baú de Akuma no Mi;
-  - Estágio 2: Parada portuária (cidade com ações limitadas);
-  - Estágio 3: Batalha de Chefe do Setor;
+- consultar o `DataLoader` dinamicamente para sortear nós de acordo com o agrupamento por fase (`allowed_stages`):
+  - **Estágio 0:** Eventos de cais elegíveis para fase 0 (`old_port_trainer`, `wandering_doctor`);
+  - **Estágio 1:** Combates procedurais variados com pool dinâmico de inimigos comuns + eventos marítimos sorteados da pool da fase 1 (`mysterious_chest`, `stranded_merchant`, `siren_shallows`);
+  - **Estágio 2:** Parada portuária (cidade com ações estratégicas de descanso/treino);
+  - **Estágio 3:** Batalha de Chefe do Setor consultando dinamicamente a pool de chefes;
 - persistir a rota na `RunScene` durante a travessia e gerar novo mapa ao iniciar nova expedição.
+
 
 ## Fluxo atual
 Fluxo atual implementado:

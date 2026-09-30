@@ -2,6 +2,9 @@
   "old_port_trainer": {
 	"id": "old_port_trainer",
 	"title": "Velho Lutador do Porto",
+	"short_title": "Velho Lutador",
+	"desc": "Treino de Postura ou Haki",
+	"allowed_stages": [0],
 	"body": "Um veterano observa seus movimentos no cais. Ele não diz muito, apenas aponta falhas na sua guarda e oferece uma breve lição antes da maré virar.",
 	"choices": [
 	  {
@@ -37,6 +40,9 @@
   "wandering_doctor": {
 	"id": "wandering_doctor",
 	"title": "Médico do Cais",
+	"short_title": "Médico do Cais",
+	"desc": "Recrutar Dr. Lin",
+	"allowed_stages": [0],
 	"body": "Em um recanto do porto, um médico de olhar calmo trata feridos com ervas e bandagens. Ele procura uma embarcação que navegue rumo a novas ilhas medicinais.",
 	"choices": [
 	  {
@@ -67,6 +73,9 @@
   "mysterious_chest": {
 	"id": "mysterious_chest",
 	"title": "Baú do Naufrágio Oculto",
+	"short_title": "Baú Naufragado",
+	"desc": "Fruta da Névoa",
+	"allowed_stages": [1],
 	"body": "Entre destroços envoltos em uma névoa sobrenatural na praia rochosa, você encontra uma arca trancada. Dentro repousa uma fruta misteriosa com espirais cintilantes: a Kiri Kiri no Mi (Fruta da Névoa). As lendas dizem que concede poderes de bruma e intangibilidade, mas rouba a bênção dos mares.",
 	"choices": [
 	  {
@@ -89,6 +98,79 @@
 		]
 	  }
 	]
+  },
+  "stranded_merchant": {
+	"id": "stranded_merchant",
+	"title": "Mercador Náutico à Deriva",
+	"short_title": "Mercador à Deriva",
+	"desc": "Troca de Recursos",
+	"allowed_stages": [1, 2],
+	"body": "Um pequeno barco à deriva acena em socorro. O capitão mercante perdeu o mastro principal, mas salvou parte valiosa de sua carga e oferece acordos vantajosos para quem o abastecer com comida.",
+	"choices": [
+	  {
+		"label": "Doar mantimentos ao mercador (-2 Comida, +30 Ouro)",
+		"effects": [
+		  {
+			"type": "gain_resource",
+			"resource": "gold",
+			"value": 30
+		  }
+		]
+	  },
+	  {
+		"label": "Resgatar seu cartógrafo (+1 Pensamento Rápido ao deck)",
+		"effects": [
+		  {
+			"type": "add_card_to_deck",
+			"card_id": "quick_thinking"
+		  }
+		]
+	  },
+	  {
+		"label": "Apenas indicar o rumo ao porto mais próximo (+5 Bounty)",
+		"effects": [
+		  {
+			"type": "gain_resource",
+			"resource": "bounty",
+			"value": 5
+		  }
+		]
+	  }
+	]
+  },
+  "siren_shallows": {
+	"id": "siren_shallows",
+	"title": "Recife dos Sussurros",
+	"short_title": "Recife dos Sussurros",
+	"desc": "Águas Perigosas",
+	"allowed_stages": [1, 2],
+	"body": "Uma canção hipnótica ecoa entre rochas afiadas. A tripulação hesita no leme enquanto brumas envolvem a rota. Você precisa decidir como guiar a embarcação através dos baixios.",
+	"choices": [
+	  {
+		"label": "Navegar com audácia através das pedras (-8 HP, +25 Ouro achado em destroços)",
+		"effects": [
+		  {
+			"type": "heal",
+			"value": -8
+		  },
+		  {
+			"type": "gain_resource",
+			"resource": "gold",
+			"value": 25
+		  }
+		]
+	  },
+	  {
+		"label": "Tapar os ouvidos e focar no ritmo dos remos (+1 Segundo Fôlego ao deck)",
+		"effects": [
+		  {
+			"type": "add_card_to_deck",
+			"card_id": "second_wind"
+		  }
+		]
+	  }
+	]
   }
 }
+
 

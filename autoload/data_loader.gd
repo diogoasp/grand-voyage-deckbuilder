@@ -90,6 +90,22 @@ func has_event(event_id: String) -> bool:
 	return events.has(event_id)
 
 
+func get_all_events() -> Dictionary:
+	return events
+
+
+func get_events_for_stage(stage_index: int) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for event_id in events.keys():
+		var ev: Dictionary = events[event_id]
+		var allowed_stages: Array = ev.get("allowed_stages", [])
+		# Se allowed_stages estiver vazio ou contiver o stage_index, o evento é elegível
+		if allowed_stages.is_empty() or allowed_stages.has(stage_index):
+			result.append(ev)
+	return result
+
+
+
 func get_crew(crew_id: String) -> Dictionary:
 	if not crew.has(crew_id):
 		push_warning("Tripulante não encontrado: %s" % crew_id)

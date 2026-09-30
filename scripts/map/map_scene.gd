@@ -190,9 +190,10 @@ func is_node_accessible(node_data: Dictionary, stage_idx: int) -> bool:
 	if last_selected_node_id != "":
 		var prev_data: Dictionary = find_node_data(last_selected_node_id)
 		var next_list: Array = prev_data.get("next_nodes", [])
-		return next_list.has(node_id)
+		if not next_list.is_empty():
+			return next_list.has(node_id)
 
-	# Fallback de segurança se não houver registro prévio
+	# Fallback de segurança se não houver registro prévio ou se o nó anterior não tinha conexões válidas
 	return true
 
 

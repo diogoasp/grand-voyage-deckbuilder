@@ -105,7 +105,21 @@ func load_saved_run() -> void:
 		map_valid = false
 
 	if not map_valid or sector_map.is_empty():
-		sector_map = MAP_GENERATOR.generate_sector_map(1)
+		sector_map = MAP_GENERATOR.generate_sector_map(GameState.current_act)
+		# Se o mapa teve que ser recriado devido a dados corrompidos no save, reconecta last_selected_node_id
+		if last_selected_node_id != "" and not completed_nodes.is_empty():
+			# Tenta achar se o nó ainda existe; se não, limpa para permitir escolher qualquer nó do estágio atual
+			var found := false
+			for st in sector_map:
+				for node in st:
+					if node.get("id", "") == last_selected_node_id:
+						found = true
+						break
+				if found:
+					break
+			if not found:
+				last_selected_node_id = ""
+		save_run()
 	else:
 		# Verifica se os nós possuem 'next_nodes' populados; se não tiverem (save antigo), reconstrói as rotas
 		var needs_connections := false
@@ -120,6 +134,7 @@ func load_saved_run() -> void:
 		if needs_connections:
 			for stage_idx in range(sector_map.size() - 1):
 				MAP_GENERATOR.build_stage_connections(sector_map[stage_idx], sector_map[stage_idx + 1])
+			save_run()
 
 	show_map()
 
@@ -167,7 +182,7 @@ func show_map() -> void:
 
 
 func _on_map_node_selected(node_data: Dictionary) -> void:
-	active_node_data = node_data
+	active_node_data = node_data.duplicate(true)
 	last_selected_node_id = str(node_data.get("id", ""))
 	save_run()
 	var node_type: String = str(node_data.get("type", ""))
@@ -193,7 +208,7 @@ func complete_active_node() -> void:
 	apply_crew_travel_effects()
 
 	current_stage += 1
-	active_node_data.clear()
+	active_node_data = {}
 	save_run()
 	show_map()
 

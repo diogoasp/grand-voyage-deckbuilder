@@ -107,12 +107,24 @@ func get_events_for_stage(stage_index: int, act: int = 1) -> Array[Dictionary]:
 
 		# Filtra por ato/fase (ex: South Blue = 1, Grand Line = 2)
 		var allowed_acts: Array = ev.get("allowed_acts", [])
-		if not (allowed_acts.is_empty() or allowed_acts.has(act)):
-			continue
+		if not allowed_acts.is_empty():
+			var has_act := false
+			for a in allowed_acts:
+				if int(a) == act:
+					has_act = true
+					break
+			if not has_act:
+				continue
 
 		var allowed_stages: Array = ev.get("allowed_stages", [])
-		if not (allowed_stages.is_empty() or allowed_stages.has(stage_index)):
-			continue
+		if not allowed_stages.is_empty():
+			var has_stage := false
+			for s in allowed_stages:
+				if int(s) == stage_index:
+					has_stage = true
+					break
+			if not has_stage:
+				continue
 
 		# Filtra eventos que concedem tripulantes ou frutas ainda não desbloqueados na metaprogressão
 		var is_available := true

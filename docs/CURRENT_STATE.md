@@ -476,9 +476,18 @@ Responsabilidades:
 - **Marcos de Conquista (Desbloqueio Passivo de Cartas por Notoriedade):**
   - *Pirata em Ascensão* (30 de Infâmia total): desbloqueia a carta `tactical_feint` na pool de combate.
   - *Queda do Carrasco* (Derrotar Capitão Morgan pela 1ª vez): desbloqueia a carta `axe_breaker` na pool de combate.
-- **Tela de Registros & Desbloqueios:**
-  - `res://scenes/menu/RecordsScene.tscn` acessível diretamente pelo Menu Principal.
-  - Exibe saldo de Infâmia, estatísticas da carreira e abas de mercado e conquistas de marcos.
+## Sistema de Estilos de Combate e Profissões do Capitão
+
+Documentação detalhada e guia de extensão: [`docs/COMBAT_STYLES_AND_PROFESSIONS.md`](file:///home/diogopaes/grand-voyage-deckbuilder/docs/COMBAT_STYLES_AND_PROFESSIONS.md)
+
+1. **Estilos de Combate (`res://data/combat_styles/combat_styles.json`):**
+   - Classes iniciais inspiradas em Slay the Spire: Espadachim (`swordsman`), Lutador (`brawler`) e Atirador Estrategista (`sniper`).
+   - Definem HP inicial, ouro, comida e baralho base.
+2. **Profissões do Capitão (`res://data/professions/professions.json`):**
+   - Combatente (`combatant` - sem passiva, +5 cartas de combate de largada), Navegador (`navigator` - revela rotas de todo o mapa náutico) e Médico (`doctor` - cura de HP na travessia entre ilhas).
+   - Cartas e passivas escalam de acordo com a raridade do capitão.
+3. **Tela de Preparação da Expedição (`CharacterSelectScene`):**
+   - Tela intermediária entre o menu principal e o início da run para seleção de estilo e profissão com prévia do baralho.
 
 ## Dívida técnica conhecida
 1. Rebuild da mão deve ser observado em mudanças futuras para evitar problemas de `queue_free()` durante sinais.
@@ -487,7 +496,7 @@ Responsabilidades:
 4. Trilha e efeitos sonoros (SFX/BGM) ainda não possuem assets de áudio integrados.
 
 ## Próximo marco
-Conclusão da base de Metaprogressão e Mercado Notório alcançada! O próximo marco é aprimorar o polimento sonoro (SFX/BGM) ou expandir as opções de eventos e novos inimigos comuns/elites.
+Implementação da persistência e evolução de Maestria por Estilo e Profissão em `MetaProgression` e exibição nas interfaces.
 
 
 

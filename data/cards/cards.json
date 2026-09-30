@@ -324,6 +324,278 @@
 		  "ignore_block": true
 		}
 	  ]
+	},
+	"map_reading": {
+	  "id": "map_reading",
+	  "name": "Leitura da Carta Náutica",
+	  "description": "Antecipe o movimento das marés e das correntes. Ganhe 5 de bloqueio e compre 1 carta.",
+	  "cost": 1,
+	  "type": "skill",
+	  "rarity": "common",
+	  "source": "profession",
+	  "tags": ["navigator", "defense", "draw"],
+	  "effects": [
+		{
+		  "type": "block",
+		  "value": 5,
+		  "target": "player"
+		},
+		{
+		  "type": "draw",
+		  "value": 1,
+		  "target": "player"
+		}
+	  ]
+	},
+	"favorable_wind": {
+	  "id": "favorable_wind",
+	  "name": "Vento Favorável",
+	  "description": "Manobre as velas a favor do vento. Ganhe 1 de energia e compre 1 carta.",
+	  "cost": 0,
+	  "type": "skill",
+	  "rarity": "uncommon",
+	  "source": "profession",
+	  "tags": ["navigator", "utility", "energy", "draw"],
+	  "effects": [
+		{
+		  "type": "gain_energy",
+		  "value": 1,
+		  "target": "player"
+		},
+		{
+		  "type": "draw",
+		  "value": 1,
+		  "target": "player"
+		}
+	  ]
+	},
+	"tempest_call": {
+	  "id": "tempest_call",
+	  "name": "Domínio da Tempestade",
+	  "description": "Direcione as intempéries oceânicas contra o inimigo. Cause 12 de dano e compre 2 cartas.",
+	  "cost": 2,
+	  "type": "attack",
+	  "rarity": "rare",
+	  "source": "profession",
+	  "tags": ["navigator", "attack", "elemental", "draw"],
+	  "effects": [
+		{
+		  "type": "damage",
+		  "value": 12,
+		  "target": "enemy"
+		},
+		{
+		  "type": "draw",
+		  "value": 2,
+		  "target": "player"
+		}
+	  ]
+	},
+	"first_aid": {
+	  "id": "first_aid",
+	  "name": "Primeiros Socorros",
+	  "description": "Faça um curativo rápido em combate. Recupere 5 de HP.",
+	  "cost": 1,
+	  "type": "skill",
+	  "rarity": "common",
+	  "source": "profession",
+	  "tags": ["doctor", "heal"],
+	  "effects": [
+		{
+		  "type": "heal",
+		  "value": 5,
+		  "target": "player"
+		}
+	  ]
+	},
+	"antidote_tonic": {
+	  "id": "antidote_tonic",
+	  "name": "Tônico Revigorante",
+	  "description": "Bebida revigorante formulada por médico. Recupere 4 de HP e ganhe 5 de bloqueio.",
+	  "cost": 1,
+	  "type": "skill",
+	  "rarity": "uncommon",
+	  "source": "profession",
+	  "tags": ["doctor", "heal", "defense"],
+	  "effects": [
+		{
+		  "type": "heal",
+		  "value": 4,
+		  "target": "player"
+		},
+		{
+		  "type": "block",
+		  "value": 5,
+		  "target": "player"
+		}
+	  ]
+	},
+	"adrenaline_shot": {
+	  "id": "adrenaline_shot",
+	  "name": "Injeção de Adrenalina",
+	  "description": "Estimulante medicinal de emergência. Recupere 8 de HP e ganhe 1 de energia.",
+	  "cost": 1,
+	  "type": "skill",
+	  "rarity": "rare",
+	  "source": "profession",
+	  "tags": ["doctor", "heal", "energy"],
+	  "effects": [
+		{
+		  "type": "heal",
+		  "value": 8,
+		  "target": "player"
+		},
+		{
+		  "type": "gain_energy",
+		  "value": 1,
+		  "target": "player"
+		}
+	  ]
+	},
+	"iron_punch": {
+	  "id": "iron_punch",
+	  "name": "Soco Pesado",
+	  "description": "Golpe direto com força marcial bruta. Cause 8 de dano.",
+	  "cost": 1,
+	  "type": "attack",
+	  "rarity": "common",
+	  "source": "profession",
+	  "tags": ["combatant", "attack", "physical"],
+	  "effects": [
+		{
+		  "type": "damage",
+		  "value": 8,
+		  "target": "enemy"
+		}
+	  ]
+	},
+	"guard_up": {
+	  "id": "guard_up",
+	  "name": "Postura de Guarda",
+	  "description": "Bloqueio marcial treinado. Ganhe 7 de bloqueio.",
+	  "cost": 1,
+	  "type": "skill",
+	  "rarity": "common",
+	  "source": "profession",
+	  "tags": ["combatant", "defense"],
+	  "effects": [
+		{
+		  "type": "block",
+		  "value": 7,
+		  "target": "player"
+		}
+	  ]
+	},
+	"counter_strike": {
+	  "id": "counter_strike",
+	  "name": "Contra-Ataque",
+	  "description": "Defenda e responda à agressão. Ganhe 6 de bloqueio e cause 6 de dano.",
+	  "cost": 1,
+	  "type": "attack",
+	  "rarity": "uncommon",
+	  "source": "profession",
+	  "tags": ["combatant", "attack", "defense"],
+	  "effects": [
+		{
+		  "type": "block",
+		  "value": 6,
+		  "target": "player"
+		},
+		{
+		  "type": "damage",
+		  "value": 6,
+		  "target": "enemy"
+		}
+	  ]
+	},
+	"heavy_impact": {
+	  "id": "heavy_impact",
+	  "name": "Impacto Demolidor",
+	  "description": "Golpe que estremece as defesas. Cause 14 de dano.",
+	  "cost": 2,
+	  "type": "attack",
+	  "rarity": "rare",
+	  "source": "profession",
+	  "tags": ["combatant", "attack", "heavy"],
+	  "effects": [
+		{
+		  "type": "damage",
+		  "value": 14,
+		  "target": "enemy"
+		}
+	  ]
+	},
+	"conquerors_roar": {
+	  "id": "conquerors_roar",
+	  "name": "Rugido do Soberano",
+	  "description": "Vontade inabalável dos mares. Cause 20 de dano perfurante e compre 2 cartas.",
+	  "cost": 2,
+	  "type": "attack",
+	  "rarity": "legendary",
+	  "source": "profession",
+	  "tags": ["combatant", "attack", "legendary", "draw"],
+	  "effects": [
+		{
+		  "type": "damage",
+		  "value": 20,
+		  "target": "enemy",
+		  "ignore_block": true
+		},
+		{
+		  "type": "draw",
+		  "value": 2,
+		  "target": "player"
+		}
+	  ]
+	},
+	"sea_chart_mastery": {
+	  "id": "sea_chart_mastery",
+	  "name": "Mestria dos Mapas Celestes",
+	  "description": "Leitura astronômica lendária dos oceanos. Ganhe 15 de bloqueio, 1 de energia e compre 2 cartas.",
+	  "cost": 1,
+	  "type": "skill",
+	  "rarity": "legendary",
+	  "source": "profession",
+	  "tags": ["navigator", "legendary", "defense", "draw", "energy"],
+	  "effects": [
+		{
+		  "type": "block",
+		  "value": 15,
+		  "target": "player"
+		},
+		{
+		  "type": "gain_energy",
+		  "value": 1,
+		  "target": "player"
+		},
+		{
+		  "type": "draw",
+		  "value": 2,
+		  "target": "player"
+		}
+	  ]
+	},
+	"miracle_panacea": {
+	  "id": "miracle_panacea",
+	  "name": "Panacéia Milagrosa",
+	  "description": "Tratamento lendário dos maiores médicos do mundo. Recupere 16 de HP e ganhe 10 de bloqueio.",
+	  "cost": 1,
+	  "type": "skill",
+	  "rarity": "legendary",
+	  "source": "profession",
+	  "tags": ["doctor", "legendary", "heal", "defense"],
+	  "effects": [
+		{
+		  "type": "heal",
+		  "value": 16,
+		  "target": "player"
+		},
+		{
+		  "type": "block",
+		  "value": 10,
+		  "target": "player"
+		}
+	  ]
 	}
 }
 

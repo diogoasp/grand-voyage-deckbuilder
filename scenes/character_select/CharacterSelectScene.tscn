@@ -1,0 +1,143 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/character_select/character_select_scene.gd" id="1_char_select"]
+
+[node name="CharacterSelectScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_char_select")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.06, 0.08, 0.12, 1)
+
+[node name="MainLayout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = 20.0
+offset_right = -32.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="TopBar" type="HBoxContainer" parent="MainLayout"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="BackButton" type="Button" parent="MainLayout/TopBar"]
+custom_minimum_size = Vector2(110, 38)
+layout_mode = 2
+text = "← Voltar"
+
+[node name="TitleLabel" type="Label" parent="MainLayout/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.95, 0.8, 0.35, 1)
+theme_override_font_sizes/font_size = 22
+text = "Preparar Expedição — Escolha seu Capitão"
+
+[node name="SplitContent" type="HBoxContainer" parent="MainLayout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 24
+
+[node name="LeftColumn" type="VBoxContainer" parent="MainLayout/SplitContent"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.1
+theme_override_constants/separation = 14
+
+[node name="StyleHeader" type="Label" parent="MainLayout/SplitContent/LeftColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.95, 1)
+theme_override_font_sizes/font_size = 16
+text = "⚔ 1. Estilo de Combate Inicial (Arquétipo)"
+
+[node name="StylesList" type="HBoxContainer" parent="MainLayout/SplitContent/LeftColumn"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ProfHeader" type="Label" parent="MainLayout/SplitContent/LeftColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.95, 1)
+theme_override_font_sizes/font_size = 16
+text = "🧭 2. Profissão do Capitão (Passiva & Arsenal)"
+
+[node name="ProfList" type="HBoxContainer" parent="MainLayout/SplitContent/LeftColumn"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="RightColumn" type="VBoxContainer" parent="MainLayout/SplitContent"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.9
+theme_override_constants/separation = 12
+
+[node name="SummaryHeader" type="Label" parent="MainLayout/SplitContent/RightColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.95, 1)
+theme_override_font_sizes/font_size = 16
+text = "📋 Resumo da Tripulação e Baralho Inicial"
+
+[node name="SummaryPanel" type="PanelContainer" parent="MainLayout/SplitContent/RightColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Margin" type="MarginContainer" parent="MainLayout/SplitContent/RightColumn/SummaryPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Scroll" type="ScrollContainer" parent="MainLayout/SplitContent/RightColumn/SummaryPanel/Margin"]
+layout_mode = 2
+
+[node name="SummaryVBox" type="VBoxContainer" parent="MainLayout/SplitContent/RightColumn/SummaryPanel/Margin/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="StyleInfoLabel" type="RichTextLabel" parent="MainLayout/SplitContent/RightColumn/SummaryPanel/Margin/Scroll/SummaryVBox"]
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+
+[node name="ProfInfoLabel" type="RichTextLabel" parent="MainLayout/SplitContent/RightColumn/SummaryPanel/Margin/Scroll/SummaryVBox"]
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+
+[node name="DeckPreviewLabel" type="RichTextLabel" parent="MainLayout/SplitContent/RightColumn/SummaryPanel/Margin/Scroll/SummaryVBox"]
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+
+[node name="BottomBar" type="HBoxContainer" parent="MainLayout"]
+layout_mode = 2
+alignment = 2
+theme_override_constants/separation = 20
+
+[node name="StartGameButton" type="Button" parent="MainLayout/BottomBar"]
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1, 0.1, 0.1, 1)
+theme_override_font_sizes/font_size = 18
+text = "⚓ Zarpar rumo ao Mar!"

@@ -5,6 +5,8 @@ var enemies: Dictionary = {}
 var events: Dictionary = {}
 var crew: Dictionary = {}
 var fruits: Dictionary = {}
+var combat_styles: Dictionary = {}
+var professions: Dictionary = {}
 
 func _ready() -> void:
 	load_all_data()
@@ -16,12 +18,16 @@ func load_all_data() -> void:
 	events = load_json_dictionary("res://data/events/events.json")
 	crew = load_json_dictionary("res://data/crew/crew.json")
 	fruits = load_json_dictionary("res://data/fruits/fruits.json")
+	combat_styles = load_json_dictionary("res://data/combat_styles/combat_styles.json")
+	professions = load_json_dictionary("res://data/professions/professions.json")
 
 	print("DataLoader: %d cartas carregadas." % cards.size())
 	print("DataLoader: %d inimigos carregados." % enemies.size())
 	print("DataLoader: %d eventos carregados." % events.size())
 	print("DataLoader: %d tripulantes carregados." % crew.size())
 	print("DataLoader: %d frutas carregadas." % fruits.size())
+	print("DataLoader: %d estilos de combate carregados." % combat_styles.size())
+	print("DataLoader: %d profissões carregadas." % professions.size())
 
 
 func load_json_dictionary(path: String) -> Dictionary:
@@ -161,3 +167,33 @@ func get_fruit(fruit_id: String) -> Dictionary:
 
 func has_fruit(fruit_id: String) -> bool:
 	return fruits.has(fruit_id)
+
+
+func get_combat_style(style_id: String) -> Dictionary:
+	if not combat_styles.has(style_id):
+		push_warning("Estilo de combate não encontrado: %s" % style_id)
+		return {}
+	return combat_styles[style_id]
+
+
+func has_combat_style(style_id: String) -> bool:
+	return combat_styles.has(style_id)
+
+
+func get_all_combat_styles() -> Dictionary:
+	return combat_styles
+
+
+func get_profession(prof_id: String) -> Dictionary:
+	if not professions.has(prof_id):
+		push_warning("Profissão não encontrada: %s" % prof_id)
+		return {}
+	return professions[prof_id]
+
+
+func has_profession(prof_id: String) -> bool:
+	return professions.has(prof_id)
+
+
+func get_all_professions() -> Dictionary:
+	return professions

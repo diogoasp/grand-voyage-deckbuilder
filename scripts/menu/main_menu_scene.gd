@@ -55,11 +55,21 @@ func refresh_save_status() -> void:
 			else:
 				fruit_info = fruit_name
 
+		var style_id: String = str(summary.get("combat_style", "swordsman"))
+		var style_name := style_id
+		if DataLoader.has_combat_style(style_id):
+			style_name = DataLoader.get_combat_style(style_id).get("name", style_id)
+
+		var prof_id: String = str(summary.get("player_profession", "combatant"))
+		var prof_name := prof_id
+		if DataLoader.has_profession(prof_id):
+			prof_name = DataLoader.get_profession(prof_id).get("name", prof_id)
+
 		var act_num: int = int(summary.get("current_act", 1))
 		var sea_name := "South Blue" if act_num == 1 else "Grand Line"
 
-		save_info_label.text = "⚓ EXPEDIÇÃO EM CURSO: %s (Setor %d)\n• Vida: %d/%d  |  Ouro: %d  |  Comida: %d  |  Bounty: %d\n• Deck: %d cartas  |  Tripulação: %d  |  Akuma no Mi: %s" % [
-			sea_name, stage_idx, hp, max_hp, gold, food, bounty, deck_size, crew_count, fruit_info
+		save_info_label.text = "⚓ EXPEDIÇÃO EM CURSO: %s (Setor %d)\n• Capitão: %s (%s)  |  Vida: %d/%d  |  Ouro: %d  |  Comida: %d\n• Deck: %d cartas  |  Tripulação: %d  |  Akuma no Mi: %s" % [
+			sea_name, stage_idx, style_name, prof_name, hp, max_hp, gold, food, deck_size, crew_count, fruit_info
 		]
 		save_info_panel.visible = true
 	else:

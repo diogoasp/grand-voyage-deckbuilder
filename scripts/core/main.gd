@@ -42,14 +42,32 @@ func _on_records_selected() -> void:
 		records.back_requested.connect(show_main_menu)
 
 
+const CHARACTER_SELECT_SCENE: PackedScene = preload("res://scenes/character_select/CharacterSelectScene.tscn")
+
+
 func _on_new_run_selected() -> void:
+	clear_current_child()
+	var char_select: Node = CHARACTER_SELECT_SCENE.instantiate()
+	current_child = char_select
+	add_child(char_select)
+
+	if char_select.has_signal("back_requested"):
+		char_select.back_requested.connect(show_main_menu)
+
+	if char_select.has_signal("expedition_started"):
+		char_select.expedition_started.connect(_on_expedition_started)
+
+
+func _on_expedition_started(style_id: String, prof_id: String, prof_rarity: String) -> void:
 	clear_current_child()
 	var run: Node = RUN_SCENE.instantiate()
 	current_child = run
 	add_child(run)
 	if run.has_signal("back_to_menu_requested"):
 		run.back_to_menu_requested.connect(show_main_menu)
-	if run.has_method("start_run"):
+	if run.has_method("start_custom_run"):
+		run.start_custom_run(style_id, prof_id, prof_rarity)
+	elif run.has_method("start_run"):
 		run.start_run()
 
 

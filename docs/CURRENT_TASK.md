@@ -1,26 +1,30 @@
 # Tarefa Atual
 
 ## Nome
-Geografia Canônica do South Blue (Ato 1), Seleção Temática de Chefes & Transição para Grand Line (Ato 2).
+Estilos de Combate Iniciais, Profissões do Capitão e Seleção de Personagem.
 
 ## Objetivo
-Implementar a estrutura canônica de Atos/Fases do mundo de One Piece:
-- Geração da rota do **South Blue (Ato 1)** partindo da ilhota desconhecida:
-  - Setor 1: Karate Island, Sorbet Kingdom ou Ilha Misteriosa (sempre Evento);
-  - Setor 2: Centaurea Kingdom, Judo Island ou Torino Kingdom;
-  - Setor 3: Ilha Misteriosa (sempre Evento) ou Baterilla Island;
-  - Setor 4: Briss Kingdom (Grande Porto Seguro antes da Grande Travessia);
-  - Setor 5: Batalha de Chefe do South Blue (Capitão Morgan ou Comodoro Pudding-Pudding).
-- **Restrição de Akuma no Mi:** Frutas são extremamente raras e **não aparecem nos Blues** (`allowed_acts: [2]`); disponíveis apenas na Grand Line.
-- **Sorteio e Balanceamento de Chefes:** Suporte ao atributo `allowed_acts` em `enemies.json` para sortear chefes condizentes com a fase da narrativa.
-- **Transição Multi-Atos:** Ao derrotar o chefe de Briss Kingdom / South Blue, o jogador pode zarpar rumo à Grand Line (Ato 2: Reverse Mountain / Whiskey Peak), preservando HP, ouro, deck e tripulação.
+Implementar o sistema de customização e arquétipos iniciais da expedição:
+- **Estilos de Combate (`data/combat_styles/combat_styles.json`)**:
+  - `swordsman` (Espadachim - Caminho da Lâmina): deck focado em corte, 72 HP, 10 ouro.
+  - `brawler` (Lutador - Punhos de Aço): deck focado em impacto e defesa pesada, 80 HP, 5 ouro.
+  - `sniper` (Atirador Estrategista - Olho de Rapina): deck focado em compra e rotação, 65 HP, 15 ouro.
+- **Profissões do Capitão (`data/professions/professions.json`)**:
+  - Raridade fixa do capitão como `"common"`.
+  - `combatant` (Combatente): Sem passiva náutica, compensado por receber 5 cartas comuns sorteadas de combate.
+  - `navigator` (Navegador): Passiva de revelar as rotas de todo o mapa náutico (sem navegador, rotas além do estágio atual ficam ocultas); concede 1 carta comum temática.
+  - `doctor` (Médico): Passiva de cura automática entre ilhas (5 HP no grau comum); concede 1 carta comum medicinal.
+- **Tela de Preparação da Expedição (`CharacterSelectScene`)**:
+  - Permite escolher estilo e profissão com resumo em tempo real do baralho e atributos.
+- **Persistência**:
+  - Estilo, profissão e raridade salvos e carregados em `GameState` e exibidos no menu principal e no mapa.
 
 ## Critérios de aceite
-1. Mapa do South Blue gera exatamente as ilhas e tipos especificados em cada setor.
-2. Ilhas Misteriosas contêm exclusivamente nós do tipo `event`.
-3. Eventos de Akuma no Mi não aparecem no South Blue (Ato 1).
-4. Chefes são filtrados por `allowed_acts`, sorteando Morgan ou Pudding-Pudding no South Blue.
-5. Vencer o chefe do South Blue permite zarpar para a Grand Line (Ato 2) mantendo o estado da expedição.
+1. `DataLoader` carrega estilos e profissões a partir de JSONs externos.
+2. `CharacterSelectScene` conecta seleção com `GameState.setup_custom_run()`.
+3. Passiva do Navegador controla visualização de rotas em `MapScene`.
+4. Passiva do Médico cura o jogador na transição entre setores.
+5. Baralho inicial é montado unindo cartas do estilo + cartas da profissão por raridade.
 6. Validação do Godot headless sem erros de parser/script.
 
 

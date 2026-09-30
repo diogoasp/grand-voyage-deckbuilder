@@ -23,6 +23,10 @@ var crew_members: Array[String] = []
 var eaten_fruit: String = ""
 var current_act: int = 1 # 1 = South Blue, 2 = Grand Line
 
+var combat_style: String = "swordsman"
+var player_profession: String = "combatant"
+var profession_rarity: String = "common"
+
 func reset_run() -> void:
 	current_act = 1
 	player_hp = player_max_hp
@@ -32,6 +36,9 @@ func reset_run() -> void:
 	bounty = 0
 	crew_members.clear()
 	eaten_fruit = ""
+	combat_style = "swordsman"
+	player_profession = "combatant"
+	profession_rarity = "common"
 	current_deck = [
 		"strike_basic",
 		"strike_basic",
@@ -42,6 +49,94 @@ func reset_run() -> void:
 		"quick_thinking",
 		"second_wind"
 	]
+
+
+func setup_custom_run(style_id: String, prof_id: String, prof_rarity: String = "common") -> void:
+	reset_run()
+	combat_style = style_id
+	player_profession = prof_id
+	profession_rarity = prof_rarity
+
+	# Aplica atributos do estilo de combate
+	if DataLoader.has_combat_style(style_id):
+		var style_data: Dictionary = DataLoader.get_combat_style(style_id)
+		player_max_hp = int(style_data.get("starting_hp", 70))
+		player_hp = player_max_hp
+		gold = int(style_data.get("starting_gold", 0))
+		food = int(style_data.get("starting_food", 5))
+
+		current_deck.clear()
+		for cid in style_data.get("starter_deck", []):
+			current_deck.append(str(cid))
+
+	# Adiciona cartas de profissão de acordo com as regras de raridade
+	distribute_profession_starter_cards(prof_id, prof_rarity)
+
+
+func distribute_profession_starter_cards(prof_id: String, rarity: String) -> void:
+	if not DataLoader.has_profession(prof_id):
+		return
+
+	var prof_data: Dictionary = DataLoader.get_profession(prof_id)
+	var card_pool: Dictionary = prof_data.get("card_pool", {})
+
+	var common_pool: Array = card_pool.get("common", [])
+	var uncommon_pool: Array = card_pool.get("uncommon", [])
+	var rare_pool: Array = card_pool.get("rare", [])
+	var legendary_pool: Array = card_pool.get("legendary", [])
+
+	var cards_to_add: Array[String] = []
+
+	if prof_id == "combatant":
+		# Regras do Combatente (sempre 5 cartas)
+		match rarity:
+			"common":
+				cards_to_add.append_array(_pick_random_cards(common_pool, 5))
+			"uncommon":
+				cards_to_add.append_array(_pick_random_cards(common_pool, 3))
+				cards_to_add.append_array(_pick_random_cards(uncommon_pool, 2))
+			"rare":
+				cards_to_add.append_array(_pick_random_cards(uncommon_pool, 3))
+				cards_to_add.append_array(_pick_random_cards(rare_pool, 2))
+			"legendary":
+				cards_to_add.append_array(_pick_random_cards(rare_pool, 3))
+				cards_to_add.append_array(_pick_random_cards(legendary_pool, 2))
+			_:
+				cards_to_add.append_array(_pick_random_cards(common_pool, 5))
+	else:
+		# Regras das outras profissões (com passiva)
+		match rarity:
+			"common":
+				cards_to_add.append_array(_pick_random_cards(common_pool, 1))
+			"uncommon":
+				cards_to_add.append_array(_pick_random_cards(common_pool, 1))
+				cards_to_add.append_array(_pick_random_cards(uncommon_pool, 1))
+			"rare":
+				cards_to_add.append_array(_pick_random_cards(uncommon_pool, 2))
+				cards_to_add.append_array(_pick_random_cards(rare_pool, 1))
+			"legendary":
+				cards_to_add.append_array(_pick_random_cards(rare_pool, 2))
+				cards_to_add.append_array(_pick_random_cards(legendary_pool, 1))
+			_:
+				cards_to_add.append_array(_pick_random_cards(common_pool, 1))
+
+	for cid in cards_to_add:
+		add_card_to_deck(cid)
+
+
+func _pick_random_cards(pool: Array, count: int) -> Array[String]:
+	var result: Array[String] = []
+	if pool.is_empty() or count <= 0:
+		return result
+
+	var temp_pool: Array = pool.duplicate()
+	for i in range(count):
+		if temp_pool.is_empty():
+			temp_pool = pool.duplicate()
+		var idx := randi() % temp_pool.size()
+		result.append(str(temp_pool[idx]))
+		temp_pool.remove_at(idx)
+	return result
 
 
 func gain_gold(amount: int) -> void:
@@ -164,6 +259,9 @@ func save_run_state(extra_data: Dictionary = {}) -> bool:
 		"food": food,
 		"ship_integrity": ship_integrity,
 		"bounty": bounty,
+		"combat_style": combat_style,
+		"player_profession": player_profession,
+		"profession_rarity": profession_rarity,
 		"current_deck": current_deck,
 		"crew_members": crew_members,
 		"eaten_fruit": eaten_fruit,
@@ -248,6 +346,9 @@ func load_run_state() -> Dictionary:
 	food = int(data.get("food", 5))
 	ship_integrity = int(data.get("ship_integrity", 100))
 	bounty = int(data.get("bounty", 0))
+	combat_style = str(data.get("combat_style", "swordsman"))
+	player_profession = str(data.get("player_profession", "combatant"))
+	profession_rarity = str(data.get("profession_rarity", "common"))
 	eaten_fruit = str(data.get("eaten_fruit", ""))
 
 	current_deck.clear()

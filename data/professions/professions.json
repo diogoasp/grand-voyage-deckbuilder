@@ -1,0 +1,50 @@
+{
+  "combatant": {
+	"id": "combatant",
+	"name": "Combatente",
+	"description": "Focado estritamente na arte da batalha. Não possui passiva utilitária de viagem, mas fortalece massivamente o baralho com 5 cartas voltadas para combate imediato.",
+	"has_passive": false,
+	"passive_name": "Sem Passiva Náutica",
+	"passive_description": "Compensa a ausência de utilitários náuticos recebendo um arsenal de 5 cartas de combate de acordo com a sua raridade.",
+	"card_pool": {
+	  "common": ["iron_punch", "guard_up", "cutlass_slash", "brace_impact", "strike_basic"],
+	  "uncommon": ["counter_strike", "sailors_gambit", "buso_strike", "tactical_feint"],
+	  "rare": ["heavy_impact", "axe_breaker"],
+	  "legendary": ["conquerors_roar"]
+	}
+  },
+  "navigator": {
+	"id": "navigator",
+	"name": "Navegador",
+	"description": "Especialista na leitura do clima, correntes marítimas e cartas náuticas. Permite traçar e enxergar com clareza as rotas marítimas de todo o oceano.",
+	"has_passive": true,
+	"passive_name": "Visão da Rota Náutica",
+	"passive_description": "Revela todas as rotas e conexões de ilhas de todo o mapa do oceano (sem navegador, apenas as conexões imediatas são visíveis).",
+	"card_pool": {
+	  "common": ["map_reading", "quick_thinking"],
+	  "uncommon": ["favorable_wind", "sailors_gambit"],
+	  "rare": ["tempest_call"],
+	  "legendary": ["sea_chart_mastery"]
+	}
+  },
+  "doctor": {
+	"id": "doctor",
+	"name": "Médico",
+	"description": "Zela pelo bem-estar e vitalidade da tripulação, tratando ferimentos com tônicos e curativos após cada travessia entre ilhas.",
+	"has_passive": true,
+	"passive_name": "Tratamento de Travessia",
+	"passive_description": "Recupera pontos de vida automaticamente ao viajar entre ilhas (o valor da cura varia conforme a raridade).",
+	"passive_heal_by_rarity": {
+	  "common": 5,
+	  "uncommon": 7,
+	  "rare": 10,
+	  "legendary": 15
+	},
+	"card_pool": {
+	  "common": ["first_aid", "field_medicine"],
+	  "uncommon": ["antidote_tonic", "kenbun_focus"],
+	  "rare": ["adrenaline_shot"],
+	  "legendary": ["miracle_panacea"]
+	}
+  }
+}

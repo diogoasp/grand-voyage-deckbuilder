@@ -1,0 +1,59 @@
+{
+  "swordsman": {
+	"id": "swordsman",
+	"name": "Espadachim",
+	"title": "Caminho da Lâmina",
+	"description": "Mestre da esgrima naval e dos cortes precisos. Seu baralho inicial conta com ataques cortantes diretos e boa postura defensiva.",
+	"starting_hp": 72,
+	"starting_gold": 10,
+	"starting_food": 5,
+	"starter_deck": [
+	  "strike_basic",
+	  "strike_basic",
+	  "strike_basic",
+	  "cutlass_slash",
+	  "defend_basic",
+	  "defend_basic",
+	  "defend_basic",
+	  "second_wind"
+	]
+  },
+  "brawler": {
+	"id": "brawler",
+	"name": "Lutador",
+	"title": "Punhos de Aço",
+	"description": "Combatente corporal vigoroso e resistente ao impacto. Começa com maior quantidade de vida e técnica para aparar investidas.",
+	"starting_hp": 80,
+	"starting_gold": 5,
+	"starting_food": 6,
+	"starter_deck": [
+	  "strike_basic",
+	  "strike_basic",
+	  "strike_basic",
+	  "defend_basic",
+	  "defend_basic",
+	  "defend_basic",
+	  "brace_impact",
+	  "second_wind"
+	]
+  },
+  "sniper": {
+	"id": "sniper",
+	"name": "Atirador Estrategista",
+	"title": "Olho de Rapina & Artimanha",
+	"description": "Engenhoso e perspicaz, calcula cada disparo e jogada. Começa com excelente capacidade de compra e rotação de cartas.",
+	"starting_hp": 65,
+	"starting_gold": 15,
+	"starting_food": 5,
+	"starter_deck": [
+	  "strike_basic",
+	  "strike_basic",
+	  "defend_basic",
+	  "defend_basic",
+	  "defend_basic",
+	  "quick_thinking",
+	  "sailors_gambit",
+	  "second_wind"
+	]
+  }
+}

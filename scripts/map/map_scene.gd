@@ -50,6 +50,17 @@ func setup_state(stage: int, completed_nodes: Array[String], last_node_id: Strin
 		rebuild_map_ui()
 
 
+func has_navigator_in_crew() -> bool:
+	if GameState.player_profession == "navigator":
+		return true
+	for crew_id in GameState.crew_members:
+		if DataLoader.has_crew(crew_id):
+			var data: Dictionary = DataLoader.get_crew(crew_id)
+			if str(data.get("role", "")).to_lower() == "navegador":
+				return true
+	return false
+
+
 func update_status_display() -> void:
 	var crew_names: Array[String] = []
 	for crew_id in GameState.crew_members:
@@ -68,12 +79,22 @@ func update_status_display() -> void:
 		else:
 			fruit_str = GameState.eaten_fruit
 
-	status_label.text = "HP: %d/%d | Ouro: %d | Comida: %d | Bounty: %d\nTripulação: %s | Fruta: %s" % [
+	var style_name := GameState.combat_style
+	if DataLoader.has_combat_style(GameState.combat_style):
+		style_name = DataLoader.get_combat_style(GameState.combat_style).get("name", GameState.combat_style)
+
+	var prof_name := GameState.player_profession
+	if DataLoader.has_profession(GameState.player_profession):
+		prof_name = DataLoader.get_profession(GameState.player_profession).get("name", GameState.player_profession)
+
+	status_label.text = "HP: %d/%d | Ouro: %d | Comida: %d | Bounty: %d\nEstilo: %s | Profissão: %s | Tripulação: %s | Fruta: %s" % [
 		GameState.player_hp,
 		GameState.player_max_hp,
 		GameState.gold,
 		GameState.food,
 		GameState.bounty,
+		style_name,
+		prof_name,
 		crew_str,
 		fruit_str
 	]
@@ -253,8 +274,14 @@ func _on_lines_overlay_draw() -> void:
 	if map_lines_overlay == null or map_stages.is_empty():
 		return
 
+	var has_navigator := has_navigator_in_crew()
+
 	# Percorre todas as conexões entre estágios
 	for stage_idx in range(map_stages.size() - 1):
+		# Sem navegador, o jogador só consegue ver as rotas percorridas e as rotas imediatas do estágio atual
+		if not has_navigator and stage_idx > current_stage:
+			continue
+
 		var curr_nodes: Array = map_stages[stage_idx]
 		for node in curr_nodes:
 			var node_id: String = node.get("id", "")
@@ -291,6 +318,8 @@ func _on_lines_overlay_draw() -> void:
 				elif stage_idx == current_stage:
 					# Linhas saindo do estágio atual
 					if last_selected_node_id != "" and node_id == last_selected_node_id:
+						is_active_route = true
+					elif current_stage == 0:
 						is_active_route = true
 
 				var line_color: Color

@@ -53,9 +53,13 @@ func _on_return_to_menu_pressed() -> void:
 
 
 func start_run() -> void:
+	start_custom_run(GameState.combat_style, GameState.player_profession, GameState.profession_rarity)
+
+
+func start_custom_run(style_id: String, prof_id: String, prof_rarity: String = "common") -> void:
 	randomize()
 	GameState.delete_saved_run()
-	GameState.reset_run()
+	GameState.setup_custom_run(style_id, prof_id, prof_rarity)
 	current_stage = 0
 	completed_nodes.clear()
 	active_node_data.clear()
@@ -215,6 +219,16 @@ func complete_active_node() -> void:
 
 
 func apply_crew_travel_effects() -> void:
+	# Passiva da profissão do Capitão (Médico)
+	if GameState.player_profession == "doctor" and DataLoader.has_profession("doctor"):
+		var prof_data: Dictionary = DataLoader.get_profession("doctor")
+		var heal_table: Dictionary = prof_data.get("passive_heal_by_rarity", {})
+		var prof_heal: int = int(heal_table.get(GameState.profession_rarity, 5))
+		if prof_heal > 0:
+			GameState.heal_player(prof_heal)
+			print("Passiva da profissão do Capitão (Médico): +%d HP recuperados na travessia." % prof_heal)
+
+	# Efeitos da Tripulação
 	for crew_id in GameState.crew_members:
 		if not DataLoader.has_crew(crew_id):
 			continue
@@ -226,7 +240,7 @@ func apply_crew_travel_effects() -> void:
 		if food_cost > 0:
 			GameState.spend_food(food_cost)
 
-		# Passiva de cura em viagem (Médico)
+		# Passiva de cura em viagem (Médico da tripulação)
 		var heal_amount: int = int(crew_data.get("passive_heal_per_sector", 0))
 		if heal_amount > 0:
 			GameState.heal_player(heal_amount)

@@ -2,21 +2,160 @@
 
 [ext_resource type="Script" uid="uid://crijxbr6su6if" path="res://scenes/combat/card_view.gd" id="1_ty6ft"]
 
-[node name="CardView" type="PanelContainer" unique_id=1551394569]
-offset_right = 110.0
-offset_bottom = 160.0
-size_flags_stretch_ratio = 0.0
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card_bg"]
+bg_color = Color(0.12, 0.14, 0.18, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.42, 0.52, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.4)
+shadow_size = 4
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_crystal"]
+bg_color = Color(0.1, 0.35, 0.65, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.8, 1, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_art_frame"]
+bg_color = Color(0.07, 0.08, 0.11, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.3, 0.4, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_desc_box"]
+bg_color = Color(0.08, 0.09, 0.13, 0.8)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.25, 0.32, 0.8)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="CardView" type="PanelContainer"]
+custom_minimum_size = Vector2(150, 215)
+offset_right = 150.0
+offset_bottom = 215.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_card_bg")
 script = ExtResource("1_ty6ft")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=133676511]
+[node name="Margin" type="MarginContainer" parent="."]
 layout_mode = 2
-alignment = 1
+mouse_filter = 2
+theme_override_constants/margin_left = 7
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_right = 7
+theme_override_constants/margin_bottom = 7
 
-[node name="NameLabel" type="Label" parent="VBoxContainer" unique_id=1201203674]
+[node name="CardVBox" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 5
 
-[node name="CostLabel" type="Label" parent="VBoxContainer" unique_id=400787461]
+[node name="HeaderHBox" type="HBoxContainer" parent="Margin/CardVBox"]
 layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
 
-[node name="DescriptionLabel" type="Label" parent="VBoxContainer" unique_id=862027404]
+[node name="CostCrystal" type="PanelContainer" parent="Margin/CardVBox/HeaderHBox"]
+custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_crystal")
+
+[node name="CostLabel" type="Label" parent="Margin/CardVBox/HeaderHBox/CostCrystal"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 15
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NameLabel" type="Label" parent="Margin/CardVBox/HeaderHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.95, 0.92, 0.82, 1)
+theme_override_font_sizes/font_size = 12
+text = "Golpe Básico"
+vertical_alignment = 1
+clip_text = true
+
+[node name="ArtContainer" type="PanelContainer" parent="Margin/CardVBox"]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_art_frame")
+
+[node name="ArtTexture" type="TextureRect" parent="Margin/CardVBox/ArtContainer"]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="PlaceholderArt" type="CenterContainer" parent="Margin/CardVBox/ArtContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="ArtIconLabel" type="Label" parent="Margin/CardVBox/ArtContainer/PlaceholderArt"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "⚔"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TypeBadge" type="Label" parent="Margin/CardVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.72, 0.8, 1)
+theme_override_font_sizes/font_size = 10
+text = "• ATAQUE •"
+horizontal_alignment = 1
+
+[node name="DescriptionBox" type="PanelContainer" parent="Margin/CardVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_desc_box")
+
+[node name="Margin" type="MarginContainer" parent="Margin/CardVBox/DescriptionBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 4
+
+[node name="DescriptionLabel" type="RichTextLabel" parent="Margin/CardVBox/DescriptionBox/Margin"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/default_color = Color(0.85, 0.87, 0.9, 1)
+theme_override_font_sizes/normal_font_size = 11
+bbcode_enabled = true
+text = "Cause 6 de dano."
+fit_content = true
+scroll_active = false
+autowrap_mode = 2

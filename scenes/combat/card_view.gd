@@ -5,14 +5,20 @@ signal card_drag_started(card_view: CardView)
 signal card_drag_ended(card_view: CardView)
 signal card_play_requested(card_view: CardView, drop_position: Vector2)
 
-const CARD_SIZE: Vector2 = Vector2(120, 180)
+const CARD_SIZE: Vector2 = Vector2(150, 215)
 
 const BASE_POSITION: Vector2 = Vector2.ZERO
-const HOVER_POSITION: Vector2 = Vector2(0, -24)
+const HOVER_POSITION: Vector2 = Vector2(0, -32)
 
-@onready var name_label: Label = $VBoxContainer/NameLabel
-@onready var cost_label: Label = $VBoxContainer/CostLabel
-@onready var description_label: Label = $VBoxContainer/DescriptionLabel
+@onready var cost_crystal: PanelContainer = $Margin/CardVBox/HeaderHBox/CostCrystal
+@onready var cost_label: Label = $Margin/CardVBox/HeaderHBox/CostCrystal/CostLabel
+@onready var name_label: Label = $Margin/CardVBox/HeaderHBox/NameLabel
+@onready var art_container: PanelContainer = $Margin/CardVBox/ArtContainer
+@onready var art_texture: TextureRect = $Margin/CardVBox/ArtContainer/ArtTexture
+@onready var placeholder_art: CenterContainer = $Margin/CardVBox/ArtContainer/PlaceholderArt
+@onready var art_icon_label: Label = $Margin/CardVBox/ArtContainer/PlaceholderArt/ArtIconLabel
+@onready var type_badge: Label = $Margin/CardVBox/TypeBadge
+@onready var description_label: RichTextLabel = $Margin/CardVBox/DescriptionBox/Margin/DescriptionLabel
 
 var instance_id: int = -1
 var card_id: String = ""
@@ -33,24 +39,80 @@ func _ready() -> void:
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
 
-	name_label.clip_text = true
-	cost_label.clip_text = true
-	description_label.clip_text = true
-	description_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-
 
 func setup(card_instance: CardInstance, card_data: Dictionary) -> void:
 	instance_id = card_instance.instance_id
 	card_id = card_instance.card_id
-	cost = int(card_data["cost"])
+	cost = int(card_data.get("cost", 0))
 
 	custom_minimum_size = CARD_SIZE
 	size = CARD_SIZE
 	position = BASE_POSITION
 
-	name_label.text = str(card_data["name"])
-	cost_label.text = "Custo: %d" % cost
-	description_label.text = str(card_data["description"])
+	# 1. Custo e Nome
+	name_label.text = str(card_data.get("name", card_id))
+	cost_label.text = str(cost)
+
+	# 2. Descrição
+	description_label.text = str(card_data.get("description", ""))
+
+	# 3. Tipo e Arte Placeholder
+	var card_type: String = str(card_data.get("type", "skill")).to_lower()
+	var rarity: String = str(card_data.get("rarity", "common")).to_lower()
+
+	match card_type:
+		"attack":
+			type_badge.text = "• ATAQUE •"
+			type_badge.add_theme_color_override("font_color", Color(0.95, 0.45, 0.45))
+			art_icon_label.text = "⚔"
+		"skill":
+			type_badge.text = "• HABILIDADE •"
+			type_badge.add_theme_color_override("font_color", Color(0.45, 0.75, 0.95))
+			art_icon_label.text = "🛡"
+		"power":
+			type_badge.text = "• PODER •"
+			type_badge.add_theme_color_override("font_color", Color(0.95, 0.8, 0.35))
+			art_icon_label.text = "⚡"
+		_:
+			type_badge.text = "• CARTA •"
+			type_badge.add_theme_color_override("font_color", Color(0.7, 0.75, 0.8))
+			art_icon_label.text = "📜"
+
+	# 4. Suporte para imagem de arte se fornecida nos dados
+	var art_path: String = str(card_data.get("art_path", ""))
+	if art_path != "" and ResourceLoader.exists(art_path):
+		var tex: Texture2D = load(art_path)
+		if tex != null:
+			art_texture.texture = tex
+			art_texture.visible = true
+			placeholder_art.visible = false
+		else:
+			art_texture.visible = false
+			placeholder_art.visible = true
+	else:
+		art_texture.visible = false
+		placeholder_art.visible = true
+
+	# 5. Borda e Moldura conforme a Raridade
+	_apply_rarity_styling(rarity)
+
+
+func _apply_rarity_styling(rarity: String) -> void:
+	var border_color := Color(0.35, 0.42, 0.52) # Comum padrão
+	match rarity:
+		"uncommon":
+			border_color = Color(0.2, 0.7, 0.85) # Azul turquesa
+		"rare":
+			border_color = Color(0.85, 0.4, 0.95) # Roxo místico
+		"legendary":
+			border_color = Color(0.95, 0.8, 0.25) # Dourado lendário
+
+	# Clona o StyleBox para não vazar a cor entre todas as cartas
+	var panel_sb: StyleBox = get_theme_stylebox("panel")
+	if panel_sb is StyleBoxFlat:
+		var new_sb: StyleBoxFlat = panel_sb.duplicate()
+		new_sb.border_color = border_color
+		add_theme_stylebox_override("panel", new_sb)
 
 
 func _gui_input(event: InputEvent) -> void:

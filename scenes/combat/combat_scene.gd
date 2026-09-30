@@ -4,7 +4,7 @@ signal combat_victory
 signal combat_defeat
 
 const CARD_VIEW_SCENE: PackedScene = preload("res://scenes/combat/CardView.tscn")
-const CARD_SLOT_SIZE: Vector2 = Vector2(130, 190)
+const CARD_SLOT_SIZE: Vector2 = Vector2(154, 220)
 
 @onready var player_area: Control = $PlayerArea
 @onready var player_name_label: Label = $PlayerArea/PlayerNameLabel
@@ -624,12 +624,12 @@ func setup_victory_card_rewards() -> void:
 			continue
 
 		var card_button := Button.new()
-		card_button.custom_minimum_size = Vector2(140, 180)
+		card_button.custom_minimum_size = Vector2(150, 215)
 		var c_name: String = str(card_data.get("name", card_id))
 		var c_cost: int = int(card_data.get("cost", 0))
 		var c_desc: String = str(card_data.get("description", ""))
 		var c_type: String = str(card_data.get("type", "carta")).to_upper()
-		card_button.text = "[%s]\n%s\nCusto: %d\n\n%s" % [c_type, c_name, c_cost, c_desc]
+		card_button.text = "🔷 %d  |  [%s]\n\n%s\n\n%s" % [c_cost, c_type, c_name, c_desc]
 		card_button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		card_button.pressed.connect(_on_reward_card_chosen.bind(card_id))
 		reward_cards_container.add_child(card_button)

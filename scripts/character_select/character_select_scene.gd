@@ -34,7 +34,8 @@ func _on_back_pressed() -> void:
 
 
 func _on_start_game_pressed() -> void:
-	expedition_started.emit(selected_style_id, selected_prof_id, PLAYER_PROF_RARITY)
+	var prof_rarity: String = MetaProgression.get_profession_rarity(selected_prof_id)
+	expedition_started.emit(selected_style_id, selected_prof_id, prof_rarity)
 
 
 func rebuild_styles_ui() -> void:
@@ -46,11 +47,17 @@ func rebuild_styles_ui() -> void:
 	for sid in styles.keys():
 		var data: Dictionary = styles[sid]
 		var btn := Button.new()
-		btn.custom_minimum_size = Vector2(130, 95)
+		btn.custom_minimum_size = Vector2(130, 105)
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		btn.text = "%s\n\nHP: %d\nOuro: %d" % [
+
+		var mastery_lvl: int = MetaProgression.get_style_mastery_level(sid)
+		var style_pts: int = MetaProgression.get_style_infamy(sid)
+
+		btn.text = "%s\n[Nv. %d Maestria]\n(%d Infâmia)\n\nHP: %d | Ouro: %d" % [
 			data.get("name", sid),
+			mastery_lvl,
+			style_pts,
 			int(data.get("starting_hp", 70)),
 			int(data.get("starting_gold", 0))
 		]
@@ -70,13 +77,18 @@ func rebuild_professions_ui() -> void:
 	for pid in profs.keys():
 		var data: Dictionary = profs[pid]
 		var btn := Button.new()
-		btn.custom_minimum_size = Vector2(130, 95)
+		btn.custom_minimum_size = Vector2(130, 105)
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		var passive_badge := "★ Com Passiva" if data.get("has_passive", false) else "⚔ +5 Cartas"
-		btn.text = "%s\n\n%s" % [
+
+		var rarity_str: String = MetaProgression.get_profession_rarity(pid).capitalize()
+		var prof_pts: int = MetaProgression.get_profession_infamy(pid)
+
+		btn.text = "%s\n[%s]\n(%d Infâmia)\n\n%s" % [
 			data.get("name", pid),
-			passive_badge
+			rarity_str,
+			prof_pts,
+			"★ Com Passiva" if data.get("has_passive", false) else "⚔ +5 Cartas"
 		]
 		btn.pressed.connect(_on_prof_selected.bind(pid))
 		prof_list.add_child(btn)
@@ -117,7 +129,7 @@ func update_preview_display() -> void:
 	var style_data: Dictionary = DataLoader.get_combat_style(selected_style_id)
 	var prof_data: Dictionary = DataLoader.get_profession(selected_prof_id)
 
-	# Exibição do Estilo de Combate
+	# Exibição do Estilo de Combate com Maestria
 	var s_name: String = str(style_data.get("name", selected_style_id))
 	var s_title: String = str(style_data.get("title", ""))
 	var s_desc: String = str(style_data.get("description", ""))
@@ -125,24 +137,68 @@ func update_preview_display() -> void:
 	var s_gold: int = int(style_data.get("starting_gold", 0))
 	var s_food: int = int(style_data.get("starting_food", 5))
 
-	style_info_label.text = "[color=#f0c040][b]Estilo: %s[/b] — %s[/color]\n[color=#b0b8c0]%s[/color]\n• [color=#70d080]HP Inicial:[/color] %d  |  • [color=#e0d050]Ouro:[/color] %d  |  • [color=#60b0ff]Provisões:[/color] %d" % [
-		s_name, s_title, s_desc, s_hp, s_gold, s_food
+	var style_lvl: int = MetaProgression.get_style_mastery_level(selected_style_id)
+	var style_next_info: Dictionary = MetaProgression.get_next_style_level_info(selected_style_id)
+	var style_prog_str := ""
+	if style_next_info.get("is_max", false):
+		style_prog_str = "[color=#f0c040]★ Maestria Máxima (Nível %d)[/color]" % style_lvl
+	else:
+		style_prog_str = "Nível %d ([color=#70d0ff]%d/%d Infâmia[/color] p/ Nv. %d: [i]%s[/i])" % [
+			style_lvl,
+			style_next_info.get("current_infamy", 0),
+			style_next_info.get("required_infamy", 0),
+			style_next_info.get("next_level", 2),
+			style_next_info.get("desc", "")
+		]
+
+	style_info_label.text = "[color=#f0c040][b]Estilo: %s[/b] — %s[/color]\n[color=#b0b8c0]%s[/color]\n• [b]Maestria:[/b] %s\n• [color=#70d080]HP Inicial:[/color] %d  |  • [color=#e0d050]Ouro:[/color] %d  |  • [color=#60b0ff]Provisões:[/color] %d" % [
+		s_name, s_title, s_desc, style_prog_str, s_hp, s_gold, s_food
 	]
 
-	# Exibição da Profissão
+	# Exibição da Profissão com Raridade Dinâmica
+	var current_rarity: String = MetaProgression.get_profession_rarity(selected_prof_id)
+	var next_rarity_info: Dictionary = MetaProgression.get_next_profession_rarity_info(selected_prof_id)
+
 	var p_name: String = str(prof_data.get("name", selected_prof_id))
 	var p_desc: String = str(prof_data.get("description", ""))
 	var p_pname: String = str(prof_data.get("passive_name", ""))
 	var p_pdesc: String = str(prof_data.get("passive_description", ""))
 
+	var rarity_prog_str := ""
+	if next_rarity_info.get("is_max", false):
+		rarity_prog_str = "[color=#e070ff]★ Raridade Máxima (Lendário)[/color]"
+	else:
+		rarity_prog_str = "%s ([color=#70d0ff]%d/%d Infâmia[/color] p/ %s)" % [
+			current_rarity.capitalize(),
+			next_rarity_info.get("current_infamy", 0),
+			next_rarity_info.get("required_infamy", 0),
+			next_rarity_info.get("next_name", "")
+		]
+
 	var bonus_text := ""
 	if selected_prof_id == "combatant":
-		bonus_text = "[color=#ff7070][b]Arsenal de Combate:[/b] Adiciona 5 cartas comuns de ataque/defesa ao baralho inicial.[/color]"
+		match current_rarity:
+			"common":
+				bonus_text = "[color=#ff7070][b]Arsenal Comum:[/b] Inicia com 5 cartas comuns de ataque/defesa.[/color]"
+			"uncommon":
+				bonus_text = "[color=#70d0ff][b]Arsenal Incomum:[/b] Inicia com 3 cartas comuns e 2 incomuns de combate.[/color]"
+			"rare":
+				bonus_text = "[color=#d070ff][b]Arsenal Raro:[/b] Inicia com 3 cartas incomuns e 2 raras de combate.[/color]"
+			"legendary":
+				bonus_text = "[color=#f0c040][b]Arsenal Lendário:[/b] Inicia com 3 cartas raras e 2 lendárias de combate![/color]"
 	else:
-		bonus_text = "[color=#70e0b0][b]Efeito de Raridade (Comum):[/b] Adiciona 1 carta comum temática ao baralho inicial.[/color]"
+		match current_rarity:
+			"common":
+				bonus_text = "[color=#70e0b0][b]Arsenal Comum:[/b] Inicia com 1 carta comum temática.[/color]"
+			"uncommon":
+				bonus_text = "[color=#70d0ff][b]Arsenal Incomum:[/b] Inicia com 1 carta comum e 1 incomum temática.[/color]"
+			"rare":
+				bonus_text = "[color=#d070ff][b]Arsenal Raro:[/b] Inicia com 2 cartas incomuns e 1 rara temática.[/color]"
+			"legendary":
+				bonus_text = "[color=#f0c040][b]Arsenal Lendário:[/b] Inicia com 2 cartas raras e 1 lendária temática![/color]"
 
-	prof_info_label.text = "[color=#50e0d0][b]Profissão: %s[/b] (Raridade do Capitão: Comum)[/color]\n[color=#b0b8c0]%s[/color]\n• [b]Passiva (%s):[/b] [i]%s[/i]\n• %s" % [
-		p_name, p_desc, p_pname, p_pdesc, bonus_text
+	prof_info_label.text = "[color=#50e0d0][b]Profissão: %s[/b] — Raridade: %s[/color]\n[color=#b0b8c0]%s[/color]\n• [b]Passiva (%s):[/b] [i]%s[/i]\n• %s" % [
+		p_name, rarity_prog_str, p_desc, p_pname, p_pdesc, bonus_text
 	]
 
 	# Preview das cartas do baralho
@@ -155,16 +211,17 @@ func update_preview_display() -> void:
 		card_names.append(c_name)
 
 	var prof_pool: Dictionary = prof_data.get("card_pool", {})
-	var common_pool: Array = prof_pool.get("common", [])
+	var current_pool: Array = prof_pool.get(current_rarity, [])
 	var pool_names: Array[String] = []
-	for cid in common_pool:
+	for cid in current_pool:
 		var c_name := str(cid)
 		if DataLoader.has_card(cid):
 			c_name = DataLoader.get_card(cid).get("name", cid)
 		pool_names.append(c_name)
 
-	deck_preview_label.text = "[color=#f5d070][b]Baralho Base do Estilo (%d cartas):[/b][/color]\n%s\n\n[color=#70d0ff][b]Possíveis Cartas Iniciais da Profissão:[/b][/color]\n%s" % [
+	deck_preview_label.text = "[color=#f5d070][b]Baralho Base do Estilo (%d cartas):[/b][/color]\n%s\n\n[color=#70d0ff][b]Possíveis Cartas Iniciais da Profissão (%s):[/b][/color]\n%s" % [
 		card_names.size(),
 		", ".join(card_names),
+		current_rarity.capitalize(),
 		", ".join(pool_names)
 	]

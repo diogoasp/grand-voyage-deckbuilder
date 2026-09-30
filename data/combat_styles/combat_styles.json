@@ -16,6 +16,26 @@
 	  "defend_basic",
 	  "defend_basic",
 	  "second_wind"
+	],
+	"mastery_levels": [
+	  {
+		"level": 2,
+		"infamy_required": 250,
+		"unlocked_card_id": "buso_strike",
+		"description": "Desbloqueia a carta Golpe com Armamento (Incomum) para suas jornadas."
+	  },
+	  {
+		"level": 3,
+		"infamy_required": 700,
+		"unlocked_card_id": "axe_breaker",
+		"description": "Desbloqueia a carta Quebra-Defesas (Rara) para suas jornadas."
+	  },
+	  {
+		"level": 4,
+		"infamy_required": 1500,
+		"unlocked_card_id": "conquerors_roar",
+		"description": "Desbloqueia a carta Rugido do Soberano (Lendária) para suas jornadas."
+	  }
 	]
   },
   "brawler": {
@@ -35,6 +55,26 @@
 	  "defend_basic",
 	  "brace_impact",
 	  "second_wind"
+	],
+	"mastery_levels": [
+	  {
+		"level": 2,
+		"infamy_required": 250,
+		"unlocked_card_id": "counter_strike",
+		"description": "Desbloqueia a carta Contra-Ataque (Incomum) para suas jornadas."
+	  },
+	  {
+		"level": 3,
+		"infamy_required": 700,
+		"unlocked_card_id": "heavy_impact",
+		"description": "Desbloqueia a carta Impacto Demolidor (Rara) para suas jornadas."
+	  },
+	  {
+		"level": 4,
+		"infamy_required": 1500,
+		"unlocked_card_id": "conquerors_roar",
+		"description": "Desbloqueia a carta Rugido do Soberano (Lendária) para suas jornadas."
+	  }
 	]
   },
   "sniper": {
@@ -54,6 +94,26 @@
 	  "quick_thinking",
 	  "sailors_gambit",
 	  "second_wind"
+	],
+	"mastery_levels": [
+	  {
+		"level": 2,
+		"infamy_required": 250,
+		"unlocked_card_id": "tactical_feint",
+		"description": "Desbloqueia a carta Finta Tática (Incomum) para suas jornadas."
+	  },
+	  {
+		"level": 3,
+		"infamy_required": 700,
+		"unlocked_card_id": "kenbun_focus",
+		"description": "Desbloqueia a carta Foco de Observação (Incomum/Rara) para suas jornadas."
+	  },
+	  {
+		"level": 4,
+		"infamy_required": 1500,
+		"unlocked_card_id": "sea_chart_mastery",
+		"description": "Desbloqueia a carta Mestria dos Mapas Celestes (Lendária) para suas jornadas."
+	  }
 	]
   }
 }

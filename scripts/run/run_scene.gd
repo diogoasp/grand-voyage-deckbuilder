@@ -296,28 +296,36 @@ func _on_city_depart_requested() -> void:
 
 
 func _on_combat_defeat() -> void:
-	# Converte o Bounty acumulado na expedição em Pontos de Infâmia permanentes
+	# Converte o Bounty acumulado na expedição em Pontos de Infâmia permanentes e credita maestria
 	var bounty_earned: int = GameState.bounty
-	var meta_res: Dictionary = MetaProgression.convert_run_end_to_infamy(bounty_earned, false)
+	var meta_res: Dictionary = MetaProgression.convert_run_end_to_infamy(
+		bounty_earned, false, GameState.combat_style, GameState.player_profession
+	)
 	print("Naufrágio! Bounty: %d -> Infâmia ganha: %d. Saldo total: %d" % [
 		bounty_earned,
 		meta_res.get("earned_infamy", 0),
 		meta_res.get("total_infamy", 0)
 	])
+	if meta_res.get("profession_promoted", false):
+		print("★ Promoção de Carreira! Sua profissão subiu para raridade: %s" % meta_res.get("new_profession_rarity", ""))
 	start_run()
 
 
 func _on_expedition_victory_requested() -> void:
 	var bounty_earned: int = GameState.bounty
-	var meta_res: Dictionary = MetaProgression.convert_run_end_to_infamy(bounty_earned, true)
+	var meta_res: Dictionary = MetaProgression.convert_run_end_to_infamy(
+		bounty_earned, true, GameState.combat_style, GameState.player_profession
+	)
 	print("Vitória no Mar! Bounty: %d -> Infâmia ganha: %d (com bônus de vitória!). Saldo total: %d" % [
 		bounty_earned,
 		meta_res.get("earned_infamy", 0),
 		meta_res.get("total_infamy", 0)
 	])
+	if meta_res.get("profession_promoted", false):
+		print("★ Promoção de Carreira! Sua profissão subiu para raridade: %s" % meta_res.get("new_profession_rarity", ""))
 	var new_cards: Array = meta_res.get("new_cards_unlocked", [])
 	if not new_cards.is_empty():
-		print("Novas cartas desbloqueadas por marco de notoriedade: %s" % str(new_cards))
+		print("Novas cartas desbloqueadas por marco de notoriedade ou maestria: %s" % str(new_cards))
 
 	if GameState.current_act == 1:
 		# Avança para o Ato 2 (Entrada da Grand Line) mantendo vida, deck, ouro e tripulação!

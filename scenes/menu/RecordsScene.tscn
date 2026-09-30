@@ -137,6 +137,50 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 12
 
+[node name="Maestria" type="Control" parent="MainLayout/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="MainLayout/TabContainer/Maestria"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Scroll" type="ScrollContainer" parent="MainLayout/TabContainer/Maestria/Margin"]
+layout_mode = 2
+
+[node name="MasteryContentVBox" type="VBoxContainer" parent="MainLayout/TabContainer/Maestria/Margin/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+
+[node name="ProfHeader" type="Label" parent="MainLayout/TabContainer/Maestria/Margin/Scroll/MasteryContentVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.9, 0.85, 1)
+theme_override_font_sizes/font_size = 18
+text = "🧭 Evolução de Carreira das Profissões (Raridade do Capitão)"
+
+[node name="ProfessionsMasteryList" type="VBoxContainer" parent="MainLayout/TabContainer/Maestria/Margin/Scroll/MasteryContentVBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="StylesHeader" type="Label" parent="MainLayout/TabContainer/Maestria/Margin/Scroll/MasteryContentVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.8, 0.45, 1)
+theme_override_font_sizes/font_size = 18
+text = "⚔ Níveis de Maestria dos Estilos de Combate (Desbloqueio de Cartas)"
+
+[node name="StylesMasteryList" type="VBoxContainer" parent="MainLayout/TabContainer/Maestria/Margin/Scroll/MasteryContentVBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
 [node name="BottomBar" type="HBoxContainer" parent="MainLayout"]
 layout_mode = 2
 alignment = 1

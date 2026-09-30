@@ -16,6 +16,10 @@ signal back_requested
 # Conteúdo da Aba 2 (Marcos & Conquistas de Cartas)
 @onready var milestones_container: VBoxContainer = $MainLayout/TabContainer/Conquistas/Margin/Scroll/MilestonesList
 
+# Conteúdo da Aba 3 (Maestria & Carreiras)
+@onready var prof_mastery_container: VBoxContainer = $MainLayout/TabContainer/Maestria/Margin/Scroll/MasteryContentVBox/ProfessionsMasteryList
+@onready var style_mastery_container: VBoxContainer = $MainLayout/TabContainer/Maestria/Margin/Scroll/MasteryContentVBox/StylesMasteryList
+
 @onready var feedback_label: Label = $MainLayout/BottomBar/FeedbackLabel
 
 
@@ -43,6 +47,7 @@ func refresh_display() -> void:
 
 	rebuild_shop_ui()
 	rebuild_milestones_ui()
+	rebuild_mastery_ui()
 
 
 func rebuild_shop_ui() -> void:
@@ -207,3 +212,146 @@ func rebuild_milestones_ui() -> void:
 		hbox.add_child(status_vbox)
 
 		milestones_container.add_child(panel)
+
+
+func rebuild_mastery_ui() -> void:
+	if prof_mastery_container == null or style_mastery_container == null:
+		return
+
+	for child in prof_mastery_container.get_children():
+		child.queue_free()
+	for child in style_mastery_container.get_children():
+		child.queue_free()
+
+	# 1. Lista de Profissões
+	var profs: Dictionary = DataLoader.get_all_professions()
+	for pid in profs.keys():
+		var data: Dictionary = profs[pid]
+		var panel := PanelContainer.new()
+		var margin := MarginContainer.new()
+		margin.add_theme_constant_override("margin_left", 12)
+		margin.add_theme_constant_override("margin_top", 10)
+		margin.add_theme_constant_override("margin_right", 12)
+		margin.add_theme_constant_override("margin_bottom", 10)
+		panel.add_child(margin)
+
+		var hbox := HBoxContainer.new()
+		hbox.add_theme_constant_override("separation", 16)
+		margin.add_child(hbox)
+
+		var info_vbox := VBoxContainer.new()
+		info_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+		var current_rarity: String = MetaProgression.get_profession_rarity(pid)
+		var next_info: Dictionary = MetaProgression.get_next_profession_rarity_info(pid)
+		var prof_pts: int = MetaProgression.get_profession_infamy(pid)
+
+		var title_lbl := Label.new()
+		title_lbl.text = "%s — Raridade Atual: [%s]" % [
+			data.get("name", pid),
+			current_rarity.capitalize()
+		]
+		title_lbl.add_theme_font_size_override("font_size", 16)
+		title_lbl.add_theme_color_override("font_color", Color(0.5, 0.9, 0.8))
+		info_vbox.add_child(title_lbl)
+
+		var desc_lbl := Label.new()
+		desc_lbl.text = "Passiva: %s\n%s" % [
+			data.get("passive_name", "Nenhuma"),
+			data.get("passive_description", "")
+		]
+		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		desc_lbl.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+		info_vbox.add_child(desc_lbl)
+
+		hbox.add_child(info_vbox)
+
+		# Progresso de Raridade
+		var prog_vbox := VBoxContainer.new()
+		prog_vbox.custom_minimum_size = Vector2(180, 0)
+		prog_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+
+		var prog_lbl := Label.new()
+		prog_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		if next_info.get("is_max", false):
+			prog_lbl.text = "★ GRAU MÁXIMO\n(Lendário)"
+			prog_lbl.add_theme_color_override("font_color", Color(0.9, 0.5, 1.0))
+		else:
+			prog_lbl.text = "%d / %d Infâmia\n(Próximo: %s)" % [
+				prof_pts,
+				next_info.get("required_infamy", 0),
+				next_info.get("next_name", "")
+			]
+			prog_lbl.add_theme_color_override("font_color", Color(0.9, 0.8, 0.3))
+
+		prog_vbox.add_child(prog_lbl)
+		hbox.add_child(prog_vbox)
+
+		prof_mastery_container.add_child(panel)
+
+	# 2. Lista de Estilos de Combate
+	var styles: Dictionary = DataLoader.get_all_combat_styles()
+	for sid in styles.keys():
+		var data: Dictionary = styles[sid]
+		var panel := PanelContainer.new()
+		var margin := MarginContainer.new()
+		margin.add_theme_constant_override("margin_left", 12)
+		margin.add_theme_constant_override("margin_top", 10)
+		margin.add_theme_constant_override("margin_right", 12)
+		margin.add_theme_constant_override("margin_bottom", 10)
+		panel.add_child(margin)
+
+		var hbox := HBoxContainer.new()
+		hbox.add_theme_constant_override("separation", 16)
+		margin.add_child(hbox)
+
+		var info_vbox := VBoxContainer.new()
+		info_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+		var current_lvl: int = MetaProgression.get_style_mastery_level(sid)
+		var style_pts: int = MetaProgression.get_style_infamy(sid)
+		var next_style_info: Dictionary = MetaProgression.get_next_style_level_info(sid)
+
+		var title_lbl := Label.new()
+		title_lbl.text = "%s — Nível de Maestria: [Nv. %d]" % [
+			data.get("name", sid),
+			current_lvl
+		]
+		title_lbl.add_theme_font_size_override("font_size", 16)
+		title_lbl.add_theme_color_override("font_color", Color(0.95, 0.8, 0.4))
+		info_vbox.add_child(title_lbl)
+
+		var desc_lbl := Label.new()
+		desc_lbl.text = "%s\n%s" % [
+			data.get("title", ""),
+			data.get("description", "")
+		]
+		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		desc_lbl.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
+		info_vbox.add_child(desc_lbl)
+
+		hbox.add_child(info_vbox)
+
+		# Progresso de Nível de Estilo
+		var prog_vbox := VBoxContainer.new()
+		prog_vbox.custom_minimum_size = Vector2(180, 0)
+		prog_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+
+		var prog_lbl := Label.new()
+		prog_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		if next_style_info.get("is_max", false):
+			prog_lbl.text = "★ MAESTRIA MÁXIMA\n(Nível 4)"
+			prog_lbl.add_theme_color_override("font_color", Color(0.95, 0.75, 0.2))
+		else:
+			prog_lbl.text = "%d / %d Infâmia\n(Nv. %d: %s)" % [
+				style_pts,
+				next_style_info.get("required_infamy", 0),
+				next_style_info.get("next_level", 2),
+				next_style_info.get("unlocked_card_id", "")
+			]
+			prog_lbl.add_theme_color_override("font_color", Color(0.5, 0.8, 1.0))
+
+		prog_vbox.add_child(prog_lbl)
+		hbox.add_child(prog_vbox)
+
+		style_mastery_container.add_child(panel)

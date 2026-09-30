@@ -1,5 +1,7 @@
 extends Control
 
+signal back_to_menu_requested
+
 const MAP_SCENE: PackedScene = preload("res://scenes/map/MapScene.tscn")
 const EVENT_SCENE: PackedScene = preload("res://scenes/events/EventScene.tscn")
 const COMBAT_SCENE: PackedScene = preload("res://scenes/combat/CombatScene.tscn")
@@ -10,6 +12,7 @@ const MAP_GENERATOR = preload("res://scripts/map/map_generator.gd")
 @onready var settings_button: Button = $TopRightUI/SettingsButton
 @onready var settings_overlay: ColorRect = $SettingsOverlay
 @onready var reset_run_button: Button = $SettingsOverlay/SettingsPanel/Margin/VBox/ResetRunButton
+@onready var return_to_menu_button: Button = $SettingsOverlay/SettingsPanel/Margin/VBox/ReturnToMenuButton
 @onready var close_settings_button: Button = $SettingsOverlay/SettingsPanel/Margin/VBox/CloseSettingsButton
 
 var current_screen: Node = null
@@ -26,12 +29,8 @@ func _ready() -> void:
 	settings_button.pressed.connect(_on_settings_button_pressed)
 	close_settings_button.pressed.connect(_on_close_settings_button_pressed)
 	reset_run_button.pressed.connect(_on_reset_run_pressed)
+	return_to_menu_button.pressed.connect(_on_return_to_menu_pressed)
 	settings_overlay.visible = false
-
-	if GameState.has_saved_run():
-		load_saved_run()
-	else:
-		start_run()
 
 
 func _on_settings_button_pressed() -> void:
@@ -45,6 +44,12 @@ func _on_close_settings_button_pressed() -> void:
 func _on_reset_run_pressed() -> void:
 	settings_overlay.visible = false
 	start_run()
+
+
+func _on_return_to_menu_pressed() -> void:
+	settings_overlay.visible = false
+	save_run()
+	back_to_menu_requested.emit()
 
 
 func start_run() -> void:

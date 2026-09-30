@@ -85,7 +85,12 @@ horizontal_alignment = 1
 [node name="ResetRunButton" type="Button" parent="SettingsOverlay/SettingsPanel/Margin/VBox"]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
-text = "Reiniciar Run"
+text = "Reiniciar Expedição"
+
+[node name="ReturnToMenuButton" type="Button" parent="SettingsOverlay/SettingsPanel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+text = "Salvar e Voltar ao Menu"
 
 [node name="CloseSettingsButton" type="Button" parent="SettingsOverlay/SettingsPanel/Margin/VBox"]
 custom_minimum_size = Vector2(0, 36)

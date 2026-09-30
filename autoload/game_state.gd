@@ -188,6 +188,30 @@ func save_run_state(extra_data: Dictionary = {}) -> bool:
 
 
 
+func peek_saved_run_summary() -> Dictionary:
+	if not has_saved_run():
+		return {}
+
+	var file: FileAccess = null
+	for p in get_save_paths():
+		if FileAccess.file_exists(p):
+			file = FileAccess.open(p, FileAccess.READ)
+			if file != null:
+				break
+
+	if file == null:
+		return {}
+
+	var json_text: String = file.get_as_text()
+	file.close()
+
+	var parsed: Variant = JSON.parse_string(json_text)
+	if not (parsed is Dictionary):
+		return {}
+
+	return parsed
+
+
 func load_run_state() -> Dictionary:
 	if not has_saved_run():
 		push_warning("Nenhum arquivo de save encontrado.")

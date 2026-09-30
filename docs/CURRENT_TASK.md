@@ -1,37 +1,29 @@
 # Tarefa Atual
  
 ## Nome
-Integração da Tripulante Sora (Meio-Mink Médica/Atiradora), Mecânica de Fraqueza (Weakness), Cartas Temáticas e Apresentação de Assistência em Combate.
+Integração das Artes do Protagonista (Masculino e Feminino), Seleção no Menu e Apresentação em Batalha com Shader de Remoção de Fundo Branco.
 
 ## Objetivo
-1. **Perfil da Sora (`crew.json`):**
-   - Substituição de Dr. Lin por Sora: Médica e Atiradora, raça Meio-Mink, raridade Comum.
-   - Personalidade: Ousada, inteligente e analítica.
-   - Ativos de arte configurados: `face_path`, `base_path` e `combat_path`.
-2. **Novas Cartas de Recrutamento (`cards.json`):**
-   - `warning_shot` (*Tiro de Advertência*): Custo 2, causa 6 de dano e aplica 1 stack de Fraqueza (`weakness`).
-   - `restorative_bullets` (*Balas Restauradoras*): Custo 1, restaura 4 HP do jogador.
-3. **Mecânica de Fraqueza (`Combatant` e `EffectResolver`):**
-   - Reduz em 25% o dano de ataques desferidos por quem possui o status (`outgoing damage * 0.75`).
-   - Consome 1 stack a cada turno/rodada.
-   - Suporte a badges visuais de status tanto no jogador quanto no inimigo.
-4. **Evento de Recrutamento (`events.json` e `EventScene`):**
-   - Atualizado o evento da médica para apresentar Sora e exibir sua ilustração (`base_path`).
-5. **Apresentação de Assistência em Combate (`CombatScene`):**
-   - Ao jogar uma carta associada a um membro recrutado da tripulação (como as da Sora), a ilustração de combate (`combat.png`) do aliado desliza suavemente ao lado do jogador, permanece durante a ação e sai da tela com fade/slide.
-
-6. **Disponibilidade e Exclusividade de Profissão no Recrutamento (`DataLoader` e `GameState`):**
-   - Eventos de recrutamento de tripulantes (`wandering_doctor`, `sea_chef_encounter`) expandidos para os setores `[0, 1, 2]` do South Blue.
-   - Implementada regra de exclusividade de profissão: caso o bando já possua um membro daquela profissão (ou o próprio capitão seja daquela profissão), outros personagens com essa profissão deixam de ser sorteados.
-   - Caso o jogador encontre e opte por não recrutar, o evento continua elegível para aparecer em ilhas/setores futuros pela geração procedural.
+1. **Seleção de Gênero/Capitão (`CharacterSelectScene`):**
+   - Inclusão dos botões de gênero ("♂ Masculino" e "♀ Feminino") na barra superior da tela de preparação.
+   - Exibição dinâmica da arte base (`res://assets/art/main_char/{gender}/base.png`) na coluna de resumo do capitão.
+   - Encaminhamento do gênero selecionado através do sinal `expedition_started`.
+2. **Propagação e Persistência do Capitão (`GameState`, `main.gd`, `run_scene.gd`):**
+   - Propriedade `player_gender` (padrão `"male"`) integrada a `GameState.reset_run`, `setup_custom_run`, `save_run_state` e `load_run_state`.
+   - Propagação correta a partir de `main.gd` e `run_scene.gd` ao iniciar ou carregar runs.
+3. **Apresentação em Combate (`CombatScene`):**
+   - Substituição do placeholder geométrico (`ColorRect`) por `TextureRect` (`PlayerSprite`).
+   - Carregamento da ilustração de combate (`res://assets/art/main_char/{gender}/combat.png`) de acordo com o capitão selecionado.
+   - Aplicação de `flip_h = true` para que o capitão fique voltado para a direita em direção aos inimigos.
+   - Criação e aplicação do shader `res://shaders/remove_white_bg.gdshader` para remoção suave do fundo branco sólido das ilustrações.
+   - Aplicação do mesmo shader e espelhamento no slide-in de assistências de tripulantes (`trigger_crew_assist_visual`).
 
 ## Critérios de aceite
-1. Dr. Lin substituído por Sora com dados de perfil, raridade comum e caminhos de arte.
-2. Cartas `warning_shot` e `restorative_bullets` integradas e funcionando com efeitos de fraqueza e cura.
-3. Fraqueza reduz o dano efetuado em 25% e decai a cada turno.
-4. Apresentação visual de slide-in do aliado ao jogar cartas de tripulante associado.
-5. Recrutamento disponível nos setores 0, 1 e 2, cessando de aparecer apenas quando a profissão já estiver presente na tripulação.
-6. Validação com Godot headless limpa e sem erros.
+1. Seleção entre Masculino e Feminino na tela de preparação de expedição, atualizando a prévia da arte (`base.png`).
+2. Persistência de `player_gender` no salvamento e carregamento da run.
+3. Capitão renderizado com sua respectiva arte de combate (`combat.png`) em batalha, espelhado para a direita (`flip_h = true`) e com fundo branco removido via shader.
+4. Assistências de tripulantes renderizadas sem artefatos de fundo branco.
+5. Validação com Godot headless limpa e sem erros.
 
 
 

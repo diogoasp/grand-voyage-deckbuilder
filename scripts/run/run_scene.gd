@@ -53,13 +53,13 @@ func _on_return_to_menu_pressed() -> void:
 
 
 func start_run() -> void:
-	start_custom_run(GameState.combat_style, GameState.player_profession, GameState.profession_rarity)
+	start_custom_run(GameState.combat_style, GameState.player_profession, GameState.profession_rarity, GameState.player_gender)
 
 
-func start_custom_run(style_id: String, prof_id: String, prof_rarity: String = "common") -> void:
+func start_custom_run(style_id: String, prof_id: String, prof_rarity: String = "common", gender: String = "male") -> void:
 	randomize()
 	GameState.delete_saved_run()
-	GameState.setup_custom_run(style_id, prof_id, prof_rarity)
+	GameState.setup_custom_run(style_id, prof_id, prof_rarity, gender)
 	current_stage = 0
 	completed_nodes.clear()
 	active_node_data.clear()

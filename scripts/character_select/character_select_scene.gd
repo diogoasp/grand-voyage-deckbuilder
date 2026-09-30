@@ -2,16 +2,20 @@ class_name CharacterSelectScene
 extends Control
 
 signal back_requested
-signal expedition_started(style_id: String, prof_id: String, prof_rarity: String)
+signal expedition_started(style_id: String, prof_id: String, prof_rarity: String, gender: String)
 
 @onready var back_button: Button = $MainLayout/TopBar/BackButton
+@onready var male_button: Button = $MainLayout/TopBar/GenderContainer/MaleButton
+@onready var female_button: Button = $MainLayout/TopBar/GenderContainer/FemaleButton
 @onready var styles_list: HBoxContainer = $MainLayout/SplitContent/LeftColumn/StylesList
 @onready var prof_list: HBoxContainer = $MainLayout/SplitContent/LeftColumn/ProfList
+@onready var character_portrait: TextureRect = $MainLayout/SplitContent/RightColumn/SummaryPanel/Margin/Scroll/SummaryVBox/CharacterPortrait
 @onready var style_info_label: RichTextLabel = $MainLayout/SplitContent/RightColumn/SummaryPanel/Margin/Scroll/SummaryVBox/StyleInfoLabel
 @onready var prof_info_label: RichTextLabel = $MainLayout/SplitContent/RightColumn/SummaryPanel/Margin/Scroll/SummaryVBox/ProfInfoLabel
 @onready var deck_preview_label: RichTextLabel = $MainLayout/SplitContent/RightColumn/SummaryPanel/Margin/Scroll/SummaryVBox/DeckPreviewLabel
 @onready var start_game_button: Button = $MainLayout/BottomBar/StartGameButton
 
+var selected_gender: String = "male"
 var selected_style_id: String = "swordsman"
 var selected_prof_id: String = "combatant"
 const PLAYER_PROF_RARITY: String = "common"
@@ -22,6 +26,8 @@ var prof_buttons: Dictionary = {}
 
 func _ready() -> void:
 	back_button.pressed.connect(_on_back_pressed)
+	male_button.pressed.connect(_on_gender_selected.bind("male"))
+	female_button.pressed.connect(_on_gender_selected.bind("female"))
 	start_game_button.pressed.connect(_on_start_game_pressed)
 
 	rebuild_styles_ui()
@@ -33,9 +39,15 @@ func _on_back_pressed() -> void:
 	back_requested.emit()
 
 
+func _on_gender_selected(gender: String) -> void:
+	selected_gender = gender
+	_refresh_button_highlights()
+	update_preview_display()
+
+
 func _on_start_game_pressed() -> void:
 	var prof_rarity: String = MetaProgression.get_profession_rarity(selected_prof_id)
-	expedition_started.emit(selected_style_id, selected_prof_id, prof_rarity)
+	expedition_started.emit(selected_style_id, selected_prof_id, prof_rarity, selected_gender)
 
 
 func rebuild_styles_ui() -> void:
@@ -110,6 +122,11 @@ func _on_prof_selected(pid: String) -> void:
 
 
 func _refresh_button_highlights() -> void:
+	if male_button != null:
+		male_button.modulate = Color(1.3, 1.2, 0.8, 1.0) if selected_gender == "male" else Color(0.8, 0.8, 0.8, 0.8)
+	if female_button != null:
+		female_button.modulate = Color(1.3, 1.2, 0.8, 1.0) if selected_gender == "female" else Color(0.8, 0.8, 0.8, 0.8)
+
 	for sid in style_buttons.keys():
 		var btn: Button = style_buttons[sid]
 		if sid == selected_style_id:
@@ -126,6 +143,14 @@ func _refresh_button_highlights() -> void:
 
 
 func update_preview_display() -> void:
+	var portrait_path := "res://assets/art/main_char/%s/base.png" % selected_gender
+	if ResourceLoader.exists(portrait_path):
+		var tex: Texture2D = load(portrait_path)
+		character_portrait.texture = tex
+		character_portrait.visible = true
+	else:
+		character_portrait.visible = false
+
 	var style_data: Dictionary = DataLoader.get_combat_style(selected_style_id)
 	var prof_data: Dictionary = DataLoader.get_profession(selected_prof_id)
 

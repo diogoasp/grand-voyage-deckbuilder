@@ -49,6 +49,26 @@ theme_override_colors/font_color = Color(0.95, 0.8, 0.35, 1)
 theme_override_font_sizes/font_size = 22
 text = "Preparar Expedição — Escolha seu Capitão"
 
+[node name="GenderContainer" type="HBoxContainer" parent="MainLayout/TopBar"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="GenderLabel" type="Label" parent="MainLayout/TopBar/GenderContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.85, 0.95, 1)
+theme_override_font_sizes/font_size = 15
+text = "Capitão:"
+
+[node name="MaleButton" type="Button" parent="MainLayout/TopBar/GenderContainer"]
+custom_minimum_size = Vector2(100, 36)
+layout_mode = 2
+text = "♂ Masculino"
+
+[node name="FemaleButton" type="Button" parent="MainLayout/TopBar/GenderContainer"]
+custom_minimum_size = Vector2(100, 36)
+layout_mode = 2
+text = "♀ Feminino"
+
 [node name="SplitContent" type="HBoxContainer" parent="MainLayout"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -111,6 +131,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 10
+
+[node name="CharacterPortrait" type="TextureRect" parent="MainLayout/SplitContent/RightColumn/SummaryPanel/Margin/Scroll/SummaryVBox"]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
 
 [node name="StyleInfoLabel" type="RichTextLabel" parent="MainLayout/SplitContent/RightColumn/SummaryPanel/Margin/Scroll/SummaryVBox"]
 layout_mode = 2

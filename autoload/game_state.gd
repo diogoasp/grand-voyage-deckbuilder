@@ -26,6 +26,7 @@ var current_act: int = 1 # 1 = South Blue, 2 = Grand Line
 var combat_style: String = "swordsman"
 var player_profession: String = "combatant"
 var profession_rarity: String = "common"
+var player_gender: String = "male"
 
 func reset_run() -> void:
 	current_act = 1
@@ -39,6 +40,7 @@ func reset_run() -> void:
 	combat_style = "swordsman"
 	player_profession = "combatant"
 	profession_rarity = "common"
+	player_gender = "male"
 	current_deck = [
 		"strike_basic",
 		"strike_basic",
@@ -51,11 +53,12 @@ func reset_run() -> void:
 	]
 
 
-func setup_custom_run(style_id: String, prof_id: String, prof_rarity: String = "common") -> void:
+func setup_custom_run(style_id: String, prof_id: String, prof_rarity: String = "common", gender: String = "male") -> void:
 	reset_run()
 	combat_style = style_id
 	player_profession = prof_id
 	profession_rarity = prof_rarity
+	player_gender = gender
 
 	# Aplica atributos do estilo de combate
 	if DataLoader.has_combat_style(style_id):
@@ -289,6 +292,7 @@ func save_run_state(extra_data: Dictionary = {}) -> bool:
 		"combat_style": combat_style,
 		"player_profession": player_profession,
 		"profession_rarity": profession_rarity,
+		"player_gender": player_gender,
 		"current_deck": current_deck,
 		"crew_members": crew_members,
 		"eaten_fruit": eaten_fruit,
@@ -376,6 +380,7 @@ func load_run_state() -> Dictionary:
 	combat_style = str(data.get("combat_style", "swordsman"))
 	player_profession = str(data.get("player_profession", "combatant"))
 	profession_rarity = str(data.get("profession_rarity", "common"))
+	player_gender = str(data.get("player_gender", "male"))
 	eaten_fruit = str(data.get("eaten_fruit", ""))
 
 	current_deck.clear()

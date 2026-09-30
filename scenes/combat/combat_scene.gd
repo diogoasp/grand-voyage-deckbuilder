@@ -5,9 +5,10 @@ signal combat_defeat
 
 const CARD_VIEW_SCENE: PackedScene = preload("res://scenes/combat/CardView.tscn")
 const CARD_SLOT_SIZE: Vector2 = Vector2(154, 220)
+const REMOVE_WHITE_BG_SHADER: Shader = preload("res://shaders/remove_white_bg.gdshader")
 
 @onready var player_area: Control = $PlayerArea
-@onready var player_placeholder: ColorRect = $PlayerArea/PlayerPlaceholder
+@onready var player_sprite: TextureRect = $PlayerArea/PlayerSprite
 @onready var player_status_container: HBoxContainer = $PlayerArea/PlayerStatusContainer
 
 @onready var top_bar: HBoxContainer = $TopBar
@@ -95,6 +96,11 @@ func start_combat() -> void:
 	player = Combatant.new()
 	player.setup("player", "Capitão", GameState.player_max_hp)
 	player.hp = GameState.player_hp
+
+	var player_combat_path := "res://assets/art/main_char/%s/combat.png" % GameState.player_gender
+	if ResourceLoader.exists(player_combat_path):
+		player_sprite.texture = load(player_combat_path)
+	player_sprite.flip_h = true
 
 	effect_resolver = EffectResolver.new()
 
@@ -594,9 +600,15 @@ func trigger_crew_assist_visual(card_id: String) -> void:
 
 	# Cria o sprite/TextureRect do aliado ao lado do jogador
 	var assist_rect := TextureRect.new()
+	var mat := ShaderMaterial.new()
+	mat.shader = REMOVE_WHITE_BG_SHADER
+	mat.set_shader_parameter("threshold", 0.94)
+	mat.set_shader_parameter("softness", 0.04)
+	assist_rect.material = mat
 	assist_rect.texture = tex
 	assist_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	assist_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	assist_rect.flip_h = true
 	# Dimensões adequadas para o espaço de combate (ex: 180x225)
 	assist_rect.custom_minimum_size = Vector2(180, 225)
 	assist_rect.size = Vector2(180, 225)

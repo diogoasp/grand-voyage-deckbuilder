@@ -58,7 +58,7 @@ func _on_new_run_selected() -> void:
 		char_select.expedition_started.connect(_on_expedition_started)
 
 
-func _on_expedition_started(style_id: String, prof_id: String, prof_rarity: String) -> void:
+func _on_expedition_started(style_id: String, prof_id: String, prof_rarity: String, gender: String = "male") -> void:
 	clear_current_child()
 	var run: Node = RUN_SCENE.instantiate()
 	current_child = run
@@ -66,7 +66,7 @@ func _on_expedition_started(style_id: String, prof_id: String, prof_rarity: Stri
 	if run.has_signal("back_to_menu_requested"):
 		run.back_to_menu_requested.connect(show_main_menu)
 	if run.has_method("start_custom_run"):
-		run.start_custom_run(style_id, prof_id, prof_rarity)
+		run.start_custom_run(style_id, prof_id, prof_rarity, gender)
 	elif run.has_method("start_run"):
 		run.start_run()
 

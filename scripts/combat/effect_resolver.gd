@@ -53,6 +53,9 @@ func resolve_effect(
 		"intangible":
 			return resolve_intangible(value, target, context, source)
 
+		"weakness":
+			return resolve_weakness(value, target, context, source)
+
 		_:
 			return {
 				"type": "unknown",
@@ -81,7 +84,18 @@ func resolve_damage(
 			"message": "Alvo inválido para dano: %s" % target
 		}
 
-	var damage_result: Dictionary = target_combatant.take_damage(value, ignore_block)
+	# Aplica fraqueza se o atacante possuir o status
+	var attacker: Combatant = null
+	if source == "enemy_intent":
+		attacker = context.enemy
+	elif source == "card":
+		attacker = context.player
+
+	var final_damage_value: int = value
+	if attacker != null:
+		final_damage_value = attacker.calculate_outgoing_damage(value)
+
+	var damage_result: Dictionary = target_combatant.take_damage(final_damage_value, ignore_block)
 
 	var msg: String = "%s recebeu %d de dano." % [
 		target_combatant.display_name,
@@ -257,6 +271,39 @@ func resolve_intangible(
 		"success": true,
 		"turns": turns,
 		"message": "%s ativou Intangibilidade por %d turno(s)! Dano recebido reduzido a 1." % [
+			target_combatant.display_name,
+			turns
+		]
+	}
+
+
+func resolve_weakness(
+	value: int,
+	target: String,
+	context: CombatContext,
+	source: String
+) -> Dictionary:
+	var target_combatant: Combatant = get_target_combatant(target, context, source)
+
+	if target_combatant == null:
+		return {
+			"type": "weakness",
+			"source": source,
+			"target": target,
+			"success": false,
+			"message": "Alvo inválido para fraqueza: %s" % target
+		}
+
+	var turns: int = max(value, 1)
+	target_combatant.gain_weakness(turns)
+
+	return {
+		"type": "weakness",
+		"source": source,
+		"target": target,
+		"success": true,
+		"turns": turns,
+		"message": "%s foi afligido por Fraqueza (%d turno(s))! Dano reduzido em 25%%." % [
 			target_combatant.display_name,
 			turns
 		]

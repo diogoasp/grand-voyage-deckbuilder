@@ -10,6 +10,7 @@ var max_hp: int = 1
 var hp: int = 1
 var block: int = 0
 var intangible: int = 0
+var weakness: int = 0
 
 
 func setup(new_id: String, new_display_name: String, new_max_hp: int) -> void:
@@ -19,6 +20,7 @@ func setup(new_id: String, new_display_name: String, new_max_hp: int) -> void:
 	hp = max_hp
 	block = 0
 	intangible = 0
+	weakness = 0
 
 
 func take_damage(amount: int, ignore_block: bool = false) -> Dictionary:
@@ -50,6 +52,14 @@ func take_damage(amount: int, ignore_block: bool = false) -> Dictionary:
 	return res
 
 
+func calculate_outgoing_damage(base_amount: int) -> int:
+	var dmg: float = float(max(base_amount, 0))
+	if weakness > 0:
+		# Fraqueza reduz o dano causado em 25%
+		dmg = dmg * 0.75
+	return int(round(dmg))
+
+
 func gain_block(amount: int) -> void:
 	var val: int = maxi(amount, 0)
 	block += val
@@ -65,9 +75,15 @@ func gain_intangible(turns: int) -> void:
 	intangible += max(turns, 0)
 
 
+func gain_weakness(turns: int) -> void:
+	weakness += max(turns, 0)
+
+
 func tick_turn_statuses() -> void:
 	if intangible > 0:
 		intangible -= 1
+	if weakness > 0:
+		weakness -= 1
 
 
 func is_defeated() -> bool:

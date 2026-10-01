@@ -1,6 +1,12 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/character_select/character_select_scene.gd" id="1_char_select"]
+[ext_resource type="Shader" path="res://shaders/remove_white_bg.gdshader" id="2_shader_white"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_portrait"]
+shader = ExtResource("2_shader_white")
+shader_parameter/threshold = 0.94
+shader_parameter/softness = 0.04
 
 [node name="CharacterSelectScene" type="Control"]
 layout_mode = 3
@@ -133,6 +139,7 @@ size_flags_vertical = 3
 theme_override_constants/separation = 10
 
 [node name="CharacterPortrait" type="TextureRect" parent="MainLayout/SplitContent/RightColumn/SummaryPanel/Margin/Scroll/SummaryVBox"]
+material = SubResource("ShaderMaterial_portrait")
 custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
 expand_mode = 1

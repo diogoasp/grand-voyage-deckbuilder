@@ -213,8 +213,39 @@ func complete_active_node() -> void:
 
 	current_stage += 1
 	active_node_data = {}
+	refresh_future_event_nodes()
 	save_run()
 	show_map()
+
+
+func refresh_future_event_nodes() -> void:
+	var act: int = 1 if current_stage <= 4 else 2
+	for stage_idx in range(current_stage, sector_map.size()):
+		var stage_nodes = sector_map[stage_idx]
+		if not (stage_nodes is Array):
+			continue
+		for node in stage_nodes:
+			if not (node is Dictionary):
+				continue
+			if str(node.get("type", "")) == "event":
+				var ev_id: String = str(node.get("target_id", ""))
+				var is_valid := false
+				if DataLoader.has_event(ev_id):
+					var ev_data: Dictionary = DataLoader.get_event(ev_id)
+					if DataLoader.is_event_available(ev_data, stage_idx, act):
+						is_valid = true
+				if not is_valid:
+					var available_events: Array[Dictionary] = DataLoader.get_events_for_stage(stage_idx, act)
+					if not available_events.is_empty():
+						var picked: Dictionary = available_events[randi() % available_events.size()]
+						node["target_id"] = str(picked.get("id", "old_port_trainer"))
+						var ev_short: String = str(picked.get("short_title", picked.get("title", "Evento")))
+						node["title"] = "%s (%s)" % [str(node.get("island_name", "Ilha")), ev_short]
+						node["desc"] = str(picked.get("desc", ""))
+					else:
+						node["target_id"] = "old_port_trainer"
+						node["title"] = "%s (Velho Lutador)" % str(node.get("island_name", "Ilha"))
+						node["desc"] = "Treino de Postura ou Haki"
 
 
 
@@ -251,9 +282,31 @@ func apply_crew_travel_effects() -> void:
 
 
 func show_event(event_id: String) -> void:
+	var final_event_id: String = event_id
+	var act: int = 1 if current_stage <= 4 else 2
+
+	# Verifica se o evento predeterminado ainda é válido (ex: tripulante ou fruta já adquiridos)
+	var is_valid := false
+	if DataLoader.has_event(final_event_id):
+		var ev_data: Dictionary = DataLoader.get_event(final_event_id)
+		if DataLoader.is_event_available(ev_data, current_stage, act):
+			is_valid = true
+
+	if not is_valid:
+		var available_events: Array[Dictionary] = DataLoader.get_events_for_stage(current_stage, act)
+		if not available_events.is_empty():
+			var picked: Dictionary = available_events[randi() % available_events.size()]
+			final_event_id = str(picked.get("id", "old_port_trainer"))
+		else:
+			final_event_id = "old_port_trainer"
+
+		# Sincroniza o active_node_data para manter consistência
+		if not active_node_data.is_empty():
+			active_node_data["target_id"] = final_event_id
+
 	var event_scene: Node = EVENT_SCENE.instantiate()
 	if event_scene.has_method("setup"):
-		event_scene.setup(event_id)
+		event_scene.setup(final_event_id)
 
 	if event_scene.has_signal("continue_requested"):
 		event_scene.continue_requested.connect(_on_event_continue_requested)

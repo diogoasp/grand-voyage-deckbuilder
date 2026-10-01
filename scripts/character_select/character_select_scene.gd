@@ -4,6 +4,8 @@ extends Control
 signal back_requested
 signal expedition_started(style_id: String, prof_id: String, prof_rarity: String, gender: String)
 
+const REMOVE_WHITE_BG_SHADER: Shader = preload("res://shaders/remove_white_bg.gdshader")
+
 @onready var back_button: Button = $MainLayout/TopBar/BackButton
 @onready var male_button: Button = $MainLayout/TopBar/GenderContainer/MaleButton
 @onready var female_button: Button = $MainLayout/TopBar/GenderContainer/FemaleButton
@@ -147,6 +149,12 @@ func update_preview_display() -> void:
 	if ResourceLoader.exists(portrait_path):
 		var tex: Texture2D = load(portrait_path)
 		character_portrait.texture = tex
+		if character_portrait.material == null:
+			var mat := ShaderMaterial.new()
+			mat.shader = REMOVE_WHITE_BG_SHADER
+			mat.set_shader_parameter("threshold", 0.94)
+			mat.set_shader_parameter("softness", 0.04)
+			character_portrait.material = mat
 		character_portrait.visible = true
 	else:
 		character_portrait.visible = false

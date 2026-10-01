@@ -3,6 +3,7 @@ extends RefCounted
 
 signal damage_taken(result: Dictionary)
 signal block_gained(amount: int)
+signal healed(result: Dictionary)
 
 var id: String = ""
 var display_name: String = ""
@@ -102,9 +103,12 @@ func heal(amount: int) -> Dictionary:
 
 	var effective_heal: int = hp - hp_before
 
-	return {
+	var res := {
 		"requested_heal": heal_amount,
 		"effective_heal": effective_heal,
 		"current_hp": hp,
 		"max_hp": max_hp
 	}
+	if effective_heal > 0:
+		healed.emit(res)
+	return res

@@ -11,5 +11,5 @@ void fragment() {
 		float alpha = 1.0 - smoothstep(threshold, threshold + softness, min_channel);
 		col.a *= alpha;
 	}
-	COLOR = col;
+	COLOR = col * COLOR;
 }

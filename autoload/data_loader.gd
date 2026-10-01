@@ -100,12 +100,9 @@ func get_all_events() -> Dictionary:
 	return events
 
 
-func get_events_for_stage(stage_index: int, act: int = 1) -> Array[Dictionary]:
-	var result: Array[Dictionary] = []
-	for event_id in events.keys():
-		var ev: Dictionary = events[event_id]
-
-		# Filtra por ato/fase (ex: South Blue = 1, Grand Line = 2)
+func is_event_available(ev: Dictionary, stage_index: int = -1, act: int = -1) -> bool:
+	# Filtra por ato/fase (ex: South Blue = 1, Grand Line = 2)
+	if act != -1:
 		var allowed_acts: Array = ev.get("allowed_acts", [])
 		if not allowed_acts.is_empty():
 			var has_act := false
@@ -114,8 +111,9 @@ func get_events_for_stage(stage_index: int, act: int = 1) -> Array[Dictionary]:
 					has_act = true
 					break
 			if not has_act:
-				continue
+				return false
 
+	if stage_index != -1:
 		var allowed_stages: Array = ev.get("allowed_stages", [])
 		if not allowed_stages.is_empty():
 			var has_stage := false
@@ -124,56 +122,57 @@ func get_events_for_stage(stage_index: int, act: int = 1) -> Array[Dictionary]:
 					has_stage = true
 					break
 			if not has_stage:
-				continue
+				return false
 
-		# Filtra eventos que concedem tripulantes ou frutas ainda não desbloqueados na metaprogressão
-		var is_available := true
-		var choices: Array = ev.get("choices", [])
-		for ch in choices:
-			if not (ch is Dictionary):
+	# Filtra eventos que concedem tripulantes ou frutas ainda não desbloqueados ou já recrutados
+	var choices: Array = ev.get("choices", [])
+	for ch in choices:
+		if not (ch is Dictionary):
+			continue
+		var effects: Array = ch.get("effects", [])
+		for eff in effects:
+			if not (eff is Dictionary):
 				continue
-			var effects: Array = ch.get("effects", [])
-			for eff in effects:
-				if not (eff is Dictionary):
-					continue
-				var eff_type: String = str(eff.get("type", ""))
-				if eff_type == "recruit_crew":
-					var cid: String = str(eff.get("crew_id", ""))
-					if cid != "":
-						# Não oferece se não estiver desbloqueado na metaprogressão
-						if not MetaProgression.is_crew_unlocked(cid):
-							is_available = false
-							break
-						# Não oferece se o membro específico já estiver na tripulação
-						if GameState.has_crew_member(cid):
-							is_available = false
-							break
-						# Não oferece se a tripulação já possuir a profissão do tripulante
-						if has_crew(cid):
-							var cdata: Dictionary = get_crew(cid)
-							var role_str: String = str(cdata.get("role", "")).to_lower()
-							var tags: Array = cdata.get("tags", [])
-							# Verifica por médico/doctor
-							if ("médic" in role_str or "doctor" in role_str or tags.has("doctor")) and (GameState.has_role_in_crew("doctor") or GameState.has_role_in_crew("médico")):
-								is_available = false
-								break
-							# Verifica por cozinheiro/chef
-							if ("cozinh" in role_str or "chef" in role_str or tags.has("chef")) and (GameState.has_role_in_crew("chef") or GameState.has_role_in_crew("cozinheiro")):
-								is_available = false
-								break
-							# Verifica por navegador/navigator
-							if ("navegad" in role_str or "navigator" in role_str or tags.has("navigator")) and (GameState.has_role_in_crew("navigator") or GameState.has_role_in_crew("navegador")):
-								is_available = false
-								break
-				elif eff_type == "consume_fruit":
-					var fid: String = str(eff.get("fruit_id", ""))
-					if fid != "" and not MetaProgression.is_fruit_unlocked(fid):
-						is_available = false
-						break
-			if not is_available:
-				break
+			var eff_type: String = str(eff.get("type", ""))
+			if eff_type == "recruit_crew":
+				var cid: String = str(eff.get("crew_id", ""))
+				if cid != "":
+					# Não oferece se não estiver desbloqueado na metaprogressão
+					if not MetaProgression.is_crew_unlocked(cid):
+						return false
+					# Não oferece se o membro específico já estiver na tripulação
+					if GameState.has_crew_member(cid):
+						return false
+					# Não oferece se a tripulação já possuir a profissão ou tags do tripulante
+					if has_crew(cid):
+						var cdata: Dictionary = get_crew(cid)
+						var role_str: String = str(cdata.get("role", "")).to_lower()
+						var tags: Array = cdata.get("tags", [])
+						# Verifica por médico/doctor
+						if ("médic" in role_str or "doctor" in role_str or tags.has("doctor")) and (GameState.has_role_in_crew("doctor") or GameState.has_role_in_crew("médico")):
+							return false
+						# Verifica por cozinheiro/chef
+						if ("cozinh" in role_str or "chef" in role_str or tags.has("chef")) and (GameState.has_role_in_crew("chef") or GameState.has_role_in_crew("cozinheiro")):
+							return false
+						# Verifica por navegador/navigator
+						if ("navegad" in role_str or "navigator" in role_str or tags.has("navigator")) and (GameState.has_role_in_crew("navigator") or GameState.has_role_in_crew("navegador")):
+							return false
+			elif eff_type == "consume_fruit":
+				var fid: String = str(eff.get("fruit_id", ""))
+				if fid != "" and not MetaProgression.is_fruit_unlocked(fid):
+					return false
+				# Não oferece se já comeu fruta
+				if GameState.has_eaten_fruit():
+					return false
 
-		if is_available:
+	return true
+
+
+func get_events_for_stage(stage_index: int, act: int = 1) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for event_id in events.keys():
+		var ev: Dictionary = events[event_id]
+		if is_event_available(ev, stage_index, act):
 			result.append(ev)
 
 	return result

@@ -108,6 +108,7 @@ func start_combat() -> void:
 
 	player.damage_taken.connect(_on_player_damage_taken)
 	player.block_gained.connect(_on_player_block_gained)
+	player.healed.connect(_on_player_healed)
 
 	enemy.damage_taken.connect(_on_enemy_damage_taken)
 	enemy.block_gained.connect(_on_enemy_block_gained)
@@ -608,7 +609,7 @@ func trigger_crew_assist_visual(card_id: String) -> void:
 	assist_rect.texture = tex
 	assist_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	assist_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	assist_rect.flip_h = true
+	assist_rect.flip_h = false
 	# Dimensões adequadas para o espaço de combate (ex: 180x225)
 	assist_rect.custom_minimum_size = Vector2(180, 225)
 	assist_rect.size = Vector2(180, 225)
@@ -1041,6 +1042,13 @@ func _on_player_block_gained(amount: int) -> void:
 	spawn_floating_text(player_area, "+%d Bloqueio" % amount, Color(0.4, 0.8, 1.0))
 
 
+func _on_player_healed(result: Dictionary) -> void:
+	var effective_heal: int = int(result.get("effective_heal", 0))
+	if effective_heal > 0:
+		spawn_floating_text(player_area, "+%d HP" % effective_heal, Color(0.2, 1.0, 0.4))
+		flash_target(player_area, Color(0.3, 1.5, 0.5, 1.0))
+
+
 func _on_enemy_block_gained(amount: int) -> void:
 	spawn_floating_text(enemy_area, "+%d Bloqueio" % amount, Color(0.4, 0.8, 1.0))
 
@@ -1072,6 +1080,7 @@ func spawn_floating_text(parent_target: Control, text: String, color: Color) -> 
 	label.add_theme_font_size_override("font_size", 18)
 	label.add_theme_color_override("font_color", color)
 	label.top_level = true
+	label.z_index = 100
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	var spawn_pos: Vector2 = parent_target.global_position + Vector2(parent_target.size.x * 0.35, 10.0)

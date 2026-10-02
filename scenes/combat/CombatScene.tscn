@@ -28,6 +28,18 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_enemy_hp_fill"]
+bg_color = Color(0.85, 0.22, 0.22, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.45, 0.45, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_0x2iq"]
 atlas = ExtResource("2_2ussv")
 region = Rect2(0, 0, 57, 59)
@@ -204,43 +216,21 @@ color = Color(0.1, 0.12, 0.16, 0.92)
 
 [node name="EnemyArea" type="VBoxContainer" parent="." unique_id=1800212012]
 layout_mode = 0
-offset_left = 760.0
-offset_top = 130.0
-offset_right = 1000.0
-offset_bottom = 380.0
-alignment = 1
-
-[node name="EnemyIntentContainer" type="HBoxContainer" parent="EnemyArea" unique_id=749684533]
-layout_mode = 2
+offset_left = 730.0
+offset_top = 100.0
+offset_right = 970.0
+offset_bottom = 420.0
 theme_override_constants/separation = 6
 alignment = 1
 
-[node name="EnemyNameLabel" type="Label" parent="EnemyArea" unique_id=1244026989]
-layout_mode = 2
-horizontal_alignment = 1
-
-[node name="EnemyHPContainer" type="HBoxContainer" parent="EnemyArea" unique_id=1850803614]
+[node name="EnemyIntentContainer" type="HBoxContainer" parent="EnemyArea" unique_id=749684533]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="EnemyHPLabel" type="Label" parent="EnemyArea/EnemyHPContainer" unique_id=1850803615]
-layout_mode = 2
-text = "HP: 32/32"
-
-[node name="EnemyBlockBadge" type="Label" parent="EnemyArea/EnemyHPContainer" unique_id=1850803616]
-visible = false
-layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.8, 1, 1)
-text = "🛡 0"
-
-[node name="EnemyStatusContainer" type="HBoxContainer" parent="EnemyArea" unique_id=1982736412]
-layout_mode = 2
-theme_override_constants/separation = 4
-alignment = 1
-
 [node name="EnemySprite" type="AnimatedSprite2D" parent="EnemyArea" unique_id=164225054]
-position = Vector2(108, 186.99997)
+position = Vector2(120, 155)
 scale = Vector2(1.9520063, 2.1188645)
 sprite_frames = SubResource("SpriteFrames_i18os")
 frame_progress = 0.23706964
@@ -248,17 +238,69 @@ frame_progress = 0.23706964
 [node name="EnemyTextureRect" type="TextureRect" parent="EnemyArea" unique_id=164225055]
 visible = false
 material = SubResource("ShaderMaterial_player")
-custom_minimum_size = Vector2(200, 240)
+custom_minimum_size = Vector2(220, 230)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
 
+[node name="EnemyNameLabel" type="Label" parent="EnemyArea" unique_id=1244026989]
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+
+[node name="EnemyHPContainer" type="HBoxContainer" parent="EnemyArea" unique_id=1850803614]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="EnemyBlockBadge" type="Label" parent="EnemyArea/EnemyHPContainer" unique_id=1850803616]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.85, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "🛡 0"
+vertical_alignment = 1
+
+[node name="EnemyHPBar" type="ProgressBar" parent="EnemyArea/EnemyHPContainer" unique_id=1850803617]
+custom_minimum_size = Vector2(150, 18)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_enemy_hp_fill")
+value = 100.0
+show_percentage = false
+
+[node name="EnemyHPLabel" type="Label" parent="EnemyArea/EnemyHPContainer/EnemyHPBar" unique_id=1850803615]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.8)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 12
+text = "32/32"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EnemyStatusContainer" type="HBoxContainer" parent="EnemyArea" unique_id=1982736412]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
 [node name="PlayerArea" type="VBoxContainer" parent="." unique_id=1316187393]
 layout_mode = 0
 offset_left = 180.0
-offset_top = 200.0
-offset_right = 320.0
+offset_top = 150.0
+offset_right = 350.0
 offset_bottom = 420.0
+theme_override_constants/separation = 6
 alignment = 1
 
 [node name="PlayerSprite" type="TextureRect" parent="PlayerArea" unique_id=1194753351]

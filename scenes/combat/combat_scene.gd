@@ -29,7 +29,8 @@ const REMOVE_WHITE_BG_SHADER: Shader = preload("res://shaders/remove_white_bg.gd
 @onready var enemy_area: VBoxContainer = $EnemyArea
 @onready var enemy_intent_container: HBoxContainer = $EnemyArea/EnemyIntentContainer
 @onready var enemy_name_label: Label = $EnemyArea/EnemyNameLabel
-@onready var enemy_hp_label: Label = $EnemyArea/EnemyHPContainer/EnemyHPLabel
+@onready var enemy_hp_bar: ProgressBar = $EnemyArea/EnemyHPContainer/EnemyHPBar
+@onready var enemy_hp_label: Label = $EnemyArea/EnemyHPContainer/EnemyHPBar/EnemyHPLabel
 @onready var enemy_block_badge: Label = $EnemyArea/EnemyHPContainer/EnemyBlockBadge
 @onready var enemy_status_container: HBoxContainer = $EnemyArea/EnemyStatusContainer
 @onready var enemy_sprite: AnimatedSprite2D = $EnemyArea/EnemySprite
@@ -311,7 +312,10 @@ func update_ui() -> void:
 		player_block_badge.visible = false
 
 	enemy_name_label.text = enemy.display_name
-	enemy_hp_label.text = "HP: %s" % enemy.get_hp_text()
+	enemy_hp_label.text = "%d/%d" % [enemy.hp, enemy.max_hp]
+	if enemy_hp_bar != null:
+		enemy_hp_bar.max_value = enemy.max_hp
+		enemy_hp_bar.value = enemy.hp
 
 	if enemy.block > 0:
 		enemy_block_badge.text = "🛡 %d" % enemy.block
@@ -357,10 +361,28 @@ func update_enemy_intent_display() -> void:
 		return
 
 	if enemy_intent.is_empty():
+		var badge := PanelContainer.new()
+		badge.mouse_filter = Control.MOUSE_FILTER_PASS
+		var sb := StyleBoxFlat.new()
+		sb.bg_color = Color(0.1, 0.12, 0.16, 0.88)
+		sb.border_width_left = 1
+		sb.border_width_top = 1
+		sb.border_width_right = 1
+		sb.border_width_bottom = 1
+		sb.border_color = Color(0.4, 0.45, 0.55, 0.8)
+		sb.corner_radius_top_left = 6
+		sb.corner_radius_top_right = 6
+		sb.corner_radius_bottom_right = 6
+		sb.corner_radius_bottom_left = 6
+		sb.content_margin_left = 6
+		sb.content_margin_right = 6
+		badge.add_theme_stylebox_override("panel", sb)
+
 		var label := Label.new()
 		label.text = "❓"
 		label.tooltip_text = "Intenção desconhecida"
-		enemy_intent_container.add_child(label)
+		badge.add_child(label)
+		enemy_intent_container.add_child(badge)
 		return
 
 	var effects: Array = enemy_intent.get("effects", [])
@@ -378,33 +400,54 @@ func update_enemy_intent_display() -> void:
 		var badge := PanelContainer.new()
 		badge.mouse_filter = Control.MOUSE_FILTER_PASS
 
+		var stylebox := StyleBoxFlat.new()
+		stylebox.bg_color = Color(0.08, 0.1, 0.14, 0.9)
+		stylebox.border_width_left = 1
+		stylebox.border_width_top = 1
+		stylebox.border_width_right = 1
+		stylebox.border_width_bottom = 1
+		stylebox.corner_radius_top_left = 8
+		stylebox.corner_radius_top_right = 8
+		stylebox.corner_radius_bottom_right = 8
+		stylebox.corner_radius_bottom_left = 8
+		stylebox.content_margin_left = 8
+		stylebox.content_margin_right = 8
+		stylebox.content_margin_top = 3
+		stylebox.content_margin_bottom = 3
+
 		var hbox := HBoxContainer.new()
-		hbox.add_theme_constant_override("separation", 4)
+		hbox.add_theme_constant_override("separation", 5)
 		badge.add_child(hbox)
 
 		var icon_label := Label.new()
 		var value_label := Label.new()
+		icon_label.add_theme_font_size_override("font_size", 16)
+		value_label.add_theme_font_size_override("font_size", 14)
 		hbox.add_child(icon_label)
 		hbox.add_child(value_label)
 
 		if effect_type == "damage" and target == "player":
+			stylebox.border_color = Color(0.9, 0.3, 0.3, 0.8)
 			icon_label.text = "⚔"
-			icon_label.add_theme_color_override("font_color", Color(1.0, 0.25, 0.25))
+			icon_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.3))
 			value_label.text = "%d" % value
-			value_label.add_theme_color_override("font_color", Color(1.0, 0.25, 0.25))
+			value_label.add_theme_color_override("font_color", Color(1.0, 0.35, 0.35))
 			badge.tooltip_text = "Intenção: Atacar causando %d de dano." % value
 		elif effect_type == "block" and target == "self":
+			stylebox.border_color = Color(0.3, 0.7, 1.0, 0.8)
 			icon_label.text = "🛡"
-			icon_label.add_theme_color_override("font_color", Color(0.3, 0.7, 1.0))
+			icon_label.add_theme_color_override("font_color", Color(0.4, 0.8, 1.0))
 			value_label.text = "%d" % value
-			value_label.add_theme_color_override("font_color", Color(0.3, 0.7, 1.0))
+			value_label.add_theme_color_override("font_color", Color(0.4, 0.8, 1.0))
 			badge.tooltip_text = "Intenção: Defender ganhando %d de bloqueio." % value
 		else:
+			stylebox.border_color = Color(0.9, 0.8, 0.4, 0.8)
 			icon_label.text = "✦"
-			icon_label.add_theme_color_override("font_color", Color(0.9, 0.8, 0.4))
+			icon_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4))
 			value_label.text = "%s %d" % [effect_type, value]
 			badge.tooltip_text = "Intenção: Aplicar %s (%d)." % [effect_type, value]
 
+		badge.add_theme_stylebox_override("panel", stylebox)
 		enemy_intent_container.add_child(badge)
 
 

@@ -31,7 +31,10 @@
 	  "gold_min": 8,
 	  "gold_max": 15,
 	  "bounty": 5
-	}
+	},
+	"idle_sprite_path": "res://assets/art/enemies/marine/idle.png",
+	"attack_sprite_path": "res://assets/art/enemies/marine/attack.png",
+	"damaged_sprite_path": "res://assets/art/enemies/marine/damaged.png"
   },
   "bandit_sailor": {
 	"id": "bandit_sailor",
@@ -189,7 +192,7 @@
 	"id": "boss_harrison",
 	"name": "Harrison, Líder dos Rebeldes de Briss",
 	"category": "boss",
-	"allowed_acts": [0],
+	"allowed_acts": [1],
 	"story_intro": "Tritão Barracuda, ex-pirata e líder dos rebeldes de Briss: 'Mares não acorrentam quem nasceu pra avançar.'",
 	"max_hp": 80,
 	"idle_sprite_path": "res://assets/art/enemies/harrison/idle.png",

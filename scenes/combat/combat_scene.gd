@@ -34,6 +34,7 @@ const REMOVE_WHITE_BG_SHADER: Shader = preload("res://shaders/remove_white_bg.gd
 @onready var enemy_status_container: HBoxContainer = $EnemyArea/EnemyStatusContainer
 @onready var enemy_sprite: AnimatedSprite2D = $EnemyArea/EnemySprite
 @onready var enemy_texture_rect: TextureRect = $EnemyArea/EnemyTextureRect
+@onready var scenario_background: TextureRect = $ScenarioBackground
 
 @onready var hand_area: HBoxContainer = $HandArea
 @onready var end_turn_button: Button = $RightHUD/EndTurnButton
@@ -61,6 +62,8 @@ var current_enemy_data: Dictionary = {}
 var enemy_intent: Dictionary = {}
 var enemy_idle_texture: Texture2D = null
 var enemy_attack_texture: Texture2D = null
+var enemy_damaged_texture: Texture2D = null
+var combat_background_path: String = ""
 
 var cards_per_turn: int = 5
 var max_energy: int = 3
@@ -139,8 +142,37 @@ func start_combat() -> void:
 
 	rebuild_hand_ui()
 	update_ui()
+	setup_combat_background()
 
 	print("Combate iniciado.")
+
+
+func setup_combat_background() -> void:
+	if not is_instance_valid(scenario_background):
+		return
+
+	# Se um cenário específico foi definido externamente via combat_background_path, usa-o
+	if combat_background_path != "" and ResourceLoader.exists(combat_background_path):
+		var custom_tex: Texture2D = load(combat_background_path)
+		if custom_tex != null:
+			scenario_background.texture = custom_tex
+			return
+
+	# Cenário baseado no inimigo ou contexto
+	var enemy_cat: String = str(current_enemy_data.get("category", ""))
+	var target_bg_path := ""
+
+	if enemy_cat == "boss" or current_enemy_id == "boss_harrison":
+		target_bg_path = "res://assets/scenarios/briss.png"
+	elif current_enemy_id == "marine_recruit":
+		target_bg_path = "res://assets/scenarios/harbor_island.png"
+	else:
+		target_bg_path = "res://assets/scenarios/misterious_island.png"
+
+	if ResourceLoader.exists(target_bg_path):
+		var bg_tex: Texture2D = load(target_bg_path)
+		if bg_tex != null:
+			scenario_background.texture = bg_tex
 
 
 func load_enemy(enemy_id: String) -> void:
@@ -159,6 +191,7 @@ func load_enemy(enemy_id: String) -> void:
 
 	var idle_path: String = str(current_enemy_data.get("idle_sprite_path", ""))
 	var attack_path: String = str(current_enemy_data.get("attack_sprite_path", ""))
+	var damaged_path: String = str(current_enemy_data.get("damaged_sprite_path", ""))
 
 	if idle_path != "" and ResourceLoader.exists(idle_path):
 		enemy_idle_texture = load(idle_path)
@@ -167,12 +200,18 @@ func load_enemy(enemy_id: String) -> void:
 		else:
 			enemy_attack_texture = enemy_idle_texture
 
+		if damaged_path != "" and ResourceLoader.exists(damaged_path):
+			enemy_damaged_texture = load(damaged_path)
+		else:
+			enemy_damaged_texture = null
+
 		enemy_texture_rect.texture = enemy_idle_texture
 		enemy_texture_rect.visible = true
 		enemy_sprite.visible = false
 	else:
 		enemy_idle_texture = null
 		enemy_attack_texture = null
+		enemy_damaged_texture = null
 		enemy_texture_rect.texture = null
 		enemy_texture_rect.visible = false
 		enemy_sprite.visible = true
@@ -1081,6 +1120,15 @@ func _on_enemy_damage_taken(result: Dictionary) -> void:
 		spawn_floating_text(enemy_area, "-%d" % final_damage, Color(1.0, 0.25, 0.25))
 		flash_target(enemy_area, Color(2.0, 0.25, 0.25, 1.0), active_enemy_visual)
 		shake_target(enemy_area, 6.0)
+
+		if enemy_texture_rect.visible and enemy_damaged_texture != null:
+			enemy_texture_rect.texture = enemy_damaged_texture
+			var hit_tween := create_tween()
+			hit_tween.tween_interval(0.35)
+			hit_tween.tween_callback(func():
+				if enemy_texture_rect.visible and enemy_idle_texture != null:
+					enemy_texture_rect.texture = enemy_idle_texture
+			)
 	elif blocked_damage > 0:
 		spawn_floating_text(enemy_area, "Bloqueado! (%d)" % blocked_damage, Color(0.3, 0.7, 1.0))
 		flash_target(enemy_area, Color(0.4, 0.8, 2.0, 1.0), active_enemy_visual)

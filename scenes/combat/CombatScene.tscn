@@ -2,8 +2,6 @@
 
 [ext_resource type="Script" uid="uid://dvwt0iugl7tbk" path="res://scenes/combat/combat_scene.gd" id="1_cetgp"]
 [ext_resource type="Texture2D" uid="uid://bd5kcqgtcftvk" path="res://assets/art/Marine_Swordsman_1_-removebg-preview.png" id="2_2ussv"]
-[ext_resource type="Texture2D" uid="uid://bou1ouens75dm" path="res://assets/art/Boss 1 Morgan_bg.png" id="2_gvrxc"]
-[ext_resource type="Texture2D" uid="uid://crgr6k283tg4y" path="res://assets/art/Boss 1 Morgan_bg_front.png" id="3_i18os"]
 [ext_resource type="Shader" uid="uid://1xygpyjljevy" path="res://shaders/remove_white_bg.gdshader" id="4_shader_white"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_bg"]
@@ -105,15 +103,16 @@ offset_bottom = 44.0
 grow_horizontal = 2
 color = Color(0.1, 0.12, 0.16, 0.95)
 
-[node name="Boss1MorganBg" type="Sprite2D" parent="." unique_id=1623098963]
-position = Vector2(577, 328)
-scale = Vector2(4.5043945, 3.4568357)
-texture = ExtResource("2_gvrxc")
-
-[node name="Boss1MorganBgFront" type="Sprite2D" parent="." unique_id=1745339370]
-position = Vector2(573.99994, 320)
-scale = Vector2(3.144414, 2.0340383)
-texture = ExtResource("3_i18os")
+[node name="ScenarioBackground" type="TextureRect" parent="." unique_id=1623098963]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 6
 
 [node name="TopBar" type="HBoxContainer" parent="." unique_id=481716624]
 layout_mode = 0
@@ -241,7 +240,7 @@ theme_override_constants/separation = 4
 alignment = 1
 
 [node name="EnemySprite" type="AnimatedSprite2D" parent="EnemyArea" unique_id=164225054]
-position = Vector2(110, 260)
+position = Vector2(108, 186.99997)
 scale = Vector2(1.9520063, 2.1188645)
 sprite_frames = SubResource("SpriteFrames_i18os")
 frame_progress = 0.23706964

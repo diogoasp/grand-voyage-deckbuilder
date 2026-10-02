@@ -319,6 +319,16 @@ func show_combat(enemy_id: String = "marine_recruit") -> void:
 	if "current_enemy_id" in combat_scene:
 		combat_scene.current_enemy_id = enemy_id
 
+	# Se a ilha ativa definir um cenário específico, encaminha para o combate
+	if "combat_background_path" in combat_scene and not active_node_data.is_empty():
+		var island_name: String = str(active_node_data.get("island_name", ""))
+		if island_name == "Briss Kingdom":
+			combat_scene.combat_background_path = "res://assets/scenarios/briss.png"
+		elif island_name in ["Karate Island", "Sorbet Kingdom", "Centaurea Kingdom", "Baterilla Island"]:
+			combat_scene.combat_background_path = "res://assets/scenarios/harbor_island.png"
+		elif island_name == "Ilha Misteriosa":
+			combat_scene.combat_background_path = "res://assets/scenarios/misterious_island.png"
+
 	if combat_scene.has_signal("combat_victory"):
 		combat_scene.combat_victory.connect(_on_combat_victory)
 

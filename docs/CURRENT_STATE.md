@@ -495,6 +495,17 @@ Documentação detalhada e guia de extensão: [`docs/COMBAT_STYLES_AND_PROFESSIO
 3. **Tela de Preparação da Expedição (`CharacterSelectScene`):**
    - Tela intermediária entre o menu principal e o início da run para seleção de estilo e profissão com prévia do baralho.
 
+## Apresentação Visual e Cenários de Combate
+
+1. **Cenários Náuticos (`assets/scenarios/`):**
+   - Suporte dinâmico a cenários em `CombatScene` através do nó `ScenarioBackground`:
+     - `briss.png` para confrontos no Reino de Briss e batalha com o Chefe Harrison.
+     - `harbor_island.png` para ilhas portuárias (Karate, Sorbet, Centaurea, Baterilla) e patrulhas da Marinha.
+     - `misterious_island.png` para Ilha Misteriosa e encontros gerais.
+2. **Sprites de Inimigos:**
+   - Harrison (`boss_harrison`): `idle.png` e `attack.png`.
+   - Marinheiro Padrão (`marine_recruit`): `idle.png`, `attack.png` e `damaged.png` (com animação de investida no ataque e reação visual ao sofrer dano).
+
 ## Dívida técnica conhecida
 1. Rebuild da mão deve ser observado em mudanças futuras para evitar problemas de `queue_free()` durante sinais.
 2. O sistema de status/buffs temporários em combate suporta atualmente intangibilidade, devendo ser estendido quando novos status surgirem.

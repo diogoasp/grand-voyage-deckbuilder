@@ -112,6 +112,7 @@ func start_combat() -> void:
 
 	enemy.damage_taken.connect(_on_enemy_damage_taken)
 	enemy.block_gained.connect(_on_enemy_block_gained)
+	enemy.healed.connect(_on_enemy_healed)
 
 	deck_manager = DeckManager.new()
 	deck_manager.setup_from_deck_ids(GameState.current_deck)
@@ -965,9 +966,15 @@ func highlight_target_area(required_target: String) -> void:
 			player_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
 
 
+var player_flash_active: bool = false
+var enemy_flash_active: bool = false
+
+
 func clear_target_highlights() -> void:
-	enemy_area.modulate = Color(1, 1, 1, 1)
-	player_area.modulate = Color(1, 1, 1, 1)
+	if not enemy_flash_active:
+		enemy_area.modulate = Color(1, 1, 1, 1)
+	if not player_flash_active:
+		player_area.modulate = Color(1, 1, 1, 1)
 
 func _process(_delta: float) -> void:
 	if dragged_card_view == null:
@@ -991,20 +998,24 @@ func update_drag_target_feedback() -> void:
 
 	match dragged_card_required_target:
 		"enemy":
-			if is_valid_target:
-				enemy_area.modulate = Color(1.35, 1.35, 1.35, 1.0)
-			else:
-				enemy_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
+			if not enemy_flash_active:
+				if is_valid_target:
+					enemy_area.modulate = Color(1.35, 1.35, 1.35, 1.0)
+				else:
+					enemy_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
 
 		"player":
-			if is_valid_target:
-				player_area.modulate = Color(1.35, 1.35, 1.35, 1.0)
-			else:
-				player_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
+			if not player_flash_active:
+				if is_valid_target:
+					player_area.modulate = Color(1.35, 1.35, 1.35, 1.0)
+				else:
+					player_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
 
 		"none":
-			enemy_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
-			player_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
+			if not enemy_flash_active:
+				enemy_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
+			if not player_flash_active:
+				player_area.modulate = Color(1.12, 1.12, 1.12, 1.0)
 
 
 func _on_enemy_damage_taken(result: Dictionary) -> void:
@@ -1013,11 +1024,11 @@ func _on_enemy_damage_taken(result: Dictionary) -> void:
 
 	if final_damage > 0:
 		spawn_floating_text(enemy_area, "-%d" % final_damage, Color(1.0, 0.25, 0.25))
-		flash_target(enemy_area, Color(1.8, 0.3, 0.3, 1.0))
+		flash_target(enemy_area, Color(2.0, 0.25, 0.25, 1.0), enemy_sprite)
 		shake_target(enemy_area, 6.0)
 	elif blocked_damage > 0:
 		spawn_floating_text(enemy_area, "Bloqueado! (%d)" % blocked_damage, Color(0.3, 0.7, 1.0))
-		flash_target(enemy_area, Color(0.5, 0.8, 1.5, 1.0))
+		flash_target(enemy_area, Color(0.4, 0.8, 2.0, 1.0), enemy_sprite)
 
 
 func _on_player_damage_taken(result: Dictionary) -> void:
@@ -1027,38 +1038,70 @@ func _on_player_damage_taken(result: Dictionary) -> void:
 
 	if was_intangible:
 		spawn_floating_text(player_area, "☁ Névoa (-%d)" % final_damage, Color(0.6, 0.9, 1.0))
-		flash_target(player_area, Color(0.5, 0.9, 1.5, 1.0))
+		flash_target(player_area, Color(0.5, 0.9, 1.5, 1.0), player_sprite)
 		shake_target(player_area, 3.0)
 	elif final_damage > 0:
 		spawn_floating_text(player_area, "-%d" % final_damage, Color(1.0, 0.2, 0.2))
-		flash_target(player_area, Color(1.8, 0.2, 0.2, 1.0))
+		flash_target(player_area, Color(2.0, 0.2, 0.2, 1.0), player_sprite)
 		shake_target(player_area, 8.0)
 	elif blocked_damage > 0:
 		spawn_floating_text(player_area, "Bloqueado! (%d)" % blocked_damage, Color(0.3, 0.7, 1.0))
-		flash_target(player_area, Color(0.5, 0.8, 1.5, 1.0))
+		flash_target(player_area, Color(0.4, 0.8, 2.0, 1.0), player_sprite)
 
 
 func _on_player_block_gained(amount: int) -> void:
 	spawn_floating_text(player_area, "+%d Bloqueio" % amount, Color(0.4, 0.8, 1.0))
+	flash_target(player_area, Color(0.4, 0.8, 2.0, 1.0), player_sprite)
 
 
 func _on_player_healed(result: Dictionary) -> void:
 	var effective_heal: int = int(result.get("effective_heal", 0))
 	if effective_heal > 0:
 		spawn_floating_text(player_area, "+%d HP" % effective_heal, Color(0.2, 1.0, 0.4))
-		flash_target(player_area, Color(0.3, 1.5, 0.5, 1.0))
+		flash_target(player_area, Color(0.3, 2.0, 0.5, 1.0), player_sprite)
 
 
 func _on_enemy_block_gained(amount: int) -> void:
 	spawn_floating_text(enemy_area, "+%d Bloqueio" % amount, Color(0.4, 0.8, 1.0))
+	flash_target(enemy_area, Color(0.4, 0.8, 2.0, 1.0), enemy_sprite)
 
 
-func flash_target(target: Control, flash_color: Color) -> void:
+func _on_enemy_healed(result: Dictionary) -> void:
+	var effective_heal: int = int(result.get("effective_heal", 0))
+	if effective_heal > 0:
+		spawn_floating_text(enemy_area, "+%d HP" % effective_heal, Color(0.2, 1.0, 0.4))
+		flash_target(enemy_area, Color(0.3, 2.0, 0.5, 1.0), enemy_sprite)
+
+
+func flash_target(target: Control, flash_color: Color, sprite_node: CanvasItem = null) -> void:
 	if not is_instance_valid(target):
 		return
+
+	if target == enemy_area:
+		enemy_flash_active = true
+	elif target == player_area:
+		player_flash_active = true
+
 	var tween := create_tween()
+	tween.set_parallel(true)
+
 	target.modulate = flash_color
-	tween.tween_property(target, "modulate", Color.WHITE, 0.22).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(target, "modulate", Color.WHITE, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+	if is_instance_valid(sprite_node):
+		sprite_node.modulate = flash_color
+		tween.tween_property(sprite_node, "modulate", Color.WHITE, 0.3).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+	tween.chain().tween_callback(func():
+		if target == enemy_area:
+			enemy_flash_active = false
+		elif target == player_area:
+			player_flash_active = false
+		if is_instance_valid(target):
+			target.modulate = Color.WHITE
+		if is_instance_valid(sprite_node):
+			sprite_node.modulate = Color.WHITE
+	)
 
 
 func shake_target(target: Control, intensity: float = 6.0) -> void:

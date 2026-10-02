@@ -1,30 +1,27 @@
 # Tarefa Atual
  
 ## Nome
-Integração das Sprites do Marinheiro Padrão (`marine_recruit`) e Cenários de Fundo em Combate (`briss.png`, `harbor_island.png`, `misterious_island.png`).
+Integração de Sprites de Inimigos (`dino` e `bandit_sailor`), Novo Inimigo Exclusivo da Ilha Misteriosa e Refinamento de UI de Combate (Estilo Slay the Spire).
 
 ## Objetivo
-1. **Sprites do Marinheiro Padrão (`marine_recruit`):**
-   - Configurado em `data/enemies/enemies.json`:
-     - `idle_sprite_path`: `res://assets/art/enemies/marine/idle.png`
-     - `attack_sprite_path`: `res://assets/art/enemies/marine/attack.png`
-     - `damaged_sprite_path`: `res://assets/art/enemies/marine/damaged.png`
-   - Suporte adicionado em `CombatScene` e `combat_scene.gd`:
-     - Renderização no `EnemyTextureRect` com shader de transparência.
-     - Animação de investida com troca para `attack.png` durante ataques.
-     - Troca momentânea para `damaged.png` ao sofrer dano (além do flash vermelho e número flutuante).
-2. **Cenários Dinâmicos de Combate (`assets/scenarios/`):**
-   - Removidos os nós antigos de fundo do Morgan da cena `CombatScene.tscn`.
-   - Adicionado nó `ScenarioBackground` (`TextureRect`) com stretch mode adequado (Keep Aspect Covered).
-   - Implementado em `combat_scene.gd` (`setup_combat_background`) e `run_scene.gd`:
-     - `briss.png` para o chefe Harrison / Reino de Briss.
-     - `harbor_island.png` para ilhas portuárias (Karate, Sorbet, Centaurea, Baterilla) e patrulha de marinheiros.
-     - `misterious_island.png` para Ilha Misteriosa e encontros neutros.
+1. **Novo Inimigo Dino Primordial (`dino`):**
+   - Criado em `data/enemies/enemies.json` com `exclusive_islands: ["Ilha Misteriosa"]`.
+   - HP balanceado (48 HP) e pool de intenções (Mordida Selvagem, Rugido Primitivo com debuff de fraqueza, Golpe de Cauda).
+   - Sprites dedicados: `idle.png`, `attack.png` e `damaged.png` em `res://assets/art/enemies/dino/`.
+   - Conexão procedural em `map_generator.gd` filtrando por ilhas exclusivas.
+2. **Sprites do Saqueador do Mar (`bandit_sailor`):**
+   - Configurado em `data/enemies/enemies.json` com caminhos para `res://assets/art/enemies/pirate_sailor/` (`idle.png`, `attack.png`, `damaged.png`).
+3. **Refinamento de Elementos de Inimigo em Combate (Estilo Slay the Spire):**
+   - Estrutura organizada no `EnemyArea`:
+     - Topo: `EnemyIntentContainer` com badges emoldurados (ícones ⚔, 🛡, ✦ com valores e cores distintas).
+     - Centro: Sprite do inimigo limpo e alinhado ao horizonte do capitão.
+     - Base: Nome com sombra, barra de progresso de vida (`EnemyHPBar`) vermelha com texto centralizado (`HP / Max HP`), badge de bloqueio (`🛡`) e container de status (`EnemyStatusContainer`).
 
 ## Critérios de aceite
-1. Marinheiro padrão exibe `idle.png`, ataca com `attack.png` e reage a dano com `damaged.png`.
-2. Cenário de combate se adapta dinamicamente ao contexto do inimigo e ilha atual.
-3. Cenas e scripts sem erros de parser/validação no Godot.
+1. `bandit_sailor` exibe sprites da pasta `pirate_sailor` com animações de ataque e dano.
+2. `dino` aparece em combates na Ilha Misteriosa com sprites de idle, ataque e dano.
+3. UI dos inimigos organizada sem sobreposição de textos e com barra de vida estilizada.
+4. Validação limpa no Godot headless.
 
 
 

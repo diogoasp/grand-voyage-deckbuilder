@@ -79,6 +79,68 @@
 	  "gold_min": 12,
 	  "gold_max": 20,
 	  "bounty": 8
+	},
+	"idle_sprite_path": "res://assets/art/enemies/pirate_sailor/idle.png",
+	"attack_sprite_path": "res://assets/art/enemies/pirate_sailor/attack.png",
+	"damaged_sprite_path": "res://assets/art/enemies/pirate_sailor/damaged.png"
+  },
+  "dino": {
+	"id": "dino",
+	"name": "Dino Primordial",
+	"category": "common",
+	"exclusive_islands": ["Ilha Misteriosa"],
+	"max_hp": 48,
+	"idle_sprite_path": "res://assets/art/enemies/dino/idle.png",
+	"attack_sprite_path": "res://assets/art/enemies/dino/attack.png",
+	"damaged_sprite_path": "res://assets/art/enemies/dino/damaged.png",
+	"intent_pool": [
+	  {
+		"id": "bite",
+		"name": "Mordida Selvagem",
+		"weight": 55,
+		"effects": [
+		  {
+			"type": "damage",
+			"value": 9,
+			"target": "player"
+		  }
+		]
+	  },
+	  {
+		"id": "primal_roar",
+		"name": "Rugido Primitivo",
+		"weight": 25,
+		"effects": [
+		  {
+			"type": "damage",
+			"value": 4,
+			"target": "player"
+		  },
+		  {
+			"type": "status",
+			"status_id": "weakness",
+			"value": 2,
+			"target": "player"
+		  }
+		]
+	  },
+	  {
+		"id": "tail_slam",
+		"name": "Golpe de Cauda",
+		"weight": 20,
+		"effects": [
+		  {
+			"type": "damage",
+			"value": 13,
+			"target": "player"
+		  }
+		]
+	  }
+	],
+	"rewards": {
+	  "gold_min": 15,
+	  "gold_max": 25,
+	  "bounty": 10
 	}
   },
   "marine_captain_morgan": {

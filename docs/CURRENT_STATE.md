@@ -504,7 +504,13 @@ Documentação detalhada e guia de extensão: [`docs/COMBAT_STYLES_AND_PROFESSIO
      - `misterious_island.png` para Ilha Misteriosa e encontros gerais.
 2. **Sprites de Inimigos:**
    - Harrison (`boss_harrison`): `idle.png` e `attack.png`.
-   - Marinheiro Padrão (`marine_recruit`): `idle.png`, `attack.png` e `damaged.png` (com animação de investida no ataque e reação visual ao sofrer dano).
+   - Marinheiro Padrão (`marine_recruit`): `idle.png`, `attack.png` e `damaged.png`.
+   - Saqueador do Mar (`bandit_sailor`): `idle.png`, `attack.png` e `damaged.png` (pasta `pirate_sailor`).
+   - Dino Primordial (`dino`): `idle.png`, `attack.png` e `damaged.png` (exclusivo para combates na Ilha Misteriosa com debuff de fraqueza).
+3. **Layout de Elementos de Inimigo (Estilo Slay the Spire):**
+   - Intenções posicionadas acima da cabeça com badges coloridos e com bordas.
+   - Nome centralizado e barra de vida (`EnemyHPBar`) vermelha com texto de vida `HP/Max` e badge de bloqueio posicionado na base.
+   - Posição horizontal e vertical niveladas com o capitão.
 
 ## Dívida técnica conhecida
 1. Rebuild da mão deve ser observado em mudanças futuras para evitar problemas de `queue_free()` durante sinais.

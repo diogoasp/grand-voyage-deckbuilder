@@ -51,7 +51,7 @@ static func generate_south_blue_map() -> Array[Array]:
 	var stage_0: Array = [
 		create_island_node("node_0_0", 0, "Karate Island", ["event", "combat", "city"], "Dojô & Cais de Luta"),
 		create_island_node("node_0_1", 0, "Sorbet Kingdom", ["event", "city", "combat"], "Monarquia do Sul"),
-		create_island_node("node_0_2", 0, "Ilha Misteriosa", ["event"], "Encontro Enigmático")
+		create_island_node("node_0_2", 0, "Ilha Misteriosa", ["event", "combat"], "Encontro Enigmático")
 	]
 	stages.append(stage_0)
 
@@ -69,7 +69,7 @@ static func generate_south_blue_map() -> Array[Array]:
 	# Setor 3: Ilha Misteriosa, Baterilla Island
 	# -------------------------------------------------------------------------
 	var stage_2: Array = [
-		create_island_node("node_2_0", 2, "Ilha Misteriosa", ["event"], "Brumas do Mar Aberto"),
+		create_island_node("node_2_0", 2, "Ilha Misteriosa", ["event", "combat"], "Brumas do Mar Aberto"),
 		create_island_node("node_2_1", 2, "Baterilla Island", ["event", "city", "combat"], "Pequeno Paraíso do Sul")
 	]
 	stages.append(stage_2)
@@ -181,7 +181,7 @@ static func create_island_node(node_id: String, stage_idx: int, island: String, 
 
 	match chosen_type:
 		"combat":
-			var combat_pool: Array[Dictionary] = get_enemy_pool_for_stage(stage_idx)
+			var combat_pool: Array[Dictionary] = get_enemy_pool_for_stage(stage_idx, island)
 			if not combat_pool.is_empty():
 				var picked: Dictionary = combat_pool[randi() % combat_pool.size()]
 				target_id = picked["target_id"]
@@ -266,17 +266,27 @@ static func build_stage_connections(current_stage_nodes: Array, next_stage_nodes
 			random_curr["next_nodes"] = cur_list
 
 
-static func get_enemy_pool_for_stage(_stage_index: int) -> Array[Dictionary]:
+static func get_enemy_pool_for_stage(_stage_index: int, island: String = "") -> Array[Dictionary]:
 	var pool: Array[Dictionary] = []
 	for enemy_id in DataLoader.enemies.keys():
 		var edata: Dictionary = DataLoader.get_enemy(enemy_id)
 		var cat: String = str(edata.get("category", "common"))
-		if cat != "boss":
-			pool.append({
-				"target_id": enemy_id,
-				"title": str(edata.get("name", enemy_id)),
-				"desc": "Confronto marítimo"
-			})
+		if cat == "boss":
+			continue
+
+		var exclusive_islands: Array = edata.get("exclusive_islands", [])
+		if not exclusive_islands.is_empty():
+			if island == "" or not exclusive_islands.has(island):
+				continue
+		elif island == "Ilha Misteriosa":
+			# Se a ilha for a Ilha Misteriosa, dá preferência ou exclusividade para monstros misteriosos
+			pass
+
+		pool.append({
+			"target_id": enemy_id,
+			"title": str(edata.get("name", enemy_id)),
+			"desc": "Confronto marítimo"
+		})
 
 	if pool.is_empty():
 		return COMMON_COMBAT_FALLBACKS.duplicate()

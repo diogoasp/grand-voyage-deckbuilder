@@ -165,8 +165,10 @@ func setup_combat_background() -> void:
 
 	if enemy_cat == "boss" or current_enemy_id == "boss_harrison":
 		target_bg_path = "res://assets/scenarios/briss.png"
-	elif current_enemy_id == "marine_recruit":
+	elif current_enemy_id == "marine_recruit" or current_enemy_id == "bandit_sailor":
 		target_bg_path = "res://assets/scenarios/harbor_island.png"
+	elif current_enemy_id == "dino":
+		target_bg_path = "res://assets/scenarios/misterious_island.png"
 	else:
 		target_bg_path = "res://assets/scenarios/misterious_island.png"
 

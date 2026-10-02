@@ -28,18 +28,6 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_enemy_hp_fill"]
-bg_color = Color(0.85, 0.22, 0.22, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 0.45, 0.45, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_0x2iq"]
 atlas = ExtResource("2_2ussv")
 region = Rect2(0, 0, 57, 59)
@@ -73,6 +61,18 @@ animations = [{
 shader = ExtResource("4_shader_white")
 shader_parameter/threshold = 0.94
 shader_parameter/softness = 0.04
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_enemy_hp_fill"]
+bg_color = Color(0.85, 0.22, 0.22, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.45, 0.45, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_energy_orb"]
 bg_color = Color(0.08, 0.22, 0.42, 0.95)

@@ -20,9 +20,9 @@ const COMMON_COMBAT_FALLBACKS: Array[Dictionary] = [
 ]
 
 const SECTOR_BOSS_FALLBACK: Dictionary = {
-	"target_id": "marine_captain_morgan",
-	"title": "Capitão Morgan",
-	"desc": "Base da Marinha"
+	"target_id": "boss_harrison",
+	"title": "Harrison, Líder dos Rebeldes de Briss",
+	"desc": "Confronto com os Rebeldes de Briss"
 }
 
 
@@ -92,7 +92,7 @@ static func generate_south_blue_map() -> Array[Array]:
 	stages.append(stage_3)
 
 	# -------------------------------------------------------------------------
-	# Setor 5: Batalha de Chefe do South Blue (Morgan ou Pudding-Pudding)
+	# Setor 5: Batalha de Chefe do South Blue (Harrison - Briss)
 	# -------------------------------------------------------------------------
 	var boss_info: Dictionary = get_sector_boss(1)
 	var stage_4: Array = [

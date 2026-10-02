@@ -246,6 +246,14 @@ scale = Vector2(1.9520063, 2.1188645)
 sprite_frames = SubResource("SpriteFrames_i18os")
 frame_progress = 0.23706964
 
+[node name="EnemyTextureRect" type="TextureRect" parent="EnemyArea" unique_id=164225055]
+visible = false
+material = SubResource("ShaderMaterial_player")
+custom_minimum_size = Vector2(200, 240)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
 [node name="PlayerArea" type="VBoxContainer" parent="." unique_id=1316187393]
 layout_mode = 0
 offset_left = 180.0

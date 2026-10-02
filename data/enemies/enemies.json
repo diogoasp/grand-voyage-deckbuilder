@@ -184,6 +184,64 @@
 	  "gold_max": 80,
 	  "bounty": 35
 	}
+  },
+  "boss_harrison": {
+	"id": "boss_harrison",
+	"name": "Harrison, Líder dos Rebeldes de Briss",
+	"category": "boss",
+	"allowed_acts": [0],
+	"story_intro": "Tritão Barracuda, ex-pirata e líder dos rebeldes de Briss: 'Mares não acorrentam quem nasceu pra avançar.'",
+	"max_hp": 80,
+	"idle_sprite_path": "res://assets/art/enemies/harrison/idle.png",
+	"attack_sprite_path": "res://assets/art/enemies/harrison/attack.png",
+	"intent_pool": [
+	  {
+		"id": "barracuda_slash",
+		"name": "Corte de Barracuda",
+		"weight": 40,
+		"effects": [
+		  {
+			"type": "damage",
+			"value": 10,
+			"target": "player"
+		  }
+		]
+	  },
+	  {
+		"id": "rebel_resolve",
+		"name": "Vontade Inquebrantável",
+		"weight": 35,
+		"effects": [
+		  {
+			"type": "block",
+			"value": 12,
+			"target": "self"
+		  },
+		  {
+			"type": "damage",
+			"value": 5,
+			"target": "player"
+		  }
+		]
+	  },
+	  {
+		"id": "tide_breaker",
+		"name": "Lâmina da Libertação",
+		"weight": 25,
+		"effects": [
+		  {
+			"type": "damage",
+			"value": 16,
+			"target": "player"
+		  }
+		]
+	  }
+	],
+	"rewards": {
+	  "gold_min": 70,
+	  "gold_max": 100,
+	  "bounty": 45
+	}
   }
 }
 

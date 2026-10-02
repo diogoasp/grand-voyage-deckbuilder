@@ -33,6 +33,7 @@ const REMOVE_WHITE_BG_SHADER: Shader = preload("res://shaders/remove_white_bg.gd
 @onready var enemy_block_badge: Label = $EnemyArea/EnemyHPContainer/EnemyBlockBadge
 @onready var enemy_status_container: HBoxContainer = $EnemyArea/EnemyStatusContainer
 @onready var enemy_sprite: AnimatedSprite2D = $EnemyArea/EnemySprite
+@onready var enemy_texture_rect: TextureRect = $EnemyArea/EnemyTextureRect
 
 @onready var hand_area: HBoxContainer = $HandArea
 @onready var end_turn_button: Button = $RightHUD/EndTurnButton
@@ -58,6 +59,8 @@ var reward_claimed: bool = false
 var current_enemy_id: String = "marine_recruit"
 var current_enemy_data: Dictionary = {}
 var enemy_intent: Dictionary = {}
+var enemy_idle_texture: Texture2D = null
+var enemy_attack_texture: Texture2D = null
 
 var cards_per_turn: int = 5
 var max_energy: int = 3
@@ -153,6 +156,26 @@ func load_enemy(enemy_id: String) -> void:
 
 	enemy = Combatant.new()
 	enemy.setup(enemy_id, enemy_name, enemy_max_hp)
+
+	var idle_path: String = str(current_enemy_data.get("idle_sprite_path", ""))
+	var attack_path: String = str(current_enemy_data.get("attack_sprite_path", ""))
+
+	if idle_path != "" and ResourceLoader.exists(idle_path):
+		enemy_idle_texture = load(idle_path)
+		if attack_path != "" and ResourceLoader.exists(attack_path):
+			enemy_attack_texture = load(attack_path)
+		else:
+			enemy_attack_texture = enemy_idle_texture
+
+		enemy_texture_rect.texture = enemy_idle_texture
+		enemy_texture_rect.visible = true
+		enemy_sprite.visible = false
+	else:
+		enemy_idle_texture = null
+		enemy_attack_texture = null
+		enemy_texture_rect.texture = null
+		enemy_texture_rect.visible = false
+		enemy_sprite.visible = true
 
 	select_enemy_intent()
 
@@ -685,6 +708,16 @@ func resolve_enemy_turn() -> void:
 		return
 
 	var effects: Array = enemy_intent.get("effects", [])
+
+	var has_attack := false
+	for eff in effects:
+		if eff is Dictionary and str(eff.get("type", "")) == "damage":
+			has_attack = true
+			break
+
+	if has_attack:
+		play_enemy_attack_animation()
+
 	var results: Array[Dictionary] = effect_resolver.resolve_effects(
 		effects,
 		combat_context,
@@ -695,6 +728,27 @@ func resolve_enemy_turn() -> void:
 
 	if player.is_defeated():
 		end_combat_with_defeat()
+
+
+func play_enemy_attack_animation() -> void:
+	if enemy_texture_rect.visible and enemy_attack_texture != null:
+		enemy_texture_rect.texture = enemy_attack_texture
+
+	var original_pos := enemy_area.position
+	var lunge_pos := original_pos + Vector2(-45.0, 0.0)
+
+	var tween := create_tween()
+	# Investida rápida para frente (em direção ao capitão)
+	tween.tween_property(enemy_area, "position", lunge_pos, 0.15).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	# Retorno para a posição base
+	tween.tween_property(enemy_area, "position", original_pos, 0.2).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	# Restaura sprite idle
+	tween.tween_callback(func():
+		if enemy_texture_rect.visible and enemy_idle_texture != null:
+			enemy_texture_rect.texture = enemy_idle_texture
+		if is_instance_valid(enemy_area):
+			enemy_area.position = original_pos
+	)
 
 func print_effect_results(results: Array[Dictionary]) -> void:
 	for result in results:
@@ -1021,14 +1075,15 @@ func update_drag_target_feedback() -> void:
 func _on_enemy_damage_taken(result: Dictionary) -> void:
 	var final_damage: int = int(result.get("final_damage", 0))
 	var blocked_damage: int = int(result.get("blocked_damage", 0))
+	var active_enemy_visual: CanvasItem = enemy_texture_rect if enemy_texture_rect.visible else enemy_sprite
 
 	if final_damage > 0:
 		spawn_floating_text(enemy_area, "-%d" % final_damage, Color(1.0, 0.25, 0.25))
-		flash_target(enemy_area, Color(2.0, 0.25, 0.25, 1.0), enemy_sprite)
+		flash_target(enemy_area, Color(2.0, 0.25, 0.25, 1.0), active_enemy_visual)
 		shake_target(enemy_area, 6.0)
 	elif blocked_damage > 0:
 		spawn_floating_text(enemy_area, "Bloqueado! (%d)" % blocked_damage, Color(0.3, 0.7, 1.0))
-		flash_target(enemy_area, Color(0.4, 0.8, 2.0, 1.0), enemy_sprite)
+		flash_target(enemy_area, Color(0.4, 0.8, 2.0, 1.0), active_enemy_visual)
 
 
 func _on_player_damage_taken(result: Dictionary) -> void:
@@ -1062,15 +1117,17 @@ func _on_player_healed(result: Dictionary) -> void:
 
 
 func _on_enemy_block_gained(amount: int) -> void:
+	var active_enemy_visual: CanvasItem = enemy_texture_rect if enemy_texture_rect.visible else enemy_sprite
 	spawn_floating_text(enemy_area, "+%d Bloqueio" % amount, Color(0.4, 0.8, 1.0))
-	flash_target(enemy_area, Color(0.4, 0.8, 2.0, 1.0), enemy_sprite)
+	flash_target(enemy_area, Color(0.4, 0.8, 2.0, 1.0), active_enemy_visual)
 
 
 func _on_enemy_healed(result: Dictionary) -> void:
 	var effective_heal: int = int(result.get("effective_heal", 0))
+	var active_enemy_visual: CanvasItem = enemy_texture_rect if enemy_texture_rect.visible else enemy_sprite
 	if effective_heal > 0:
 		spawn_floating_text(enemy_area, "+%d HP" % effective_heal, Color(0.2, 1.0, 0.4))
-		flash_target(enemy_area, Color(0.3, 2.0, 0.5, 1.0), enemy_sprite)
+		flash_target(enemy_area, Color(0.3, 2.0, 0.5, 1.0), active_enemy_visual)
 
 
 func flash_target(target: Control, flash_color: Color, sprite_node: CanvasItem = null) -> void:

@@ -395,15 +395,21 @@ Main
 Dados:
 `res://data/enemies/enemies.json`
 
-Chefe implementado:
-- `marine_captain_morgan` (Capitão Morgan 'Mão de Machado'):
-  - HP: 65;
-  - Recompensas: 50-75 Ouro, 30 Bounty;
+Chefes implementados:
+- `boss_harrison` (Harrison, Líder dos Rebeldes de Briss):
+  - Raça: Tritão Barracuda (ex-pirata e combatente revolucionário);
+  - Chefe do Ato 1 (Briss Kingdom / Águas do Estreito Final);
+  - HP: 80;
+  - Recompensas: 70-100 Ouro, 45 Bounty;
   - Ciclo de Intenções:
-    - *Golpe de Machado*: 9 de dano;
-    - *Postura do Tirano*: 10 de bloqueio próprio + 4 de dano ao jogador;
-    - *Execução Impiedosa*: 15 de dano massivo;
-  - Conexão: ativado no nó final do setor através do tipo `"boss"`, com destaque visual no mapa (borda avermelhada e ícone de caveira).
+    - *Corte de Barracuda*: 10 de dano ao capitão;
+    - *Vontade Inquebrantável*: 12 de bloqueio próprio + 5 de dano ao capitão;
+    - *Lâmina da Libertação*: 16 de dano perfurante ao capitão;
+  - Apresentação em batalha: sprites dinâmicos dedicados (`idle.png` e `attack.png`) com lunge animado durante ataques;
+- `marine_captain_morgan` (Capitão Morgan 'Mão de Machado') e `commodore_pudding_pudding`:
+  - Reservados / desativados da rota do Ato 1 para dar lugar exclusivamente a Harrison e futuros chefes canônicos de Briss.
+
+Conexão: ativado no nó final do setor através do tipo `"boss"`, com destaque visual no mapa (borda avermelhada e ícone de caveira).
 
 ## Geração Procedural da Carta Náutica (MapGenerator) & Fases/Atos
 
@@ -416,7 +422,7 @@ Responsabilidades:
   - **Setor 2:** Centaurea Kingdom (Combates/Eventos), Judo Island ou Torino Kingdom (Ervas/Medicina);
   - **Setor 3:** Ilha Misteriosa (sempre Evento) ou Baterilla Island (História Náutica/Pousada);
   - **Setor 4:** Briss Kingdom (Grande Porto Seguro com Taverna, Treinamentos e Provisões antes da Grande Travessia);
-  - **Setor 5:** Batalha de Chefe do South Blue (sorteio entre chefes elegíveis para o Ato 1: Capitão Morgan ou Comodoro Pudding-Pudding).
+  - **Setor 5:** Batalha de Chefe de Briss (Harrison, Líder dos Rebeldes de Briss).
 - **Regras Canônicas de Frutas e Chefes por Ato:**
   - Akuma no Mi são extremamente raras e **não aparecem nos Blues** (`allowed_acts: [2]`); elas só passam a ser encontradas em baús/ruínas na **Grand Line (Ato 2)**.
   - Inimigos e Chefes possuem o atributo `allowed_acts` no `enemies.json` para garantir balanceamento e narrativa coesa por mar.
